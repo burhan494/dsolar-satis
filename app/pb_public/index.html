@@ -108,10 +108,10 @@ function menu() {
 function ciz() {
   if (!TOK || !BEN) { girisEkrani(); return; }
   var h = (location.hash || "").replace(/^#/, "").split("/"), sayfa = h[0] || (rol() === "ortak" ? "ortak" : "bugun");
-  $("app").innerHTML = '<header><b>D Solar Satış</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
+  $("app").innerHTML = '<header><b>D Solar Satış</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
     '<nav>' + menu().map(function (m) { return '<a href="#' + m[0] + '" class="' + (m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "on" : "") + '"><i>' + m[1] + "</i>" + m[2] + "</a>"; }).join("") + "</nav><main id=\"m\"><div class=\"bos\">Yükleniyor…</div></main>";
   $("cik").onclick = cikis;
-  var S = { bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak };
   (S[sayfa] || sBugun)(h[1]);
 }
 window.addEventListener("hashchange", ciz);
@@ -325,6 +325,17 @@ function sEkip() {
     Array.prototype.forEach.call(document.querySelectorAll("[data-s]"), function (e) { e.onclick = function () { if (!confirm(e.dataset.e + " için yeni geçici şifre oluşturulsun mu?")) return; var s = geciciSifre();
       api("/api/collections/users/records/" + e.dataset.s, { method: "PATCH", body: { password: s, passwordConfirm: s } }).then(function () { sifreGoster(e.dataset.e, s); }).catch(hata); }; });
   }).catch(hata);
+}
+
+/* ---------- Şifre değiştir ---------- */
+function sProfil() {
+  $("m").innerHTML = '<div class="card"><h3>Şifremi değiştir</h3><div class="f"><label>Mevcut (geçici) şifre<input id="pE" type="password" autocomplete="current-password"></label>' +
+    '<label>Yeni şifre (en az 10 karakter)<input id="pY" type="password" autocomplete="new-password"></label><label>Yeni şifre (tekrar)<input id="pT" type="password" autocomplete="new-password"></label>' +
+    '<button class="btn pri" id="pK">Şifreyi değiştir</button><small style="color:var(--muted)">Değiştirdikten sonra yeni şifrenizle yeniden giriş yaparsınız.</small></div></div>';
+  $("pK").onclick = function () { var y = $("pY").value;
+    if (y.length < 10) { toast("Yeni şifre en az 10 karakter olmalı"); return; } if (y !== $("pT").value) { toast("Yeni şifreler aynı değil"); return; }
+    api("/api/collections/users/records/" + BEN.id, { method: "PATCH", body: { oldPassword: $("pE").value, password: y, passwordConfirm: y } })
+      .then(function () { toast("Şifre değişti, yeniden giriş yapın"); setTimeout(cikis, 1200); }).catch(function () { toast("Mevcut şifre hatalı ya da yeni şifre uygun değil"); }); };
 }
 
 /* ---------- İş ortağı ---------- */

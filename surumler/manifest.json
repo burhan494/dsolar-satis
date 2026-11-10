@@ -1,7 +1,7 @@
 {
- "surum": 2,
- "paket": "surumler/dsolar-2.zip",
- "sha256": "72ad4c535d91d6477fc668fb3261d6bc7e8b93933b1700894d6e829c1d4a1c85",
- "imza": "g7dbIaRBqVf6HhoqsVpLt553ouWal8ZdOWrE1Suda6l4KiFZ6W1VIi3WOFyJzJoL4LSLTf3aJUh2mELhyGGsXYVrss3Ly0I2jEjwqUf5+nMb7FNDaKy0M9C0Rx5AUHeEm5NKjm2ju5yIsNHnCdt2tTLDXVJbaR6eULkV7/fpuocUn8jc+rCc2dB4J6/REl7YYwjfhvlzuBb3GUDWfZM82nBwaDkbvaifFeXPWFpJcBEL+WDu1D215DdfpOakZvMRF/gybZwMgBDMwFwC7ucW4IYqbQevjhSNc596r8kQUS9fSCHwLe51XYKabf2wDWHQpXSFczukG+oXuCNFtauJX//k4rlD67G7+1uaLKdlFFkcc77VOnfbPUj24Xnu8OWNb4q0DHGyCdb6pFQEHP76/IQ4/xIfDQm+Lzzx1UL2vQ6L7vQG0SRcw9mQ8uXAlMX3g3ve/KACFlame9Z7lKKw8bTfZZIRCHg1gAammXtlDcJIQ7E5rYltTIfOJjTa1yxi",
- "not": "Ön hesap aday kartında; yönetici için hesap ayarları ve sunucu sürümü; ilk yönetici hesabı"
+ "surum": 3,
+ "paket": "surumler/dsolar-3.zip",
+ "sha256": "0d021910704f21720922a39d747bdbd543f2bfc2d07d77f76b87c8f9770b3a85",
+ "imza": "AlQwbndlmF5D8sD6pjGYGqoe3lPTfRzM8R3Wx74AtBOTcr+KCvKWJ+eTORw0+3wT2eCgM1VOp3pDvhabFx2VmF4Zzgy46vpeFwD+pPaziBdJ9AfIIWbPSQ4B/xRDcfbvcAM+0OEH5F6o5Gwc3MqlJDTUXKDkL1ig2jl/VX/wJoJegsmLwONN2Q0PR5DIGxa5aDe+ydSH//lxRmgYT9rlMMhy/SynaXtXkKkgE3uXfNAdjL5H18KqBC3X37W5VloU8fgZ/t9Kx5QRKlb6g8D5GEI89Rzit3IpO6tLc4/HeGhl3AcuDv0hECj3arwnJ4KnIvcAAAZ5zwlWT+3Ki/kJYDATzaVocINtJa1O5126TQZEgE1ZRD/Hq+3MKwji0Vp/CDaWCdYOmjVdC8xPuoeVKb3O/M9amHPgV8kuim2RNr4ebi5LO11jJIBxwAcK225Tut1aJtpOd8lLSV9GxGp06etQ1CLsKnQQAHQS9p1lBVlmYgYG6QwTYO3F/7lnNPC6",
+ "not": "Şifremi değiştir ekranı (geçici şifreyi değiştirmek için)"
 }
