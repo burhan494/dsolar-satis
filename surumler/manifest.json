@@ -1,7 +1,7 @@
 {
- "surum": 4,
- "paket": "surumler/dsolar-4.zip",
- "sha256": "3898f938a5f623590435c27c8889578bf4edc9a0cb9a3db0520859b297310172",
- "imza": "NIpSHiByXze0ch2UYo/5JQzTa4N3avkwgJW8RszSPVLm07Hg0MRcxMYLXeVd/sHhwtpEW0qCDEhXtS8Q9gSJGokfXVDIkuJ0Zvty/G36Zi0AXh5jkt2v29x3qEwAvOv8N/I41jMHYrY1uCvRRfG8enOL/l/PIzZ8ORB7A8X0x3NItsMI9AtqmUvT4nD2puajzjf1dF847uMmEov1dR+CdkYpohgLzWtxXHcVCKPTcRS7S02M39O05xBkO77O18jNXK6Aw3vZYhG1tnpMSryUCBkAIagONUm1nIax8kws/yIv4PqPoARuTQy+cPUwdQ/Vw2DDWGMeV+xiNVXv5Gfx9+L74c9iVJcgKSAvvNGzKldmckMCndVsNQ0rst7/NDkIk6n6n/2UaWzGc5QRBNwGcombmNMZjSAZcqUV5cWsgrf6+TX6W8BZcgy1t5dZbh2RI8qZp3vnvkA3y4Qz+W0w0+MtxQK7hPc4oqRKUax1fwrVC6840mrVD6QeXtZ21pWI",
- "not": "Finans (kasa, banka, hareketler, krediler, ortak cari, varlıklar) ve GES aylık takibi"
+ "surum": 5,
+ "paket": "surumler/dsolar-5.zip",
+ "sha256": "614471ec65c7170d9489bcbf9ca3033e25ef72d1f1150486c898e9bba92c0b0e",
+ "imza": "g/AA6LMDbeU8tu/dVW9kXxNH6F5Msc/WImBeZu73B1iashqfc56oFWLqMx97XyXxoGquS3xL0yknBBk9vNRvtNiCwEWm7jQ7Kh5G8s7CRnDMsyVPJVxdycQ/aCzwB2w1lDGjvTGET1Tmi3Guwjk5iauh/9+XwdaNb9aSMsLzigHSqikFQi/turBWACjoVx/KKRzvisOrYzguH9NyLrCrnbeq2yHXN9xviMJaSj8SuQzKL7g4P7su0twKwptHUctuSRWHCRyoyGJVeHMXkOMGWoIvQjEOKjK4SAvNHxx1YU7NiKj0tPyGfYI0Rh9KCmgPFgUZLRH3Yvz5xAtY111ZH0hke4MyjmJNppXBDFlh+dR+D6o6CZg2+0iw2kvGaRMJ7IYiLtVKor8xxCHEGis571FsYkPeIU6CgPcKN/3sGoqyrKvQ4Cy1TQxBWctCyzE1nLe55xQl0Pbtc5q8VZMkOLn6eewgJ0Kav44o8pIyRGqOM8k5TEq78TzavbPYtLV5",
+ "not": "Beacon'dan finans aktarma (Ekip sayfası), nakit akışı tahmini, kredi/limit/teminat, sabit giderler, finans soruları; müşteri silme"
 }
