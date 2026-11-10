@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1d3557">
-<title>D Solar Satış</title>
+<title>D Solar</title>
 <style>
 :root{--navy:#1d3557;--blue:#1e88e5;--blue2:#1565c0;--orange:#ed7d31;--bg:#f4f7fb;--card:#fff;--line:#e3e9f1;--muted:#5f6f82;--text:#1d3557;--ok:#1b6b3a;--okbg:#e6f6ec;--warn:#9a4508;--warnbg:#fff3e8;--info:#1565c0;--infobg:#eaf4ff;--bad:#b42318}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Arial,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
 header{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;gap:10px}
-header b{font-size:17px;flex:1}header .rol{font-size:12px;background:rgba(255,255,255,.15);padding:3px 9px;border-radius:999px}
+header b{font-size:17px;flex:1;white-space:nowrap}header .rol{font-size:12px;background:rgba(255,255,255,.15);padding:3px 9px;border-radius:999px}
 main{max-width:860px;margin:0 auto;padding:14px 14px 96px}
 nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(8px + env(safe-area-inset-bottom));z-index:5}
 nav a{flex:1;text-align:center;text-decoration:none;color:#6b7a8c;font-size:11px;font-weight:600;padding:4px 0}nav a.on{color:var(--navy)}nav a i{display:block;font-style:normal;font-size:20px;line-height:1.2}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
 .card h3{margin:0;padding:12px 14px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid #edf1f6;text-decoration:none;color:inherit}
-.row .t{flex:1;min-width:0}.row .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row .t small{color:var(--muted)}
+.row .t{flex:1;min-width:0}.row .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row .t small{color:var(--muted)}.row .t b.w{white-space:normal}
 .pill{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;white-space:nowrap;background:#eef1f5;color:#4a5b70}
 .p-Aday{background:#eef1f5;color:#4a5b70}.p-Nitelikli{background:var(--infobg);color:var(--info)}.p-Keşif{background:#f3e8ff;color:#6b21a8}.p-Teklif{background:var(--warnbg);color:var(--warn)}.p-Sözleşme{background:var(--okbg);color:var(--ok)}.p-Kaybedildi{background:#fde8e8;color:var(--bad)}
 .btn{min-height:44px;border-radius:12px;border:1px solid #d5deea;background:#fff;color:var(--navy);font-weight:600;padding:0 16px;cursor:pointer}
@@ -56,6 +56,7 @@ function telNorm(t) { t = String(t || "").replace(/\D/g, ""); if (t.indexOf("90"
 function toast(m) { var e = document.createElement("div"); e.className = "toast"; e.textContent = m; document.body.appendChild(e); setTimeout(function () { e.remove(); }, 2600); }
 function rol() { return BEN && BEN.rol; }
 function yon() { return rol() === "yonetici"; }
+function finansci() { return rol() === "yonetici" || rol() === "muhasebe"; }
 function satisci() { return rol() === "yonetici" || rol() === "satis"; }
 function filtreQ(f) { return encodeURIComponent(f); }
 function q(v) { return '"' + String(v).replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"'; }
@@ -99,8 +100,10 @@ function menu() {
   else {
     M.push(["bugun", "🏠", "Bugün"]);
     if (rol() !== "muhasebe") M.push(["adaylar", "👥", rol() === "saha" ? "Keşiflerim" : "Müşteriler"]);
-    if (satisci()) M.push(["yeni", "➕", "Yeni aday"]);
+    if (rol() === "satis") M.push(["yeni", "➕", "Yeni aday"]);
     if (satisci() || rol() === "muhasebe") M.push(["teklifler", "📄", "Teklifler"]);
+    if (finansci()) M.push(["finans", "💰", "Finans"]);
+    if (yon()) M.push(["ges", "☀️", "GES"]);
     if (yon()) M.push(["ekip", "⚙️", "Ekip"]);
   }
   return M;
@@ -108,10 +111,10 @@ function menu() {
 function ciz() {
   if (!TOK || !BEN) { girisEkrani(); return; }
   var h = (location.hash || "").replace(/^#/, "").split("/"), sayfa = h[0] || (rol() === "ortak" ? "ortak" : "bugun");
-  $("app").innerHTML = '<header><b>D Solar Satış</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
+  $("app").innerHTML = '<header><b>D Solar</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
     '<nav>' + menu().map(function (m) { return '<a href="#' + m[0] + '" class="' + (m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "on" : "") + '"><i>' + m[1] + "</i>" + m[2] + "</a>"; }).join("") + "</nav><main id=\"m\"><div class=\"bos\">Yükleniyor…</div></main>";
   $("cik").onclick = cikis;
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes };
   (S[sayfa] || sBugun)(h[1]);
 }
 window.addEventListener("hashchange", ciz);
@@ -145,7 +148,7 @@ function adayRow(a) {
 function sBugun() {
   var b = bugun(), f;
   if (rol() === "saha") f = "kesifci = " + q(BEN.id) + " && asama = 'Keşif'";
-  else if (rol() === "muhasebe") { $("m").innerHTML = '<div class="card"><h3>Muhasebe</h3><div class="bilgi">Teklifler ve tahsilat ekranı "Teklifler" sekmesinde. Kasa ve nakit akışı ekranı sonraki sürümde gelecek.</div></div>'; return; }
+  else if (rol() === "muhasebe") { $("m").innerHTML = '<div class="card"><h3>Muhasebe</h3><div class="bilgi">Teklifler ve tahsilat ekranı "Teklifler" sekmesinde. Kasa, banka, nakit hareketleri ve krediler "Finans" sekmesinde.</div></div>'; return; }
   else f = "asama != 'Sözleşme' && asama != 'Kaybedildi'";
   liste("adaylar", f, "sonraki").then(function (A) {
     var vade = A.filter(function (a) { return a.sonraki && a.sonraki.slice(0, 10) <= b; });
@@ -349,6 +352,188 @@ function sOrtak() {
       '<div class="card"><h3>Müşteri yönlendir</h3><div class="bilgi">Yönlendirmek istediğiniz kişiyi D Solar ekibine telefonla ya da WhatsApp\'tan (0544 498 25 99) bildirin; ekip sizin adınıza kaydeder.</div></div>';
   }).catch(hata);
 }
+/* ---------- Finans (yönetici + muhasebe; ortak cari ve varlıklar yalnız yönetici) ---------- */
+var PB_AD = { TRY: "TL", USD: "USD", EUR: "EUR" };
+var GELIR = ["Satış tahsilatı", "Amcor kira", "Diğer gelir", "Ortak koydu"];
+var KATEGORI = ["Satış tahsilatı", "Amcor kira", "Diğer gelir", "Malzeme", "İşçilik / taşeron", "Maaş", "Vergi / SGK", "Kredi ödemesi", "Kira / ofis", "Araç", "GES gideri", "Ortak koydu", "Ortak aldı", "Hesaplar arası", "Diğer gider"];
+var AYLAR = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+function num(v) { var x = parseFloat(String(v == null ? "" : v).replace(/\s/g, "").replace(/\./g, "").replace(",", ".")); return isNaN(x) ? null : x; }
+function para(v, pb) { return sayi(v) + " " + (PB_AD[pb] || pb || ""); }
+function ayAd(d) { return AYLAR[+d.slice(5, 7) - 1] + " " + d.slice(0, 4); }
+function ayEkle(d, n) { var y = +d.slice(0, 4), m = +d.slice(5, 7) - 1 + n; y += Math.floor(m / 12); m = ((m % 12) + 12) % 12; return y + "-" + String(m + 1).padStart(2, "0"); }
+function sec(L, v) { return L.map(function (x) { var k = Array.isArray(x) ? x[0] : x, a = Array.isArray(x) ? x[1] : x; return '<option value="' + esc(k) + '"' + (k === v ? " selected" : "") + ">" + esc(a) + "</option>"; }).join(""); }
+function bagT(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(sel), function (e) { e.onclick = function (ev) { ev.stopPropagation(); f(e, ev); }; }); }
+function bakiyeler(H, M) {
+  var B = {}; H.forEach(function (h) { B[h.id] = +h.acilis || 0; });
+  M.forEach(function (m) { if (m.durum !== "Gerçekleşti" || !(m.hesap in B)) return; var h = H.filter(function (x) { return x.id === m.hesap; })[0];
+    if (h.acilisTarihi && m.tarih.slice(0, 10) < h.acilisTarihi.slice(0, 10)) return; B[m.hesap] += (m.yon === "Giriş" ? 1 : -1) * (+m.tutar || 0); });
+  return B;
+}
+function sFinans(alt) {
+  if (!finansci()) { location.hash = "#bugun"; return; }
+  alt = alt || "ozet";
+  var T = [["ozet", "Özet"], ["hareket", "Hareketler"], ["hesap", "Hesaplar"], ["kredi", "Krediler"]];
+  if (yon()) T.push(["ortak", "Ortak cari"], ["varlik", "Varlıklar"]);
+  var bas = '<div class="chips">' + T.map(function (t) { return '<button onclick="location.hash=\'#finans/' + t[0] + '\'" class="' + (t[0] === alt ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + '</div><div id="fm"><div class="bos">Yükleniyor…</div></div>';
+  $("m").innerHTML = bas;
+  ({ ozet: fOzet, hareket: fHareket, hesap: fHesap, kredi: fKredi, ortak: fOrtak, varlik: fVarlik }[alt] || fOzet)();
+}
+function fOzet() {
+  Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", "", "tarih")]).then(function (R) {
+    var H = R[0], M = R[1], B = bakiyeler(H, M), b = bugun(), top = {};
+    H.forEach(function (h) { if (h.aktif) top[h.pb] = (top[h.pb] || 0) + B[h.id]; });
+    var gec = M.filter(function (m) { return m.durum === "Planlandı" && m.tarih.slice(0, 10) < b; });
+    var son90 = ayEkle(b, 3) + "-31";
+    var plan = M.filter(function (m) { return m.durum === "Planlandı" && m.tarih.slice(0, 10) >= b && m.tarih.slice(0, 10) <= son90; });
+    var pbler = Object.keys(top).length ? Object.keys(top) : ["TRY"];
+    var aylar = []; for (var i = -5; i <= 3; i++) aylar.push(ayEkle(b, i));
+    var html = '<div class="card"><h3>Bakiye (aktif hesaplar)</h3><div class="kv">' + pbler.map(function (p) { return '<div><small>' + PB_AD[p] + '</small><b style="' + (top[p] < 0 ? "color:var(--bad)" : "") + '">' + para(top[p] || 0, p) + "</b></div>"; }).join("") + "</div>" +
+      (H.length ? "" : '<div class="bilgi">Önce "Hesaplar" sekmesinden kasa ve banka hesaplarını açılış bakiyeleriyle ekleyin.</div>') + "</div>";
+    if (gec.length) html += '<div class="uyari" style="margin:0 0 12px">' + gec.length + ' planlı hareketin tarihi geçti. "Hareketler" sekmesinde gerçekleşti olarak işaretleyin ya da tarihini düzeltin.</div>';
+    pbler.forEach(function (p) {
+      var hs = H.filter(function (h) { return h.pb === p; }).map(function (h) { return h.id; });
+      var satir = aylar.map(function (a) { var g = 0, c = 0, pl = false, var_ = false; M.forEach(function (m) { if (hs.indexOf(m.hesap) < 0 || m.tarih.slice(0, 7) !== a || m.kategori === "Hesaplar arası") return; var_ = true; if (m.durum === "Planlandı") pl = true; if (m.yon === "Giriş") g += +m.tutar; else c += +m.tutar; });
+        if (!var_) return ""; return '<div class="row"><div class="t"><b>' + ayAd(a) + (a > b.slice(0, 7) ? " <small>(plan)</small>" : pl ? " <small>(planlı var)</small>" : "") + '</b><small>giriş ' + sayi(g) + " · çıkış " + sayi(c) + '</small></div><b style="color:' + (g - c < 0 ? "var(--bad)" : "var(--ok)") + '">' + (g - c > 0 ? "+" : "") + sayi(g - c) + "</b></div>"; });
+      html += '<div class="card"><h3>Aylık nakit akışı (' + PB_AD[p] + ')</h3>' + (satir.join("") || '<div class="bos">Son 6 ay ve önümüzdeki 3 ayda hareket yok.</div>') + '<div class="not"><small>Hesaplar arası transferler hariç. Gelecek aylar yalnız "Planlandı" kayıtlarını gösterir.</small></div></div>';
+    });
+    var hesapAd = {}; H.forEach(function (h) { hesapAd[h.id] = h; });
+    html += '<div class="card"><h3>Önümüzdeki 3 ay: planlı</h3>' + (plan.map(function (m) { var h = hesapAd[m.hesap] || {}; return '<div class="row"><div class="t"><b>' + tarih(m.tarih) + " · " + esc(m.kategori || "") + "</b><small>" + esc([m.aciklama, h.ad].filter(Boolean).join(" · ")) + '</small></div><b style="color:' + (m.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (m.yon === "Giriş" ? "+" : "−") + para(m.tutar, h.pb) + "</b></div>"; }).join("") || '<div class="bos">Planlı hareket yok.</div>') + "</div>";
+    $("fm").innerHTML = html;
+  }).catch(hata);
+}
+var FH = { ay: "" };
+function fHareket() {
+  Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", FH.ay ? "tarih >= " + q(FH.ay + "-01 00:00:00") + " && tarih < " + q(ayEkle(FH.ay + "-01", 1) + "-01 00:00:00") : "", "-tarih,-created"),
+    yon() ? liste("adaylar", "asama = 'Sözleşme'", "ad") : Promise.resolve([])]).then(function (R) {
+    var H = R[0], M = R[1], P = R[2], ha = {}; H.forEach(function (h) { ha[h.id] = h; });
+    var akt = H.filter(function (h) { return h.aktif; }).sort(function (x, y) { return (x.pb === "TRY" ? 0 : 1) - (y.pb === "TRY" ? 0 : 1); });
+    if (!akt.length) { $("fm").innerHTML = '<div class="card"><div class="bilgi" style="margin:14px">Önce "Hesaplar" sekmesinden en az bir hesap ekleyin.</div></div>'; return; }
+    var L = FH.ay ? M : M.slice(0, 150);
+    $("fm").innerHTML = '<div class="card"><h3>Hareket ekle</h3><div class="f"><div class="f2"><label>Tarih<input id="hT" type="date" value="' + bugun() + '"></label><label>Hesap<select id="hH">' + sec(akt.map(function (h) { return [h.id, h.ad + " (" + PB_AD[h.pb] + ")"]; })) + "</select></label></div>" +
+      '<div class="f2"><label>Kategori<select id="hK">' + sec(KATEGORI, "Malzeme") + '</select></label><label>Yön<select id="hY">' + sec(["Çıkış", "Giriş"]) + "</select></label></div>" +
+      '<div class="f2"><label>Tutar<input id="hU" inputmode="decimal"></label><label>Durum<select id="hD">' + sec(["Gerçekleşti", "Planlandı"]) + "</select></label></div>" +
+      '<label>Açıklama<input id="hA" placeholder="ör. Ekim maaşları, X firması panel ödemesi"></label>' +
+      (yon() ? '<label>Proje (sözleşmeli müşteri, kârlılık için)<select id="hP"><option value="">—</option>' + sec(P.map(function (a) { return [a.id, a.ad + (a.ilce ? " · " + a.ilce : "")]; })) + "</select></label>" : "") +
+      '<button class="btn pri" id="hK2">Kaydet</button></div></div>' +
+      '<div class="ust"><input id="hAy" type="month" value="' + FH.ay + '"><button class="btn" id="hTum">Son kayıtlar</button></div>' +
+      '<div class="card"><h3>' + (FH.ay ? ayAd(FH.ay) : "Son kayıtlar") + ' <small style="color:var(--muted)">' + L.length + "</small></h3>" +
+      (L.map(function (m) { var h = ha[m.hesap] || {}; return '<div class="row"><div class="t"><b class="w">' + tarih(m.tarih) + " · " + esc(m.kategori || "") + "</b><small>" + esc([m.aciklama, h.ad].filter(Boolean).join(" · ")) + "</small></div>" +
+        '<div style="display:grid;justify-items:end;gap:6px"><b style="white-space:nowrap;color:' + (m.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (m.yon === "Giriş" ? "+" : "−") + para(m.tutar, h.pb) + "</b><div style=\"display:flex;gap:6px\">" +
+        (m.durum === "Planlandı" ? '<button class="btn sm" data-g="' + m.id + '">Gerçekleşti</button>' : "") + (yon() ? '<button class="btn sm" data-x="' + m.id + '" title="Sil">✕</button>' : "") + "</div></div></div>"; }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
+    $("hK").onchange = function () { $("hY").value = GELIR.indexOf(this.value) >= 0 ? "Giriş" : "Çıkış"; };
+    $("hAy").onchange = function () { FH.ay = this.value; fHareket(); };
+    $("hTum").onclick = function () { FH.ay = ""; fHareket(); };
+    $("hK2").onclick = function () { var u = num($("hU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; } if (!$("hT").value) { toast("Tarih gerekli"); return; }
+      var v = { tarih: $("hT").value + " 12:00:00.000Z", hesap: $("hH").value, kategori: $("hK").value, yon: $("hY").value, tutar: u, durum: $("hD").value, aciklama: $("hA").value.trim(), giren: BEN.id };
+      if ($("hP") && $("hP").value) v.aday = $("hP").value;
+      $("hK2").disabled = true; api("/api/collections/fin_hareketler/records", { method: "POST", body: v }).then(function () { toast("Kaydedildi"); fHareket(); }).catch(function (e) { $("hK2").disabled = false; hata(e); }); };
+    bagT("[data-g]", function (e) { api("/api/collections/fin_hareketler/records/" + e.dataset.g, { method: "PATCH", body: { durum: "Gerçekleşti" } }).then(fHareket).catch(hata); });
+    bagT("[data-x]", function (e) { if (confirm("Bu hareket silinsin mi?")) api("/api/collections/fin_hareketler/records/" + e.dataset.x, { method: "DELETE" }).then(fHareket).catch(hata); });
+  }).catch(hata);
+}
+function fHesap() {
+  Promise.all([liste("fin_hesaplar", "", "-aktif,ad"), liste("fin_hareketler", "durum = 'Gerçekleşti'", "tarih")]).then(function (R) {
+    var H = R[0], B = bakiyeler(H, R[1]);
+    $("fm").innerHTML = '<div class="card"><h3>Hesaplar</h3>' + (H.map(function (h) { return '<div class="row"><div class="t"><b' + (h.aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(h.ad) + "</b><small>" + esc(h.tur) + " · açılış " + para(h.acilis, h.pb) + (h.acilisTarihi ? " (" + tarih(h.acilisTarihi) + ")" : "") + (h.not ? " · " + esc(h.not) : "") + "</small></div><b>" + para(B[h.id], h.pb) + "</b>" +
+      '<button class="btn sm" data-ak="' + h.id + '" data-v="' + (h.aktif ? 0 : 1) + '">' + (h.aktif ? "Kapat" : "Aç") + "</button></div>"; }).join("") || '<div class="bos">Hesap yok.</div>') + "</div>" +
+      '<div class="card"><h3>Hesap ekle</h3><div class="f"><label>Ad<input id="kA" placeholder="ör. Ziraat TL, Kasa, Garanti USD"></label><div class="f2"><label>Tür<select id="kT">' + sec(["Banka", "Kasa", "Kredi kartı"]) + '</select></label><label>Para birimi<select id="kP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + "</select></label></div>" +
+      '<div class="f2"><label>Açılış bakiyesi<input id="kB" inputmode="decimal" placeholder="eksi olabilir"></label><label>Açılış tarihi<input id="kD" type="date" value="' + bugun() + '"></label></div><label>Not<input id="kN"></label><button class="btn pri" id="kK">Ekle</button>' +
+      '<small style="color:var(--muted)">Açılış tarihinden önceki hareketler bakiyeye katılmaz. Bankadaki bakiyeyle eşitlemek için açılış bakiyesini o günün ekstresinden girin.</small></div></div>';
+    $("kK").onclick = function () { if (!$("kA").value.trim()) { toast("Ad gerekli"); return; } var b = String($("kB").value).trim(), n = num(b.replace(/^[-−]/, "")) || 0; if (/^[-−]/.test(b)) n = -n;
+      api("/api/collections/fin_hesaplar/records", { method: "POST", body: { ad: $("kA").value.trim(), tur: $("kT").value, pb: $("kP").value, acilis: n, acilisTarihi: $("kD").value ? $("kD").value + " 00:00:00.000Z" : "", aktif: true, not: $("kN").value.trim() } }).then(function () { toast("Hesap eklendi"); fHesap(); }).catch(hata); };
+    bagT("[data-ak]", function (e) { api("/api/collections/fin_hesaplar/records/" + e.dataset.ak, { method: "PATCH", body: { aktif: e.dataset.v === "1" } }).then(fHesap).catch(hata); });
+  }).catch(hata);
+}
+function fKredi() {
+  liste("krediler", "", "sonOdeme").then(function (K) {
+    var top = {}; K.forEach(function (k) { top[k.pb] = (top[k.pb] || 0) + (+k.kalan || 0); });
+    $("fm").innerHTML = '<div class="card"><h3>Kalan borç</h3><div class="kv">' + (Object.keys(top).map(function (p) { return "<div><small>" + PB_AD[p] + "</small><b>" + para(top[p], p) + "</b></div>"; }).join("") || '<div><small>—</small><b>0</b></div>') + "</div></div>" +
+      '<div class="card"><h3>Krediler</h3>' + (K.map(function (k) { return '<div class="row"><div class="t"><b>' + esc(k.ad) + "</b><small>kalan " + para(k.kalan, k.pb) + " / " + para(k.anaPara, k.pb) + (k.taksit ? " · taksit " + para(k.taksit, k.pb) : "") + (k.faiz ? " · %" + sayi(k.faiz, 2) : "") + (k.sonOdeme ? " · vade " + tarih(k.sonOdeme) : "") + (k.not ? " · " + esc(k.not) : "") + "</small></div>" +
+        '<button class="btn sm" data-kk="' + k.id + '" data-k="' + esc(k.kalan || 0) + '">Kalan</button>' + (yon() ? '<button class="btn sm" data-kx="' + k.id + '">✕</button>' : "") + "</div>"; }).join("") || '<div class="bos">Kredi yok.</div>') + "</div>" +
+      '<div class="card"><h3>Kredi ekle</h3><div class="f"><label>Ad (banka / kredi)<input id="rA"></label><div class="f2"><label>Para birimi<select id="rP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + '</select></label><label>Ana para<input id="rN" inputmode="decimal"></label></div>' +
+      '<div class="f2"><label>Kalan ana para<input id="rK" inputmode="decimal"></label><label>Aylık taksit<input id="rT" inputmode="decimal"></label></div><div class="f2"><label>Yıllık faiz (%)<input id="rF" inputmode="decimal"></label><label>Son ödeme<input id="rS" type="date"></label></div>' +
+      '<label>Not<input id="rO"></label><button class="btn pri" id="rE">Ekle</button></div></div>';
+    $("rE").onclick = function () { if (!$("rA").value.trim()) { toast("Ad gerekli"); return; }
+      api("/api/collections/krediler/records", { method: "POST", body: { ad: $("rA").value.trim(), pb: $("rP").value, anaPara: num($("rN").value), kalan: num($("rK").value), taksit: num($("rT").value), faiz: num($("rF").value), sonOdeme: $("rS").value ? $("rS").value + " 00:00:00.000Z" : "", not: $("rO").value.trim() } }).then(function () { toast("Eklendi"); fKredi(); }).catch(hata); };
+    bagT("[data-kk]", function (e) { var v = prompt("Güncel kalan ana para:", String(e.dataset.k).replace(".", ",")); if (v == null) return; var n = num(v); if (n == null || n < 0) { toast("Geçersiz tutar"); return; }
+      api("/api/collections/krediler/records/" + e.dataset.kk, { method: "PATCH", body: { kalan: n } }).then(fKredi).catch(hata); });
+    bagT("[data-kx]", function (e) { if (confirm("Kredi kaydı silinsin mi?")) api("/api/collections/krediler/records/" + e.dataset.kx, { method: "DELETE" }).then(fKredi).catch(hata); });
+  }).catch(hata);
+}
+function fOrtak() {
+  if (!yon()) { location.hash = "#finans"; return; }
+  liste("ortak_cari", "", "-tarih").then(function (C) {
+    var S = { Burhan: { k: 0, a: 0 }, Batur: { k: 0, a: 0 } };
+    C.forEach(function (c) { if (S[c.ortak]) S[c.ortak][c.yon === "Koydu" ? "k" : "a"] += +c.tutarUsd || 0; });
+    var nB = S.Burhan.a - S.Burhan.k, nT = S.Batur.a - S.Batur.k, T = nB + nT, oneri = "";
+    if (C.length) {
+      var x = nB / 0.6 - T, y = nT / 0.4 - T;
+      if (Math.abs(nB - 0.6 * T) < 1) oneri = "Ortak cari 60/40 dengede.";
+      else if (x > 0) oneri = "60/40 denge için Batur'un " + sayi(x) + " USD daha çekmesi (ya da Burhan'ın " + sayi(nB - 0.6 * T) + " USD koyması) gerekir.";
+      else oneri = "60/40 denge için Burhan'ın " + sayi(y) + " USD daha çekmesi (ya da Batur'un " + sayi(nT - 0.4 * T) + " USD koyması) gerekir.";
+    }
+    $("fm").innerHTML = '<div class="card"><h3>Ortak cari (USD)</h3><div class="kv">' + ["Burhan", "Batur"].map(function (o) { var n = S[o].a - S[o].k; return "<div><small>" + o + " · net çekilen</small><b>" + sayi(n) + "</b><small>koydu " + sayi(S[o].k) + " · aldı " + sayi(S[o].a) + "</small></div>"; }).join("") + "</div>" +
+      (oneri ? '<div class="bilgi">' + esc(oneri) + (T ? " Şu anki pay: Burhan %" + sayi(nB / T * 100, 1) + " / Batur %" + sayi(nT / T * 100, 1) + "." : "") + "</div>" : "") + "</div>" +
+      '<div class="card"><h3>Kayıt ekle</h3><div class="f"><div class="f2"><label>Tarih<input id="oT" type="date" value="' + bugun() + '"></label><label>Ortak<select id="oO">' + sec(["Burhan", "Batur"]) + '</select></label></div>' +
+      '<div class="f2"><label>Yön<select id="oY">' + sec(["Aldı", "Koydu"]) + '</select></label><label>Tutar (USD)<input id="oU" inputmode="decimal"></label></div><label>Açıklama<input id="oA" placeholder="ör. DRK avansı, sermaye"></label><button class="btn pri" id="oK">Ekle</button>' +
+      '<small style="color:var(--muted)">DRK\'ya yapılan avanslar Burhan tarafına yazılır. Yalnız yöneticiler görür.</small></div></div>' +
+      '<div class="card"><h3>Hareketler</h3>' + (C.map(function (c) { return '<div class="row"><div class="t"><b>' + tarih(c.tarih) + " · " + esc(c.ortak) + " " + esc(c.yon.toLocaleLowerCase("tr")) + "</b><small>" + esc(c.aciklama || "") + "</small></div><b>" + sayi(c.tutarUsd) + ' USD</b><button class="btn sm" data-ox="' + c.id + '">✕</button></div>'; }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
+    $("oK").onclick = function () { var u = num($("oU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; }
+      api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: $("oT").value + " 12:00:00.000Z", ortak: $("oO").value, yon: $("oY").value, tutarUsd: u, aciklama: $("oA").value.trim() } }).then(fOrtak).catch(hata); };
+    bagT("[data-ox]", function (e) { if (confirm("Kayıt silinsin mi?")) api("/api/collections/ortak_cari/records/" + e.dataset.ox, { method: "DELETE" }).then(fOrtak).catch(hata); });
+  }).catch(hata);
+}
+function fVarlik() {
+  if (!yon()) { location.hash = "#finans"; return; }
+  liste("varliklar", "", "durum,ad").then(function (V) {
+    var elde = V.filter(function (v) { return v.durum !== "Satıldı"; }).reduce(function (s, v) { return s + (+v.tahminiUsd || 0); }, 0);
+    var satilan = V.filter(function (v) { return v.durum === "Satıldı"; }).reduce(function (s, v) { return s + (+v.satisUsd || 0); }, 0);
+    $("fm").innerHTML = '<div class="kv" style="padding:0 0 12px"><div style="background:#fff;border:1px solid var(--line)"><small>Eldeki varlıklar (tahmini)</small><b>' + sayi(elde) + ' USD</b></div><div style="background:#fff;border:1px solid var(--line)"><small>Satılanlardan gelen</small><b>' + sayi(satilan) + " USD</b></div></div>" +
+      '<div class="card"><h3>Varlıklar</h3>' + (V.map(function (v) { return '<div class="row"><div class="t"><b>' + esc(v.ad) + "</b><small>" + esc([v.tur, v.sahip ? "tapu/ruhsat: " + v.sahip : "", v.durum === "Satıldı" ? "satış " + sayi(v.satisUsd) + " USD" : "tahmini " + sayi(v.tahminiUsd) + " USD", v.not].filter(Boolean).join(" · ")) + "</small></div>" +
+        '<select data-vd="' + v.id + '" style="width:auto;min-height:34px">' + sec(["Elde", "Satışta", "Satıldı"], v.durum || "Elde") + '</select><button class="btn sm" data-vx="' + v.id + '">✕</button></div>'; }).join("") || '<div class="bos">Varlık yok.</div>') + "</div>" +
+      '<div class="card"><h3>Varlık ekle</h3><div class="f"><label>Ad<input id="vA" placeholder="ör. Aliağa Kalabak arsası, Manisa dükkan, şirket aracı"></label><div class="f2"><label>Tür<select id="vT">' + sec(["Arsa", "Dükkan / bina", "Araç", "Ekipman", "Diğer"]) + '</select></label><label>Tapu / ruhsat sahibi<input id="vS"></label></div>' +
+      '<div class="f2"><label>Tahmini değer (USD)<input id="vU" inputmode="decimal"></label><label>Durum<select id="vD">' + sec(["Elde", "Satışta"]) + '</select></label></div><label>Not<input id="vN" placeholder="ör. ortaklar 60/40, tapu operasyonel nedenle Burhan adına"></label><button class="btn pri" id="vK">Ekle</button></div></div>';
+    $("vK").onclick = function () { if (!$("vA").value.trim()) { toast("Ad gerekli"); return; }
+      api("/api/collections/varliklar/records", { method: "POST", body: { ad: $("vA").value.trim(), tur: $("vT").value, sahip: $("vS").value.trim(), tahminiUsd: num($("vU").value), durum: $("vD").value, not: $("vN").value.trim() } }).then(fVarlik).catch(hata); };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-vd]"), function (e) { e.onchange = function () { var b = { durum: e.value };
+      if (e.value === "Satıldı") { var s = prompt("Satış tutarı (USD):"); if (s == null) { fVarlik(); return; } b.satisUsd = num(s); }
+      api("/api/collections/varliklar/records/" + e.dataset.vd, { method: "PATCH", body: b }).then(fVarlik).catch(hata); }; });
+    bagT("[data-vx]", function (e) { if (confirm("Varlık kaydı silinsin mi?")) api("/api/collections/varliklar/records/" + e.dataset.vx, { method: "DELETE" }).then(fVarlik).catch(hata); });
+  }).catch(hata);
+}
+
+/* ---------- GES (yalnız yönetici) ---------- */
+function sGes() {
+  if (!yon()) { location.hash = "#bugun"; return; }
+  liste("ges_aylik", "", "-donem").then(function (G) {
+    var b = bugun(), yil = b.slice(0, 4), Y = G.filter(function (g) { return g.donem.slice(0, 4) === yil; });
+    var t = function (L, k) { return L.reduce(function (s, g) { return s + (+g[k] || 0); }, 0); };
+    var uY = t(Y, "uretimKwh"), tY = t(Y.filter(function (g) { return g.tahminKwh > 0 && g.uretimKwh > 0; }), "tahminKwh"), uT = t(Y.filter(function (g) { return g.tahminKwh > 0 && g.uretimKwh > 0; }), "uretimKwh");
+    var bekleyen = G.filter(function (g) { return g.kiraTl > 0 && !g.kiraTahsil; });
+    var html = '<div class="card"><h3>' + yil + ' özeti</h3><div class="kv"><div><small>Üretim (OSOS)</small><b>' + sayi(uY) + ' kWh</b></div><div><small>Tahmine göre</small><b>' + (tY ? (uT >= tY ? "+" : "") + sayi((uT / tY - 1) * 100, 1) + "%" : "—") + "</b></div>" +
+      '<div><small>Amcor kira (KDV dahil)</small><b>' + sayi(t(Y, "kiraTl")) + ' TL</b></div><div><small>Giderler (reaktif + diğer)</small><b>' + sayi(t(Y, "reaktifTl") + t(Y, "digerGiderTl")) + " TL</b></div></div>" +
+      (bekleyen.length ? '<div class="uyari">Tahsil edilmemiş kira: ' + bekleyen.map(function (g) { var v = ayEkle(g.donem + "-01", 2); return ayAd(g.donem) + " " + sayi(g.kiraTl) + " TL (beklenen " + ayAd(v) + (v < b.slice(0, 7) ? ", gecikti" : "") + ")"; }).join("; ") + "</div>" : "") + "</div>";
+    html += '<div class="card"><h3 id="gBas">Ay ekle / düzelt</h3><div class="f"><div class="f2"><label>Dönem<input id="gD" type="month" value="' + ayEkle(b, -1) + '"></label><label>Üretim, OSOS (kWh)<input id="gU" inputmode="decimal"></label></div>' +
+      '<div class="f2"><label>Tahmini üretim (kWh)<input id="gT" inputmode="decimal"></label><label>Amcor kira faturası (TL, KDV dahil)<input id="gK" inputmode="decimal"></label></div>' +
+      '<div class="f2"><label>Kira tahsil tarihi<input id="gH" type="date"></label><label>Reaktif bedel (TL)<input id="gR" inputmode="decimal"></label></div>' +
+      '<div class="f2"><label>Diğer gider (TL)<input id="gO" inputmode="decimal"></label><label>Not<input id="gN"></label></div><button class="btn pri" id="gK2">Kaydet</button>' +
+      '<small style="color:var(--muted)">Kira, iki ay sonra tahsil edilir (ör. Eylül kirası Kasım\'da). Kira tutarı faturadaki değerdir; hesaplama (B kuralı) sonraki sürümde. Reaktif bedel D Solar gideri olarak tutulur.</small></div></div>';
+    html += '<div class="card"><h3>Aylar</h3>' + (G.map(function (g) { var s = g.tahminKwh > 0 && g.uretimKwh > 0 ? (g.uretimKwh / g.tahminKwh - 1) * 100 : null;
+      return '<div class="row" data-ge="' + g.id + '" style="cursor:pointer"><div class="t"><b>' + ayAd(g.donem) + "</b><small>" + [g.uretimKwh ? sayi(g.uretimKwh) + " kWh" + (s != null ? " (" + (s >= 0 ? "+" : "") + sayi(s, 1) + "%)" : "") : "üretim girilmedi", g.kiraTl ? "kira " + sayi(g.kiraTl) + " TL · " + (g.kiraTahsil ? "tahsil " + tarih(g.kiraTahsil) : "tahsil bekleniyor") : "", (g.reaktifTl || g.digerGiderTl) ? "gider " + sayi((+g.reaktifTl || 0) + (+g.digerGiderTl || 0)) + " TL" : ""].filter(Boolean).join(" · ") + "</small></div>" +
+        '<button class="btn sm" data-gx="' + g.id + '">✕</button></div>'; }).join("") || '<div class="bos">Henüz ay girilmedi.</div>') + "</div>";
+    $("m").innerHTML = html;
+    var doldur = function (g) { $("gD").value = g.donem; $("gU").value = g.uretimKwh || ""; $("gT").value = g.tahminKwh || ""; $("gK").value = g.kiraTl || ""; $("gH").value = (g.kiraTahsil || "").slice(0, 10); $("gR").value = g.reaktifTl || ""; $("gO").value = g.digerGiderTl || ""; $("gN").value = g.not || ""; };
+    $("gD").onchange = function () { var g = G.filter(function (x) { return x.donem === $("gD").value; })[0]; doldur(g || { donem: $("gD").value }); };
+    $("gD").onchange();
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ge]"), function (e) { e.onclick = function () { doldur(G.filter(function (x) { return x.id === e.dataset.ge; })[0]); $("gBas").scrollIntoView({ behavior: "smooth" }); }; });
+    $("gK2").onclick = function () { var d = $("gD").value; if (!/^\d{4}-\d{2}$/.test(d)) { toast("Dönem gerekli"); return; }
+      var v = { donem: d, uretimKwh: num($("gU").value), tahminKwh: num($("gT").value), kiraTl: num($("gK").value), kiraTahsil: $("gH").value ? $("gH").value + " 12:00:00.000Z" : "", reaktifTl: num($("gR").value), digerGiderTl: num($("gO").value), not: $("gN").value.trim() };
+      var g = G.filter(function (x) { return x.donem === d; })[0];
+      api("/api/collections/ges_aylik/records" + (g ? "/" + g.id : ""), { method: g ? "PATCH" : "POST", body: v }).then(function () { toast(ayAd(d) + " kaydedildi"); sGes(); }).catch(hata); };
+    bagT("[data-gx]", function (e) { if (confirm("Bu ay silinsin mi?")) api("/api/collections/ges_aylik/records/" + e.dataset.gx, { method: "DELETE" }).then(sGes).catch(hata); });
+  }).catch(hata);
+}
+
 ciz();
 </script>
 </body>
