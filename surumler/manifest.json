@@ -1,7 +1,7 @@
 {
- "surum": 7,
- "paket": "surumler/dsolar-7.zip",
- "sha256": "bdb773129712cf1dc0fe7f3cff8eaf3965eca48bd309124512a67b11d623fb8c",
- "imza": "i0UOQbmo6f0U4Lzc3eGi0V5286+BJP2gfgzc4+JC6a0A2zLmaa/MBEo98f6rT8550XnKv1IJabUBviyd4+c8VzpvSskQXhYesw5hzOnmmYfl8FrPnpOWczN1Zmq/tvEAl+xq5/sEH9JdX6H8rPSozFKQSzgbrp4nitboob1xRolWbdUaSA6KPGOnimWA61OsPiR5bVqFuBmuClLDBxsPDGzoqVacm8Ftf2UYyRmEmDV3uM+sSaYU3VA9fJplizNZJfjwHT2riYRciI1MRFGfcnhU+JPdpAUkfS8dh8+tNrU6TyySAU4HtLJDHdnwBgcuec1K4U4SX/MCQyrLjJdV1pDnRy25z11L5R3qWuibgvuuE/Hja0vm5QgiXRZd3b5K4nynrzdIKw7G4rDdR+H7Ua76ht2jnZYewHOdznsgptKCfqmOo/B5h9kdKRoDtCHmuQdOZBrAXoECmYKjGyYT9RPZqiloHP4C61dbyZtjNCftLJLRteBMPPHPfSxj/28g",
- "not": "Proje takibi (saha + resmi süreç adımları, gecikme uyarısı, proje kârlılığı); Anlaşıldı teklif müşteriyi Sözleşme aşamasına alır"
+ "surum": 8,
+ "paket": "surumler/dsolar-8.zip",
+ "sha256": "827e3f11570cea3ebf2e5aa8077603c2d6c2fbdb2dae4b47f7b4ae1f5e7909c6",
+ "imza": "lZFRLai9Sf/eoKqbbNfITsle6Hlgrr+U4OJHR6kHrY3Hz3JOjGJHw7+zH8Wfr7itiiXGBqhdENY3W3OSPDUOs6ALukZkxSqeLkIaohJKyy9JyDpwOFzlTIh4MOhGfPmVs4kpJqbPy5sVKzmI43PYLIHlPZaQR0kC4uMZ3RtgV8cNbpPh38ZvroI7JUS4IspQ7kYPsSvAkeEvZeQiwJdKUNKugNVDPBSEDBH/AXStmPVpNu8I8e58CueNxSSLgeOZ0zq1yaBuDVTrrCHXpUYSAFzVKgFrWDuCMyTKOsfdISDyjdBl2KdatAPSdCgg9DKgr8nlBqQoXOeyaEducOfvbmhVWyr7W0dziYzLXEIWxc/2+HI0YHC2aUsFtrWWNpMuQhEkEYkzY/hOztQcEJHpXx/CnAMbCYXxOTACnOfp36H+ubu0y+njVLqdEFi+u2nWpoPY1U65YTek7Tsei3XESoI4AXB4WlZIpyNt3SFAL3+BtUQ32KQx8WHx/mNbwb3J",
+ "not": "Aktarma, sunucu yavaşlatınca bekleyip kendiliğinden devam eder"
 }

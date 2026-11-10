@@ -688,6 +688,9 @@ function aktarBagla() {
     r.readAsText(f);
   };
 }
+function bekle(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+function apiSabirli(yol, opt, n) { n = n || 0;
+  return bekle(120).then(function () { return api(yol, opt); }).catch(function (e) { if (/Too Many|429/.test(e.message) && n < 12) { if ($("akS")) $("akS").innerHTML = '<div class="bos">Sunucu yavaşlattı, ' + (n + 1) * 3 + " sn bekleniyor…</div>"; return bekle((n + 1) * 3000).then(function () { return apiSabirli(yol, opt, n + 1); }); } throw e; }); }
 function aktarYaz(T) {
   var rapor = [], krediMap = {};
   var sira = ["fin_hesaplar", "krediler", "fin_hareketler", "fin_kartlar", "fin_limitler", "fin_teminatlar", "fin_sabitler", "fin_talepler", "ortak_cari", "varliklar", "katalog", "ges_aylik", "fin_ayarlar"];
@@ -695,7 +698,7 @@ function aktarYaz(T) {
     if (i >= sira.length) return Promise.resolve(rapor);
     var col = sira[i], L = T[col] || [], anahtar = col === "ges_aylik" ? "donem" : col === "fin_ayarlar" ? "anahtar" : "kaynakId";
     $("akS").innerHTML = '<div class="bos">' + esc(AKTAR_AD[col]) + " yazılıyor…</div>";
-    return liste(col, "", "", "").then(function (Var) {
+    return bekle(300).then(function () { return liste(col, "", "", ""); }).then(function (Var) {
       var mevcut = {}; Var.forEach(function (x) { mevcut[x[anahtar]] = x; if (col === "krediler" && x.kaynakId) krediMap[x.kaynakId] = x.id; });
       var yeni = 0, atla = 0, gun = 0;
       var tek = function (k) {
@@ -703,9 +706,9 @@ function aktarYaz(T) {
         var x = Object.assign({}, L[k]); delete x._hata; var kr = x._kredi; delete x._kredi; if (kr && krediMap[kr]) x.kredi = krediMap[kr];
         if (!x.ortak && col === "ortak_cari") { atla++; return tek(k + 1); }
         var m = mevcut[x[anahtar]];
-        if (m && col === "fin_ayarlar") { gun++; return api("/api/collections/" + col + "/records/" + m.id, { method: "PATCH", body: { deger: x.deger } }).then(function () { return tek(k + 1); }); }
+        if (m && col === "fin_ayarlar") { gun++; return apiSabirli("/api/collections/" + col + "/records/" + m.id, { method: "PATCH", body: { deger: x.deger } }).then(function () { return tek(k + 1); }); }
         if (m) { atla++; return tek(k + 1); }
-        return api("/api/collections/" + col + "/records", { method: "POST", body: x }).then(function (r) { yeni++; if (col === "krediler") krediMap[x.kaynakId] = r.id; return tek(k + 1); });
+        return apiSabirli("/api/collections/" + col + "/records", { method: "POST", body: x }).then(function (r) { yeni++; if (col === "krediler") krediMap[x.kaynakId] = r.id; return tek(k + 1); });
       };
       return tek(0).then(function () { rapor.push(AKTAR_AD[col] + ": " + yeni + " yeni" + (atla ? ", " + atla + " zaten vardı" : "") + (gun ? ", " + gun + " güncellendi" : "")); return adim(i + 1); });
     });
