@@ -33,6 +33,14 @@ $kaynak = $PSScriptRoot
 foreach ($d in @($Kok, "$Kok\app", "$Kok\pb_data", "$Kok\pb_migrations", "$Kok\log")) { New-Item -ItemType Directory -Force -Path $d | Out-Null }
 
 # 1) Dosyalar ve butunluk kontrolu (pocketbase.exe pakette yoksa resmi GitHub surumunden indirilir)
+$hedefExe = "$Kok\app\pocketbase.exe"
+if ((Test-Path $hedefExe) -and ((Get-FileHash $hedefExe -Algorithm SHA256).Hash -eq $PB_SHA256)) {
+  Yaz "pocketbase.exe zaten kurulu ve dogru surumde; yeniden kopyalanmadi."
+} else {
+if (Test-Path $hedefExe) {
+  Stop-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue; Start-Sleep 2
+  Get-Process pocketbase -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep 1
+}
 if (-not (Test-Path "$kaynak\pocketbase.exe")) {
   $url = "https://github.com/pocketbase/pocketbase/releases/download/v0.36.5/pocketbase_0.36.5_windows_amd64.zip"
   $zip = Join-Path $env:TEMP "pocketbase_0.36.5_windows_amd64.zip"
@@ -44,6 +52,7 @@ if (-not (Test-Path "$kaynak\pocketbase.exe")) {
   $acik = Join-Path $env:TEMP "pocketbase_0365"; Expand-Archive -Path $zip -DestinationPath $acik -Force
   Copy-Item "$acik\pocketbase.exe" "$Kok\app\pocketbase.exe" -Force
 } else { Copy-Item "$kaynak\pocketbase.exe" "$Kok\app\pocketbase.exe" -Force }
+}
 Copy-Item "$kaynak\pb_migrations\*" "$Kok\pb_migrations\" -Force
 $h = (Get-FileHash "$Kok\app\pocketbase.exe" -Algorithm SHA256).Hash
 if ($h -ne $PB_SHA256) { throw "pocketbase.exe ozeti beklenen degil ($h). Kurulum durduruldu." }
