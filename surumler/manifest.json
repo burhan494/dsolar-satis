@@ -1,7 +1,7 @@
 {
- "surum": 8,
- "paket": "surumler/dsolar-8.zip",
- "sha256": "827e3f11570cea3ebf2e5aa8077603c2d6c2fbdb2dae4b47f7b4ae1f5e7909c6",
- "imza": "lZFRLai9Sf/eoKqbbNfITsle6Hlgrr+U4OJHR6kHrY3Hz3JOjGJHw7+zH8Wfr7itiiXGBqhdENY3W3OSPDUOs6ALukZkxSqeLkIaohJKyy9JyDpwOFzlTIh4MOhGfPmVs4kpJqbPy5sVKzmI43PYLIHlPZaQR0kC4uMZ3RtgV8cNbpPh38ZvroI7JUS4IspQ7kYPsSvAkeEvZeQiwJdKUNKugNVDPBSEDBH/AXStmPVpNu8I8e58CueNxSSLgeOZ0zq1yaBuDVTrrCHXpUYSAFzVKgFrWDuCMyTKOsfdISDyjdBl2KdatAPSdCgg9DKgr8nlBqQoXOeyaEducOfvbmhVWyr7W0dziYzLXEIWxc/2+HI0YHC2aUsFtrWWNpMuQhEkEYkzY/hOztQcEJHpXx/CnAMbCYXxOTACnOfp36H+ubu0y+njVLqdEFi+u2nWpoPY1U65YTek7Tsei3XESoI4AXB4WlZIpyNt3SFAL3+BtUQ32KQx8WHx/mNbwb3J",
- "not": "Aktarma, sunucu yavaşlatınca bekleyip kendiliğinden devam eder"
+ "surum": 9,
+ "paket": "surumler/dsolar-9.zip",
+ "sha256": "0d1223879c3850189855bbf0616f43b54218a118ef70fe3d927a6d4c668eedac",
+ "imza": "SBEyws3JL9fgebg/nXb4AAVN5cxGQqOsQK0WSQAnYa/2e/0HamxhjHEBSTIrKxAfJi/rB+WSuFgU83HWOyZ/yQ36M6NHNVMW3aI//5VTkydGnuDCmPXUCucICbK/tGyVeLlwMCV1+jWUCxIOyG0+t9Z2Xl0Z+/DBYPRBeiB/TOIhWN4EdFUrN/KtQ8eVszE7teTD4B28Aya92QJms9ZvfLFX/iqtxDWVi15Ht+CGXj7ksUYuHLuGhYMfpNEn23TwYVy+oDT4cC/Y5KKvMRbP1NmqvPpruX2cH5nSXbT9vUYLnvqQsOjb11AABLQ74raxEjuCDS0my5yiyhIN7eUO4wWxhZrBjMDyZIhASRutUd7hqZ+rS8kj4RuVw1aUJF8oCRySjUr5V2IoSiPJOlsP3IUymxCFk3HFMBs/kEbh9K3zoZ7QY4Nx4qpr7byTk7K0zoL/iVn2LjTRBwKwmiO0OuFwE9K3bB6q+9Mx2WyIXydeymFJeH8alOfvQABhhr+3",
+ "not": "Aktarma: tutarı 0 olan kayıtlar da aktarılır; hatalı kayıt aktarmayı durdurmaz, raporda gösterilir"
 }

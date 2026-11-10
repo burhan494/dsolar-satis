@@ -700,7 +700,7 @@ function aktarYaz(T) {
     $("akS").innerHTML = '<div class="bos">' + esc(AKTAR_AD[col]) + " yazılıyor…</div>";
     return bekle(300).then(function () { return liste(col, "", "", ""); }).then(function (Var) {
       var mevcut = {}; Var.forEach(function (x) { mevcut[x[anahtar]] = x; if (col === "krediler" && x.kaynakId) krediMap[x.kaynakId] = x.id; });
-      var yeni = 0, atla = 0, gun = 0;
+      var yeni = 0, atla = 0, gun = 0, hatali = [];
       var tek = function (k) {
         if (k >= L.length) return Promise.resolve();
         var x = Object.assign({}, L[k]); delete x._hata; var kr = x._kredi; delete x._kredi; if (kr && krediMap[kr]) x.kredi = krediMap[kr];
@@ -708,9 +708,10 @@ function aktarYaz(T) {
         var m = mevcut[x[anahtar]];
         if (m && col === "fin_ayarlar") { gun++; return apiSabirli("/api/collections/" + col + "/records/" + m.id, { method: "PATCH", body: { deger: x.deger } }).then(function () { return tek(k + 1); }); }
         if (m) { atla++; return tek(k + 1); }
-        return apiSabirli("/api/collections/" + col + "/records", { method: "POST", body: x }).then(function (r) { yeni++; if (col === "krediler") krediMap[x.kaynakId] = r.id; return tek(k + 1); });
+        return apiSabirli("/api/collections/" + col + "/records", { method: "POST", body: x }).then(function (r) { yeni++; if (col === "krediler") krediMap[x.kaynakId] = r.id; return tek(k + 1); },
+          function (e) { hatali.push((x.aciklama || x.ad || x.model || x.kaynakId || "kayıt") + ": " + e.message); return tek(k + 1); });
       };
-      return tek(0).then(function () { rapor.push(AKTAR_AD[col] + ": " + yeni + " yeni" + (atla ? ", " + atla + " zaten vardı" : "") + (gun ? ", " + gun + " güncellendi" : "")); return adim(i + 1); });
+      return tek(0).then(function () { rapor.push(AKTAR_AD[col] + ": " + yeni + " yeni" + (atla ? ", " + atla + " zaten vardı" : "") + (gun ? ", " + gun + " güncellendi" : "") + (hatali.length ? " · AKTARILAMADI " + hatali.length + ": " + hatali.slice(0, 5).join("; ") : "")); return adim(i + 1); });
     });
   };
   return adim(0);
