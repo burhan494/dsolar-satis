@@ -72,6 +72,9 @@ function PB([string[]]$a) {
   return $kod
 }
 
+# Herhangi bir hatada sunucuyu kapali birakma: gorev varsa yeniden baslat
+trap { if (Get-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue) { Start-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue; Write-Host "Sunucu yeniden baslatildi." -ForegroundColor Yellow }; break }
+
 # 3) Gorev calisiyorsa durdur (guncelleme durumu)
 $g = Get-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue
 if ($g) { Stop-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue; Start-Sleep 2; Get-Process pocketbase -ErrorAction SilentlyContinue | Stop-Process -Force; Yaz "Calisan surum durduruldu." }
@@ -94,16 +97,22 @@ if (-not (Test-Path $gizli)) {
 
 # 6) Calisma modu
 if ($Alan) {
-  foreach ($p in 80, 443) { $c = Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -ne 0 }
-    if ($c) { $ad = (Get-Process -Id $c[0].OwningProcess).ProcessName; if ($ad -ne "pocketbase") { throw "Port $p baska bir program tarafindan kullaniliyor ($ad). BT ile gorusun." } } }
+  function PortSahibi($p) { $c = Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.OwningProcess -ne 0 }
+    if ($c) { $ad = (Get-Process -Id $c[0].OwningProcess).ProcessName; if ($ad -ne "pocketbase") { return $ad } }; return "" }
+  $s443 = PortSahibi 443
+  if ($s443) { throw "Port 443 baska bir program tarafindan kullaniliyor ($s443). Sunucu eski haliyle yeniden baslatildi. BT ile gorusun." }
+  # 80 zorunlu degil: sertifika 443 uzerinden (TLS-ALPN) alinir. 80 doluysa http yalniz yerelde dinlenir.
+  $s80 = PortSahibi 80
+  if ($s80) { $httpArg = " --http=127.0.0.1:$Port --https=0.0.0.0:443"; $kuralPort = "443"; Yaz "Port 80 baska bir programda ($s80); 80 kullanilmayacak, yalniz 443." }
+  else { $httpArg = ""; $kuralPort = "80,443" }
   try { $ip = (Resolve-DnsName $Alan -Type A -ErrorAction Stop | Where-Object { $_.Type -eq "A" } | Select-Object -First 1).IPAddress } catch { $ip = "" }
   if (-not $ip) { throw "$Alan DNS'te bulunamadi. Once DNS A kaydi eklenmeli." }
   Yaz "DNS: $Alan -> $ip"
-  $servis = "serve $Alan"; $adres = "https://$Alan"; $saglik = "https://$Alan"
+  $servis = "serve $Alan$httpArg"; $adres = "https://$Alan"; $saglik = "https://$Alan"
   # Sunucu kendi adresini yerelden cozsun (saglik kontrolu ve guncelleyici icin; router NAT donusu gerekmez)
   $hosts = "$env:SystemRoot\System32\drivers\etc\hosts"
   if (-not (Select-String -Path $hosts -Pattern ("\s" + [regex]::Escape($Alan) + "\s*$") -Quiet)) { Add-Content -Path $hosts -Value ("`r`n127.0.0.1`t" + $Alan) -Encoding ASCII; Yaz "hosts dosyasina eklendi: 127.0.0.1 $Alan" }
-  $kuralPort = "80,443"; $kuralUzak = "Any"
+  $kuralUzak = "Any"
 } else {
   $servis = "serve --http=0.0.0.0:$Port"; $adres = "http://192.168.1.254:$Port"; $saglik = "http://127.0.0.1:$Port"
   $kuralPort = "$Port"; $kuralUzak = $IzinliAg
