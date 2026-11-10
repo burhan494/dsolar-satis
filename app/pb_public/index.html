@@ -109,12 +109,13 @@ function menu() {
   return M;
 }
 function ciz() {
+  document.title = "D Solar";
   if (!TOK || !BEN) { girisEkrani(); return; }
   var h = (location.hash || "").replace(/^#/, "").split("/"), sayfa = h[0] || (rol() === "ortak" ? "ortak" : "bugun");
   $("app").innerHTML = '<header><b>D Solar</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
     '<nav>' + menu().map(function (m) { return '<a href="#' + m[0] + '" class="' + (m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "on" : "") + '"><i>' + m[1] + "</i>" + m[2] + "</a>"; }).join("") + "</nav><main id=\"m\"><div class=\"bos\">Yükleniyor…</div></main>";
   $("cik").onclick = cikis;
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf };
   (S[sayfa] || sBugun)(h[1]);
 }
 window.addEventListener("hashchange", ciz);
@@ -242,7 +243,7 @@ function sAday(id) {
         '<div><small>Fiyat (KDV dahil, bugünkü kur)</small><b>' + (O.kesif ? "keşif gerekli" : sayi(O.tlAlt) + "–" + sayi(O.tlUst) + " TL") + '</b></div><div><small>USD, KDV hariç</small><b>' + (O.kesif ? "—" : sayi(O.alt) + "–" + sayi(O.ust)) + "</b></div></div>" +
         '<div class="bilgi">Dayanak: ' + esc(O.kaynak) + "; sözleşme gücü " + sayi(O.soz, 1) + " kW" + (O.sozV ? " (bilinmiyor, varsayıldı — müşteriye sorun)" : "") + (O.sinirli ? "; sistem sözleşme gücüyle sınırlandı, tam ihtiyaç için güç artırımı gerekir" : "") + ".</div>" +
         '<div class="f"><div class="f2"><button class="btn" id="oA"' + (O.kesif ? " disabled" : "") + '>Teklif taslağına aktar</button><button class="btn" id="oC">Cevap metnini kopyala</button></div><small style="color:var(--muted)">Metin müşteriye otomatik gitmez; kopyalayıp kendiniz gönderirsiniz. Fiyat katalogdan türetilmiş yaklaşık değerdir.</small></div>') + "</div>" : "") +
-      (satisci() ? '<div class="card"><h3>Teklifler</h3>' + (T.map(teklifRow).join("") || '<div class="bos">Teklif yok.</div>') +
+      (satisci() ? '<div class="card"><h3>Teklifler <a class="btn sm or" href="#teklif/' + id + '" style="text-decoration:none;display:inline-flex;align-items:center">Kalem kalem teklif</a></h3>' + (T.map(teklifRow).join("") || '<div class="bos">Teklif yok.</div>') +
         '<div class="f" style="padding-top:12px;border-top:1px solid #edf1f6"><div class="f2"><label>Güç (kWp)<input id="tK" inputmode="decimal"></label><label>Fiyat (USD, KDV hariç)<input id="tF" inputmode="decimal"></label></div><label>Not<input id="tN" placeholder="ör. 18 panel, 10 kW inverter"></label>' +
         '<button class="btn" id="tE">Teklif taslağı ekle</button><small style="color:var(--muted)">Teklif müşteriye otomatik gitmez. Yönetici onayından sonra ekip kendisi gönderir.</small></div></div>' : "") +
       (yon() ? '<div class="card"><h3>Kaydı sil</h3><div class="f">' + (T.length ? '<div class="uyari" style="margin:0">Bu müşterinin ' + T.length + ' teklifi var. Teklif geçmişi ve satış istatistikleri bozulmasın diye silmek yerine aşamayı "Kaybedildi" yapın.</div><button class="btn" id="aKay">Kaybedildi olarak işaretle</button>' :
@@ -274,7 +275,8 @@ function teklifRow(t) {
   var bt = "";
   if (yon() && (t.durum === "Onay bekliyor" || t.durum === "Taslak")) bt = '<button class="btn sm pri" data-t="' + t.id + '" data-d="Gönderildi">Onayla</button>';
   else if (satisci() && t.durum === "Gönderildi") bt = '<button class="btn sm" data-t="' + t.id + '" data-d="Anlaşıldı">Anlaşıldı</button><button class="btn sm" data-t="' + t.id + '" data-d="Kaybedildi">Kaybedildi</button>';
-  return '<div class="row"><div class="t"><b style="white-space:normal">' + esc(t.no || "") + " · " + sayi(t.kwp, 1) + " kWp · USD " + sayi(t.fiyatUSD) + '</b><small>' + tarih(t.created) + (t.not ? " · " + esc(t.not) : "") + (t.expand && t.expand.aday ? " · " + esc(t.expand.aday.ad) : "") + '</small></div><span class="pill">' + esc(t.durum) + "</span>" + bt + "</div>";
+  if (t.kalemler && t.kalemler.length) bt = '<a class="btn sm" href="#tpdf/' + t.id + '" style="text-decoration:none;display:inline-flex;align-items:center">PDF</a>' + (satisci() && t.durum !== "Anlaşıldı" && t.durum !== "Kaybedildi" ? '<a class="btn sm" href="#teklif/' + t.aday + "," + t.id + '" style="text-decoration:none;display:inline-flex;align-items:center">' + (t.durum === "Gönderildi" ? "Revize" : "Düzenle") + "</a>" : "") + bt;
+  return '<div class="row" style="flex-wrap:wrap"><div class="t" style="min-width:60%"><b style="white-space:normal">' + esc(t.no || "") + " · " + sayi(t.kwp, 1) + " kWp · USD " + sayi(t.fiyatUSD) + '</b><small>' + tarih(t.created) + (t.not ? " · " + esc(t.not) : "") + (t.expand && t.expand.aday ? " · " + esc(t.expand.aday.ad) : "") + '</small></div><span class="pill">' + esc(t.durum) + "</span>" + bt + "</div>";
 }
 function teklifBagla(sonra) {
   Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function (b) { b.onclick = function () {
@@ -286,7 +288,7 @@ function teklifBagla(sonra) {
 function sTeklifler() {
   liste("teklifler", "", "-created", "aday").then(function (T) {
     var grup = function (d) { return T.filter(function (t) { return d.indexOf(t.durum) >= 0; }); };
-    var blok = function (b, L) { return '<div class="card"><h3>' + b + " <small style=\"color:var(--muted)\">" + L.length + "</small></h3>" + (L.map(function (t) { return teklifRow(t).replace('<div class="row">', '<div class="row" onclick="if(event.target.tagName!==\'BUTTON\')location.hash=\'#aday/' + t.aday + '\'" style="cursor:pointer">'); }).join("") || '<div class="bos">—</div>') + "</div>"; };
+    var blok = function (b, L) { return '<div class="card"><h3>' + b + " <small style=\"color:var(--muted)\">" + L.length + "</small></h3>" + (L.map(function (t) { return teklifRow(t).replace('<div class="row" style="flex-wrap:wrap">', '<div class="row" style="flex-wrap:wrap;cursor:pointer" onclick="if(event.target.tagName!==\'BUTTON\'&&event.target.tagName!==\'A\')location.hash=\'#aday/' + t.aday + '\'">'); }).join("") || '<div class="bos">—</div>') + "</div>"; };
     $("m").innerHTML = blok("Onay bekleyen", grup(["Onay bekliyor", "Taslak"])) + blok("Gönderilen", grup(["Gönderildi"])) + blok("Sonuçlanan", grup(["Anlaşıldı", "Kaybedildi"]));
     teklifBagla(sTeklifler);
   }).catch(hata);
@@ -626,6 +628,10 @@ function beaconCevir(j) {
   T.varliklar = g("varliklar").map(function (a) { return { kaynakId: "varliklar/" + (a.id || a._k), ad: a.ad || "Varlık", tur: a.tur || "", sahip: a.sahip || "", konum: a.konum || "", rehin: a.rehin || "", deger: bSayi(a.deger), pb: bPb(a.pb), degerTarihi: bTarih(a.degerTarihi),
     durum: ["Elde", "Satışta", "Satıldı"].indexOf(a.durum) >= 0 ? a.durum : "Elde", alisTarihi: bTarih(a.alisTarihi), alisBedeli: bSayi(a.alisBedeli), satisaUygun: a.satisaUygun || "", hizliFiyat: bSayi(a.hizliFiyat), satisTutar: bSayi(a.satisTutar), satisTarihi: bTarih(a.satisTarihi),
     not: [a.not, a.ortakMal ? "ortak malı" : "", a.paraNereye ? "para: " + a.paraNereye : ""].filter(Boolean).join(" · "), kaynak: a.kaynak || K }; });
+  var KAT_ALAN = ["kat", "marka", "model", "fiyat", "pb", "birim", "guc", "garanti", "mensei", "teknoloji", "boyut", "agirlik", "img", "aktif", "ekleyen", "guncellendi", "id"];
+  T.katalog = g("katalog").map(function (x) { var oz = {}; Object.keys(x).forEach(function (f) { if (KAT_ALAN.indexOf(f) < 0 && f !== "_k") oz[f] = x[f]; });
+    return { kaynakId: "katalog/" + x._k, kat: x.kat || "diger", marka: (x.marka || "").trim(), model: (x.model || "").trim() || "—", fiyat: bSayi(x.fiyat), pb: bPb(x.pb), birim: x.birim || "adet", guc: bSayi(x.guc), garanti: bSayi(x.garanti),
+      mensei: x.mensei || "", teknoloji: x.teknoloji || "", boyut: x.boyut || "", agirlik: x.agirlik || "", img: typeof x.img === "string" && x.img.indexOf("data:image/") === 0 && x.img.length < 600000 ? x.img : "", aktif: x.aktif !== false, ozellik: oz }; });
   var gesK = null;
   T.ges_aylik = g("ges").filter(function (x) { if (!x.ay) { gesK = x; return false; } return /^\d{4}-\d{2}$/.test(x.ay); }).map(function (x) { var o = x.osos || {}, m = +x.ay.slice(5, 7);
     return { kaynakId: "ges/" + x.ay, donem: x.ay, uretimKwh: bSayi(o.uretim), cekisKwh: bSayi(o.cekis), tahminKwh: kira.profil && kira.profil[m - 1] ? Math.round(kira.profil[m - 1]) : null,
@@ -633,11 +639,11 @@ function beaconCevir(j) {
       ososGun: o.gun || null, iscGun: x.isc || null, ososDosya: o.dosya || "", not: (o.sayac ? "sayaç " + o.sayac : "") + (o.tarih ? " · OSOS " + o.tarih : ""), kaynak: K }; });
   T.fin_ayarlar = Object.keys(v).filter(function (k) { return k.indexOf("ayarlar/") === 0; }).map(function (k) { return { anahtar: "beacon_" + k.slice(8), deger: v[k] }; });
   if (gesK) T.fin_ayarlar.push({ anahtar: "beacon_ges_isemirleri", deger: gesK });
-  T.fin_ayarlar.push({ anahtar: "beacon_aktarim", deger: { yedekTarihi: j.tarih, aktaran: BEN && BEN.email, tarih: new Date().toISOString(), atlanan: Object.keys(v).map(function (k) { return k.split("/")[0]; }).filter(function (p, i, a) { return a.indexOf(p) === i && ["adaylar", "katalog"].indexOf(p) >= 0; }) } });
+  T.fin_ayarlar.push({ anahtar: "beacon_aktarim", deger: { yedekTarihi: j.tarih, aktaran: BEN && BEN.email, tarih: new Date().toISOString(), atlanan: Object.keys(v).map(function (k) { return k.split("/")[0]; }).filter(function (p, i, a) { return a.indexOf(p) === i && ["adaylar"].indexOf(p) >= 0; }) } });
   return T;
 }
 var AKTAR_AD = { fin_hesaplar: "Banka hesapları", krediler: "Krediler", fin_hareketler: "Nakit hareketleri (plan + gerçekleşen)", fin_kartlar: "Kredi kartları", fin_limitler: "Banka limitleri (Findeks)", fin_teminatlar: "Teminat mektupları",
-  fin_sabitler: "Sabit giderler", fin_talepler: "Finans soruları", ortak_cari: "Ortak cari", varliklar: "Varlıklar", ges_aylik: "GES aylık (OSOS)", fin_ayarlar: "Model ayarları (kira, kur, Orhan, ortaklar)" };
+  fin_sabitler: "Sabit giderler", fin_talepler: "Finans soruları", ortak_cari: "Ortak cari", varliklar: "Varlıklar", katalog: "Ürün kataloğu (teklif için)", ges_aylik: "GES aylık (OSOS)", fin_ayarlar: "Model ayarları (kira, kur, Orhan, ortaklar)" };
 function aktarOzet(T) {
   var t = function (L, pb, f) { return L.filter(function (x) { return !pb || x.pb === pb; }).reduce(function (s, x) { return s + (+x[f] || 0); }, 0); };
   var sat = [];
@@ -653,8 +659,8 @@ function aktarOzet(T) {
   return { satir: sat, hata: hata };
 }
 function aktarKarti() {
-  return '<div class="card"><h3>Beacon\'dan finans verisi aktar</h3><div class="f"><div class="bilgi" style="margin:0">Beacon\'da D Solar bölümünden aldığınız yedek dosyasını (dsolar-yedek-….json) seçin. Dosya yalnız bu tarayıcıda okunur; önce özet gösterilir, siz "Aktar" demeden hiçbir şey kaydedilmez. ' +
-    'Aynı dosyayı ikinci kez aktarırsanız daha önce aktarılan kayıtlar atlanır. Müşteri listesi (adaylar) ve ürün kataloğu bu adımda aktarılmaz.</div>' +
+  return '<div class="card"><h3>Beacon\'dan finans ve katalog aktar</h3><div class="f"><div class="bilgi" style="margin:0">Beacon\'da D Solar bölümünden aldığınız yedek dosyasını (dsolar-yedek-….json) seçin. Dosya yalnız bu tarayıcıda okunur; önce özet gösterilir, siz "Aktar" demeden hiçbir şey kaydedilmez. ' +
+    'Aynı dosyayı ikinci kez aktarırsanız daha önce aktarılan kayıtlar atlanır. Müşteri listesi (adaylar) bu adımda aktarılmaz. Katalogda daha önce aktarılmış ürünler atlanır; fiyat değişikliği için kataloğu uygulamadan düzenleyin.</div>' +
     '<input id="akD" type="file" accept=".json,application/json"><div id="akO"></div></div></div>';
 }
 function aktarBagla() {
@@ -675,7 +681,7 @@ function aktarBagla() {
 }
 function aktarYaz(T) {
   var rapor = [], krediMap = {};
-  var sira = ["fin_hesaplar", "krediler", "fin_hareketler", "fin_kartlar", "fin_limitler", "fin_teminatlar", "fin_sabitler", "fin_talepler", "ortak_cari", "varliklar", "ges_aylik", "fin_ayarlar"];
+  var sira = ["fin_hesaplar", "krediler", "fin_hareketler", "fin_kartlar", "fin_limitler", "fin_teminatlar", "fin_sabitler", "fin_talepler", "ortak_cari", "varliklar", "katalog", "ges_aylik", "fin_ayarlar"];
   var adim = function (i) {
     if (i >= sira.length) return Promise.resolve(rapor);
     var col = sira[i], L = T[col] || [], anahtar = col === "ges_aylik" ? "donem" : col === "fin_ayarlar" ? "anahtar" : "kaynakId";
@@ -696,6 +702,152 @@ function aktarYaz(T) {
     });
   };
   return adim(0);
+}
+
+/* ---------- Kalem kalem teklif (katalogdan) ve müşteri PDF'i ---------- */
+var KAT_AD = { panel: "Panel", inverter: "İnverter", aku: "Akü", tasiyici: "Alt taşıyıcı", pano: "GES panosu", ac_kablo: "AC kablo", dc_kablo: "DC kablo", zayif_kablo: "Zayıf akım kablosu", kanal: "Kablo kanalı", topraklama: "Topraklama", sarj: "Şarj ünitesi", pompa_surucu: "Pompa sürücü", diger: "Diğer" };
+var KAT_SIRA = ["panel", "inverter", "aku", "tasiyici", "pano", "ac_kablo", "dc_kablo", "zayif_kablo", "kanal", "topraklama", "sarj", "pompa_surucu", "diger"];
+var TK = null;
+function tkAyar(A) { return Object.assign({ marj: 25, gecerlilik: 7, teslimGun: 120, birimTL: 4.22, zam: 25, degr: 0.4, eurUsd: 1.16, firma: { ad: "D Solar" }, odeme: [], dahil: [], haric: [], asamalar: [], idari: [] }, A || {}); }
+function kAd(k) { return [k.marka, k.model].filter(Boolean).join(" ").trim(); }
+function birimUsd(k, kur, eurUsd) { var f = +k.fiyat || 0; return k.pb === "TRY" ? f / kur : k.pb === "EUR" ? f * eurUsd : f; }
+function kalemYap(k, adet, kur, eurUsd) {
+  var b = birimUsd(k, kur, eurUsd), carp = k.birim === "W" ? (+k.guc || 0) : 1;
+  return { id: k.id, kat: k.kat, ad: kAd(k), adet: adet, birim: k.birim === "W" ? "adet" : k.birim, birimUsd: Math.round(b * carp * 100) / 100, toplamUsd: Math.round(b * carp * adet * 100) / 100,
+    guc: k.guc || null, garanti: k.garanti || null, mensei: k.mensei || "", teknoloji: k.teknoloji || "", fiyatYok: !(+k.fiyat > 0) };
+}
+function tkOneri(K, tip, panel, panelAdet, kur, eurUsd) {
+  var L = [], bul = function (kat, f) { return K.filter(function (k) { return k.kat === kat && k.aktif !== false && (!f || f(k)); }); };
+  var kwp = Math.round(panelAdet * (+panel.guc || 0) / 10) / 100;
+  L.push(kalemYap(panel, panelAdet, kur, eurUsd));
+  var hib = function (k) { return /hyd|hybrid|hibrit/i.test(k.model); };
+  var inv = bul("inverter", function (k) { return tip === "Hibrit" ? hib(k) : true; }).filter(function (k) { return +k.guc > 0; }).sort(function (a, b) { return a.guc - b.guc; });
+  var secInv = inv.filter(function (k) { return k.guc * 1.3 >= kwp; })[0] || inv[inv.length - 1];
+  if (secInv) L.push(kalemYap(secInv, 1, kur, eurUsd));
+  var tas = bul("tasiyici"), secT = tas.filter(function (k) { return /kiremit/i.test(k.model); })[0] || tas[0];
+  if (secT) L.push(kalemYap(secT, kwp, kur, eurUsd));
+  var invG = secInv ? +secInv.guc : kwp;
+  var pano = bul("pano", function (k) { return (tip === "Hibrit" ? /hybrid/i : /on-grid/i).test(k.model) && +k.guc >= invG; }).sort(function (a, b) { return a.guc - b.guc; })[0] || bul("pano").sort(function (a, b) { return b.guc - a.guc; })[0];
+  if (pano) L.push(kalemYap(pano, 1, kur, eurUsd));
+  var kes = invG <= 8 ? /5 x 4 /i : invG <= 15 ? /5 x 6 /i : /5 x 10 /i, ac = bul("ac_kablo", function (k) { return kes.test(k.model + " "); })[0];
+  if (ac) L.push(kalemYap(ac, 20, kur, eurUsd));
+  var dc = bul("dc_kablo")[0]; if (dc) L.push(kalemYap(dc, 40, kur, eurUsd));
+  var kn = bul("kanal", function (k) { return /pvc/i.test(k.model); })[0] || bul("kanal")[0]; if (kn) L.push(kalemYap(kn, 20, kur, eurUsd));
+  bul("topraklama").forEach(function (k) { L.push(kalemYap(k, /bara/i.test(k.model) ? 1 : 20, kur, eurUsd)); });
+  var meta = bul("diger", function (k) { var m = k.model.match(/META SOLAR (\d+)-(\d+)/i); return m && kwp >= +m[1] && kwp < +m[2]; })[0]; if (meta) L.push(kalemYap(meta, 1, kur, eurUsd));
+  ["Statik proje mesken", "Nakliye ( Mesken )"].forEach(function (ad) { var k = bul("diger", function (x) { return x.model.replace(/\s+/g, " ").toLowerCase().indexOf(ad.toLowerCase()) >= 0; })[0]; if (k) L.push(kalemYap(k, 1, kur, eurUsd)); });
+  return L;
+}
+function tkHesap(X, H, T) {
+  var malz = X.kalemler.reduce(function (s, k) { return s + (+k.toplamUsd || 0); }, 0);
+  var p = X.kalemler.filter(function (k) { return k.kat === "panel"; })[0], adet = p ? +p.adet : 0, kwp = p ? Math.round(adet * (+p.guc || 0) / 10) / 100 : 0;
+  var fiyat = Math.round(malz * (1 + (+X.marj || 0) / 100) / 10) * 10, uretim = Math.round(kwp * H.ozgulVerim);
+  return { malzeme: Math.round(malz * 100) / 100, fiyat: fiyat, kwp: kwp, panelAdet: adet, uretim: uretim, tlKdv: Math.round(fiyat * X.kur * (1 + (H.kdv || 0.2)) / 1000) * 1000 };
+}
+function tkGeriDonus(fiyatTL, uretim, tuketim, T, artis) {
+  var top = 0, satir = [], donus = null;
+  for (var y = 1; y <= 10; y++) { var u = uretim * Math.pow(1 - T.degr / 100, y - 1), fayda = tuketim > 0 ? Math.min(u, tuketim) : u, bf = T.birimTL * Math.pow(1 + artis / 100, y - 1), kaz = fayda * bf; top += kaz;
+    if (donus == null && top >= fiyatTL) donus = y; satir.push({ y: y, u: u, bf: bf, kaz: kaz, top: top }); }
+  return { satir: satir, donus: donus };
+}
+function sTeklif(arg) {
+  if (!satisci()) { location.hash = "#bugun"; return; }
+  var p = String(arg || "").split(","), adayId = p[0], tId = p[1];
+  Promise.all([api("/api/collections/adaylar/records/" + adayId), liste("katalog", "aktif = true", "kat,marka,model"), liste("ayarlar", "anahtar = 'hesap' || anahtar = 'teklif'"), tId ? api("/api/collections/teklifler/records/" + tId) : Promise.resolve(null)]).then(function (R) {
+    var a = R[0], K = R[1], A = {}; R[2].forEach(function (x) { A[x.anahtar] = x.deger; }); var H = A.hesap || {}, T = tkAyar(A.teklif), eski = R[3];
+    if (!K.length) { $("m").innerHTML = '<div class="card"><h3>Katalog boş</h3><div class="bilgi">Teklif için önce ürün kataloğu gerekli. Yönetici, Ekip sayfasındaki "Beacon\'dan finans ve katalog aktar" kartından Beacon yedeğini aktarabilir.</div></div>'; return; }
+    var KM = {}; K.forEach(function (k) { KM[k.id] = k; });
+    var paneller = K.filter(function (k) { return k.kat === "panel" && +k.guc > 0; });
+    if (!TK || TK.adayId !== adayId || TK.tId !== tId) {
+      if (eski && eski.kalemler && eski.kalemler.length) TK = { adayId: adayId, tId: tId, tip: eski.tip || "On-grid", kalemler: JSON.parse(JSON.stringify(eski.kalemler)), marj: eski.marj != null ? eski.marj : T.marj, kur: H.kur, not: eski.not || "" };
+      else { var O = onHesap(a, H), pn = paneller.filter(function (k) { return +k.guc === +H.panelW; })[0] || paneller[0];
+        TK = { adayId: adayId, tId: tId, tip: "On-grid", kalemler: tkOneri(K, "On-grid", pn, O && !O.kesif ? O.panel : 10, H.kur, T.eurUsd), marj: T.marj, kur: H.kur, not: "" }; }
+    }
+    var X = TK, S = tkHesap(X, H, T), pnl = X.kalemler.filter(function (k) { return k.kat === "panel"; })[0];
+    var uy = []; X.kalemler.forEach(function (k) { if (k.fiyatYok) uy.push(k.ad + " için katalogda fiyat yok"); });
+    var inv = X.kalemler.filter(function (k) { return k.kat === "inverter"; })[0];
+    if (inv && inv.guc && S.kwp > inv.guc * inv.adet * 1.3) uy.push("Panel gücü invertörün 1,3 katını aşıyor (DC/AC sınırı)");
+    if (a.sozlesmeGucu > 0 && inv && inv.guc * inv.adet > a.sozlesmeGucu) uy.push("İnvertör gücü sözleşme gücünden (" + sayi(a.sozlesmeGucu, 1) + " kW) büyük; güç artırımı gerekir");
+    if (!inv) uy.push("İnvertör seçilmedi");
+    var grup = function (L) { return KAT_SIRA.map(function (kt) { var x = L.filter(function (k) { return k.kat === kt; }); return x.length ? '<optgroup label="' + (KAT_AD[kt] || kt) + '">' + x.map(function (k) { return '<option value="' + k.id + '">' + esc(kAd(k)) + " · " + sayi(k.fiyat, 3) + " " + PB_AD[k.pb] + "/" + esc(k.birim) + "</option>"; }).join("") + "</optgroup>" : ""; }).join(""); };
+    $("m").innerHTML = '<a href="#aday/' + adayId + '" style="color:var(--blue2);text-decoration:none;font-size:14px">‹ ' + esc(a.ad) + "</a>" +
+      '<div class="card" style="margin-top:8px"><h3>' + (eski ? "Teklifi düzenle · " + esc(eski.no) : "Kalem kalem teklif") + '</h3><div class="f"><div class="f2"><label>Sistem tipi<select id="kTip">' + sec(["On-grid", "Hibrit"], X.tip) + '</select></label><label>Panel adedi<input id="kAdet" inputmode="numeric" value="' + (pnl ? pnl.adet : "") + '"></label></div>' +
+      '<label>Panel<select id="kPan">' + sec(paneller.map(function (k) { return [k.id, kAd(k) + " (" + k.guc + " W)"]; }), pnl ? pnl.id : "") + '</select></label><button class="btn" id="kOner">Önerilen kalemleri yeniden yükle</button><small style="color:var(--muted)">Tip, panel ya da adet değişince önerilen kalemler bu düğmeyle yeniden hesaplanır; elle yaptığınız değişiklikler silinir.</small></div></div>' +
+      '<div class="card"><h3>Kalemler <small style="color:var(--muted)">malzeme USD ' + sayi(S.malzeme) + "</small></h3>" + X.kalemler.map(function (k, i) {
+        return '<div class="row"><div class="t"><b class="w">' + esc(k.ad) + "</b><small>" + esc(KAT_AD[k.kat] || k.kat) + " · birim " + sayi(k.birimUsd, 2) + " USD" + (k.fiyatYok ? " · fiyat yok" : "") + '</small></div><input data-ka="' + i + '" value="' + String(k.adet).replace(".", ",") + '" inputmode="decimal" style="width:70px;min-height:36px;text-align:right"><small style="width:34px">' + esc(k.birim) + '</small><b style="width:70px;text-align:right">' + sayi(k.toplamUsd) + '</b><button class="btn sm" data-kx="' + i + '">✕</button></div>'; }).join("") +
+      '<div class="f" style="padding-top:12px;border-top:1px solid #edf1f6"><label>Kalem ekle<select id="kEk"><option value="">— katalogdan seçin</option>' + grup(K) + '</select></label><div class="f2"><label>Adet / metraj<input id="kEkA" inputmode="decimal" value="1"></label><button class="btn" id="kEkB" style="align-self:end">Ekle</button></div>' +
+      '<small style="color:var(--muted)">Kablo metrajları ve taşıyıcı ön hesaptır; keşifte kesinleşir. Fiyatlar katalogdan, bugünkü kurla (' + sayi(X.kur, 2) + " TL) USD'ye çevrilir.</small></div></div>" +
+      (uy.length ? '<div class="uyari" style="margin:0 0 12px">' + uy.map(esc).join("<br>") + "</div>" : "") +
+      '<div class="card"><h3>Fiyat</h3><div class="kv"><div><small>Malzeme (USD)</small><b>' + sayi(S.malzeme) + '</b></div><div><small>Teklif fiyatı (USD, KDV hariç)</small><b>' + sayi(S.fiyat) + '</b></div><div><small>TL karşılığı (KDV dahil)</small><b>' + sayi(S.tlKdv) + ' TL</b></div><div><small>Sistem</small><b>' + sayi(S.kwp, 2) + " kWp · " + S.panelAdet + ' panel</b></div><div><small>Yıllık üretim</small><b>' + sayi(S.uretim) + " kWh</b></div><div><small>Kâr payı</small><b>%" + sayi(X.marj) + "</b></div></div>" +
+      '<div class="f">' + (yon() ? '<label>Kâr payı (%, malzeme üstüne)<input id="kMarj" inputmode="decimal" value="' + X.marj + '"></label>' : "") + '<label>Not (teklifte görünmez)<input id="kNot" value="' + esc(X.not) + '"></label>' +
+      '<button class="btn pri" id="kKay">' + (eski && eski.durum === "Gönderildi" ? "Revizyon olarak kaydet" : "Kaydet ve PDF'i aç") + '</button><small style="color:var(--muted)">Teklif müşteriye otomatik gitmez. ' + (yon() ? "" : "Yönetici onaylayana kadar PDF'te \"onay bekliyor\" ibaresi çıkar.") + "</small></div></div>";
+    var yeniden = function () { sTeklif(arg); };
+    $("kTip").onchange = function () { X.tip = this.value; };
+    $("kOner").onclick = function () { var pn = KM[$("kPan").value], n = parseInt($("kAdet").value, 10); if (!pn || !(n > 0)) { toast("Panel ve adet gerekli"); return; } X.tip = $("kTip").value; X.kalemler = tkOneri(K, X.tip, pn, n, X.kur, T.eurUsd); yeniden(); };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ka]"), function (e) { e.onchange = function () { var k = X.kalemler[+e.dataset.ka], v = num(e.value); if (!(v > 0)) { toast("Geçersiz adet"); e.value = k.adet; return; }
+      k.adet = v; k.toplamUsd = Math.round(k.birimUsd * v * 100) / 100; yeniden(); }; });
+    bagT("[data-kx]", function (e) { X.kalemler.splice(+e.dataset.kx, 1); yeniden(); });
+    $("kEkB").onclick = function () { var k = KM[$("kEk").value], v = num($("kEkA").value); if (!k || !(v > 0)) { toast("Kalem ve adet seçin"); return; } X.kalemler.push(kalemYap(k, v, X.kur, T.eurUsd));
+      X.kalemler.sort(function (a, b) { return KAT_SIRA.indexOf(a.kat) - KAT_SIRA.indexOf(b.kat); }); yeniden(); };
+    if ($("kMarj")) $("kMarj").onchange = function () { var v = num(this.value); if (v == null || v < 0) { toast("Geçersiz"); return; } X.marj = v; yeniden(); };
+    $("kNot").oninput = function () { X.not = this.value; };
+    $("kKay").onclick = function () {
+      if (!inv) { toast("İnvertör seçilmedi"); return; } if (!(S.fiyat > 0)) { toast("Fiyat hesaplanamadı"); return; }
+      $("kKay").disabled = true;
+      var veri = { aday: adayId, tip: X.tip, kwp: S.kwp, panelAdet: S.panelAdet, fiyatUSD: S.fiyat, malzemeUsd: S.malzeme, marj: X.marj, kur: X.kur, uretimYil: S.uretim, kalemler: X.kalemler, not: X.not, hazirlayan: BEN.id };
+      var revizyon = eski && eski.durum === "Gönderildi";
+      var is = eski && !revizyon ? api("/api/collections/teklifler/records/" + eski.id, { method: "PATCH", body: veri }) :
+        api("/api/collections/teklifler/records?perPage=1&filter=" + filtreQ("no ~ 'DS-" + bugun().slice(0, 4) + "-'")).then(function (j) {
+          var no = revizyon ? eski.no.replace(/-R\d+$/, "") + "-R" + ((+(eski.no.match(/-R(\d+)$/) || [0, 0])[1]) + 1) : "DS-" + bugun().slice(0, 4) + "-" + String((j.totalItems || 0) + 1).padStart(4, "0");
+          veri.no = no; veri.durum = yon() ? "Taslak" : "Onay bekliyor"; if (revizyon) veri.onceki = eski.no;
+          return api("/api/collections/teklifler/records", { method: "POST", body: veri }); });
+      is.then(function (r) { return (a.asama === "Aday" || a.asama === "Nitelikli" || a.asama === "Keşif" ? api("/api/collections/adaylar/records/" + adayId, { method: "PATCH", body: { asama: "Teklif" } }) : Promise.resolve()).then(function () { return r; }); })
+        .then(function (r) { TK = null; toast("Teklif kaydedildi"); location.hash = "#tpdf/" + r.id; }).catch(function (e) { $("kKay").disabled = false; hata(e); });
+    };
+  }).catch(hata);
+}
+/* müşteri PDF'i: yazdırılabilir sayfa (Yazdır > PDF olarak kaydet) */
+function sTeklifPdf(id) {
+  Promise.all([api("/api/collections/teklifler/records/" + id + "?expand=aday,hazirlayan"), liste("ayarlar", "anahtar = 'hesap' || anahtar = 'teklif'")]).then(function (R) {
+    var t = R[0], A = {}; R[1].forEach(function (x) { A[x.anahtar] = x.deger; }); var H = A.hesap || {}, T = tkAyar(A.teklif), a = (t.expand || {}).aday || {}, hz = (t.expand || {}).hazirlayan || BEN;
+    var L = t.kalemler || [], ids = L.filter(function (k) { return ["panel", "inverter", "aku", "tasiyici"].indexOf(k.kat) >= 0; }).map(function (k) { return k.id; });
+    return (ids.length ? liste("katalog", ids.map(function (i) { return "id = " + q(i); }).join(" || ")) : Promise.resolve([])).catch(function () { return []; }).then(function (KK) {
+      var KM = {}; KK.forEach(function (k) { KM[k.id] = k; });
+      var kur = t.kur || H.kur, fiyatTL = t.fiyatUSD * kur * (1 + (H.kdv || 0.2)), tuk = a.yillikKwh > 0 ? a.yillikKwh : a.aylikFatura > 0 && H.k1 ? Math.round(tlKwh(a.aylikFatura, H) * 12) : 0;
+      var uretim = t.uretimYil || Math.round((t.kwp || 0) * (H.ozgulVerim || 1350)), G1 = tkGeriDonus(fiyatTL, uretim, tuk, T, T.zam), G0 = tkGeriDonus(fiyatTL, uretim, tuk, T, 0);
+      var kar = tuk ? Math.min(100, Math.round(uretim / tuk * 100)) : null, onayli = t.durum === "Gönderildi" || t.durum === "Anlaşıldı", f = T.firma || {};
+      var ana = L.filter(function (k) { return ["panel", "inverter", "aku", "tasiyici", "pano", "sarj", "pompa_surucu"].indexOf(k.kat) >= 0; }), dig = L.filter(function (k) { return ana.indexOf(k) < 0 && k.kat !== "diger"; });
+      var gecT = new Date(t.created.slice(0, 10)), n = 0; while (n < (T.gecerlilik || 7)) { gecT.setDate(gecT.getDate() + 1); if (gecT.getDay() % 6) n++; }
+      var gecS = gecT.toISOString().slice(0, 10), yer = function (s) { return String(s).replace("{gecerlilik}", T.gecerlilik).replace("{teslimGun}", T.teslimGun); };
+      var tablo = function (G, bas) { return '<table><tr><th>Yıl</th><th>Üretim (kWh)</th><th>Birim fiyat (TL)</th><th>Yıllık kazanç (TL)</th><th>Toplam kazanç (TL)</th></tr>' + G.satir.map(function (s) { return "<tr" + (s.y === G.donus ? ' class="don"' : "") + "><td>" + s.y + "</td><td>" + sayi(s.u) + "</td><td>" + sayi(s.bf, 2) + "</td><td>" + sayi(s.kaz) + "</td><td>" + sayi(s.top) + "</td></tr>"; }).join("") + "</table><p class=\"k\">" + bas + (G.donus ? " Yatırım yaklaşık <b>" + G.donus + ". yılda</b> geri döner." : " Yatırım 10 yıl içinde geri dönmüyor.") + "</p>"; };
+      var css = '@page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#e9eef5;font:10.5pt/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1d3557}.ara{position:sticky;top:0;background:#1d3557;color:#fff;padding:10px 14px;display:flex;gap:8px;align-items:center;z-index:2}.ara button,.ara a{background:#fff;color:#1d3557;border:0;border-radius:10px;padding:9px 14px;font-weight:600;text-decoration:none;font-size:14px}.ara span{flex:1;font-size:12px;opacity:.85}' +
+        '.sayfa{max-width:794px;margin:14px auto;background:#fff;padding:28px 32px;box-shadow:0 2px 12px rgba(0,0,0,.08)}h1{font-size:19pt;margin:0;letter-spacing:.5px}h2{font-size:12.5pt;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ed7d31}.ust{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:3px solid #1d3557;padding-bottom:10px}.logo{font-size:22pt;font-weight:800}.logo i{color:#ed7d31;font-style:normal}.k{font-size:9pt;color:#5f6f82}' +
+        '.oz{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.oz div{background:#f4f7fb;border-radius:8px;padding:8px 10px}.oz small{display:block;color:#5f6f82;font-size:8.5pt}.oz b{font-size:13pt}.oz .f{grid-column:span 3;background:#1d3557;color:#fff}.oz .f small{color:#cfd9e6}.oz .f b{font-size:17pt}table{width:100%;border-collapse:collapse;font-size:9pt}th,td{border-bottom:1px solid #e3e9f1;padding:5px 6px;text-align:left;vertical-align:top}th{background:#f4f7fb}tr.don td{background:#fff3e8;font-weight:700}' +
+        '.urun img{width:44px;height:44px;object-fit:contain}.iki{display:grid;grid-template-columns:1fr 1fr;gap:14px}ul{margin:4px 0;padding-left:18px}.blok{break-inside:avoid}.uyari{background:#fde8e8;color:#b42318;padding:8px 10px;border-radius:8px;font-weight:700;margin-bottom:10px}.imza{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:10px}.imza div{border-top:1px solid #1d3557;padding-top:6px;min-height:60px}' +
+        'body{-webkit-print-color-adjust:exact;print-color-adjust:exact}@media print{body{background:#fff}.ara,.toast{display:none!important}.sayfa{box-shadow:none;margin:0;max-width:none;padding:0}}@media(max-width:600px){.sayfa{padding:16px}.oz{grid-template-columns:1fr 1fr}.oz .f{grid-column:span 2}.iki{grid-template-columns:1fr}}';
+      var doc = '<div class="ara"><a href="#aday/' + esc(t.aday) + '">‹ Geri</a><button id="yaz">PDF olarak kaydet</button><span>Yazdır penceresinde "PDF olarak kaydet"i seçin. iPhone\'da: Paylaş › Yazdır › iki parmakla büyütün › Paylaş.</span></div><div class="sayfa">' +
+        (onayli ? "" : '<div class="uyari">ONAY BEKLİYOR: Bu teklif yönetici onayından geçmedi; müşteriye gönderilmemelidir.</div>') +
+        '<div class="ust"><div><div class="logo">D <i>Solar</i></div><div class="k">' + esc(f.unvan || "") + "<br>" + esc(f.adres || "") + "<br>" + esc([f.web, f.tel].filter(Boolean).join(" · ")) + '</div></div><div style="text-align:right"><h1>GÜNEŞ ENERJİSİ<br>SİSTEMİ TEKLİFİ</h1><div class="k">Teklif no <b>' + esc(t.no) + "</b><br>Tarih " + tarih(t.created) + "<br>Geçerlilik " + tarih(gecS) + " (" + T.gecerlilik + " iş günü)</div></div></div>" +
+        '<p style="margin:12px 0 0">Sayın <b>' + esc(a.ad || "") + "</b>" + (a.ilce ? " · " + esc(a.ilce) : "") + ",</p><p class=\"k\" style=\"margin:2px 0 0\">Evinizin elektrik ihtiyacına göre hazırladığımız anahtar teslim güneş enerjisi sistemi teklifimizi bilgilerinize sunarız.</p>" +
+        '<h2>Teklifin özeti</h2><div class="oz"><div class="f"><small>Anahtar teslim fiyat</small><b>' + sayi(t.fiyatUSD) + " USD + KDV</b><small>Bugünkü kurla (" + sayi(kur, 2) + " TL) KDV dahil yaklaşık " + sayi(Math.round(fiyatTL / 1000) * 1000) + " TL. Ödeme Türk lirası ile, ödeme günündeki kurdan yapılır.</small></div>" +
+        "<div><small>Sistem gücü</small><b>" + sayi(t.kwp, 2) + " kWp</b><small>" + (t.panelAdet || "") + " panel</small></div><div><small>Yıllık üretim (tahmini)</small><b>" + sayi(uretim) + " kWh</b></div><div><small>Tüketimi karşılama</small><b>" + (kar != null ? "%" + kar : "—") + "</b>" + (tuk ? "<small>yıllık tüketim " + sayi(tuk) + " kWh</small>" : "") + "</div>" +
+        "<div><small>İlk yıl kazanç (tahmini)</small><b>" + sayi(G1.satir[0].kaz) + " TL</b></div><div><small>Geri dönüş</small><b>" + (G1.donus ? "~" + G1.donus + ". yıl" : "10 yıl+") + "</b></div><div><small>Sistem tipi</small><b>" + esc(t.tip || "On-grid") + "</b></div></div>" +
+        (T.slogan ? '<p style="text-align:center;font-weight:800;color:#ed7d31;margin:10px 0 0">' + esc(T.slogan) + "</p>" : "") +
+        '<div class="blok"><h2>Sistem ve ekipman</h2><table><tr><th></th><th>Bileşen</th><th>Marka / model</th><th>Adet</th><th>Özellik</th><th>Menşei</th><th>Garanti</th></tr>' + ana.map(function (k) { var c = KM[k.id] || {};
+          return '<tr class="urun"><td>' + (c.img ? '<img src="' + c.img + '" alt="">' : "") + "</td><td>" + esc(KAT_AD[k.kat] || k.kat) + "</td><td>" + esc(k.ad) + "</td><td>" + (k.birim === "kWp" ? sayi(k.adet, 2) + " kWp" : sayi(k.adet, k.adet % 1 ? 1 : 0)) + "</td><td>" + esc([k.guc ? (k.kat === "panel" ? k.guc + " W" : k.guc + " kW") : "", k.teknoloji].filter(Boolean).join(" · ")) + "</td><td>" + esc(k.mensei || "") + "</td><td>" + (k.garanti ? k.garanti + " yıl" : "") + "</td></tr>"; }).join("") + "</table>" +
+        (dig.length ? '<p class="k">Diğer malzemeler: ' + dig.map(function (k) { return esc(k.ad.trim()) + " (" + sayi(k.adet, k.adet % 1 ? 1 : 0) + " " + esc(k.birim) + ")"; }).join(", ") + ". Kablo metrajları ön hesaptır; keşifte elektrik mühendisi onayıyla kesinleşir.</p>" : "") + "</div>" +
+        '<div class="blok"><h2>Yatırımın geri dönüşü</h2><div class="iki"><div><b>Elektrik fiyatları yılda %' + sayi(T.zam) + " artarsa</b>" + tablo(G1, "") + "</div><div><b>Fiyatlar hiç artmazsa (en temkinli senaryo)</b>" + tablo(G0, "") + "</div></div>" +
+        '<p class="k">Varsayımlar: ' + sayi(H.ozgulVerim) + " kWh/kWp yıllık özgül verim, panel verim kaybı yılda %" + sayi(T.degr, 1) + ", ilk yıl birim elektrik fiyatı " + sayi(T.birimTL, 2) + " TL/kWh" + (tuk ? ", yalnız kendi tüketiminizi karşılayan üretim hesaba katıldı" : "") + ". Tahminler hava koşulları, tarife ve kullanıma göre değişebilir.</p></div>" +
+        '<div class="blok"><h2>Kapsam ve süreç</h2><div class="iki"><div><b>Fiyata dahil olanlar</b>' + (T.dahil || []).map(function (g) { return '<div style="margin-top:6px"><b class="k" style="color:#1d3557">' + esc(g[0]) + "</b><ul>" + g[1].map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>"; }).join("") + "</div>" +
+        "<div><b>Fiyata dahil olmayanlar</b><ul>" + (T.haric || []).map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul><b>Süreç</b><ul>" + (T.asamalar || []).map(function (x) { return "<li>" + esc(x[0]) + " · " + esc(x[1]) + "</li>"; }).join("") + "</ul><b>Ödeme planı</b><ul>" + (T.odeme || []).map(function (x) { return "<li>%" + x[0] + " · " + esc(x[1]) + "</li>"; }).join("") + '</ul><p class="k">Tutarlara KDV eklenir.</p></div></div></div>' +
+        '<div class="blok"><h2>Garantiler</h2><ul>' + ana.filter(function (k) { return k.garanti; }).map(function (k) { return "<li>" + esc(KAT_AD[k.kat]) + ": " + esc(k.ad) + " · " + k.garanti + " yıl ürün garantisi</li>"; }).join("") + "<li>İşletme, bakım ve izleme: 2 yıl ücretsiz</li></ul></div>" +
+        '<div class="blok"><h2>Şartlar ve onay</h2>' + (T.idari || []).map(function (x) { return '<p class="k"><b style="color:#1d3557">' + esc(x[0]) + ".</b> " + esc(yer(x[1])) + "</p>"; }).join("") +
+        '<div class="imza"><div><b>Müşteri</b><br>' + esc(a.ad || "") + '<br><span class="k">Tarih: ……………… İmza:</span></div><div><b>D Solar</b><br>' + esc(hz.name || "") + '<br><span class="k">' + esc([hz.tel, hz.email].filter(Boolean).join(" · ")) + "</span></div></div></div></div>";
+      document.title = "Teklif-" + t.no + "-" + String(a.ad || "").replace(/\s+/g, "-");
+      $("app").innerHTML = "<style>" + css + "</style>" + doc;
+      $("yaz").onclick = function () { window.print(); };
+    });
+  }).catch(hata);
 }
 
 ciz();

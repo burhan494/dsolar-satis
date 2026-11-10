@@ -1,7 +1,7 @@
 {
- "surum": 5,
- "paket": "surumler/dsolar-5.zip",
- "sha256": "614471ec65c7170d9489bcbf9ca3033e25ef72d1f1150486c898e9bba92c0b0e",
- "imza": "g/AA6LMDbeU8tu/dVW9kXxNH6F5Msc/WImBeZu73B1iashqfc56oFWLqMx97XyXxoGquS3xL0yknBBk9vNRvtNiCwEWm7jQ7Kh5G8s7CRnDMsyVPJVxdycQ/aCzwB2w1lDGjvTGET1Tmi3Guwjk5iauh/9+XwdaNb9aSMsLzigHSqikFQi/turBWACjoVx/KKRzvisOrYzguH9NyLrCrnbeq2yHXN9xviMJaSj8SuQzKL7g4P7su0twKwptHUctuSRWHCRyoyGJVeHMXkOMGWoIvQjEOKjK4SAvNHxx1YU7NiKj0tPyGfYI0Rh9KCmgPFgUZLRH3Yvz5xAtY111ZH0hke4MyjmJNppXBDFlh+dR+D6o6CZg2+0iw2kvGaRMJ7IYiLtVKor8xxCHEGis571FsYkPeIU6CgPcKN/3sGoqyrKvQ4Cy1TQxBWctCyzE1nLe55xQl0Pbtc5q8VZMkOLn6eewgJ0Kav44o8pIyRGqOM8k5TEq78TzavbPYtLV5",
- "not": "Beacon'dan finans aktarma (Ekip sayfası), nakit akışı tahmini, kredi/limit/teminat, sabit giderler, finans soruları; müşteri silme"
+ "surum": 6,
+ "paket": "surumler/dsolar-6.zip",
+ "sha256": "e2c68777cc62b78b289852e62ae78ae58610cdbac1f34e22b8cd534ddd485e5c",
+ "imza": "byxzZieB2nFqMVWRBTmSA/pAfWDAAPzggJOtE/yx67hdP+iVCHGHtJaADwi+UIYN7JPtc6HhubJue7VQICbVRucaE1n7vcA/aU8a/I+6xn7s7hbscvJjWQk+OMVSCBqDzS95TsgU99wIWtQM3dx4KBuba6egJQ6FIG/FZ4pRONPxOchMyj3Yejm4uZ8nuAP1Wjm79bnclhl/LixkZAqicL/iNvFxEAy/oIsgz319MFfIKKBeillXHAYtr4xYg9at58Z1ldIN7DuZc61O0IdxZ4ZPLFk2vLn5RWkKq6HGqLduaf0Bm2lzq7+1s+WGIh2RTaGM12uokHGDzeWp6Z3aKZBUJKJqM3QHIa6LaYurb3tFXz0IcVZYnMSB1BFZQKT8LiXyTvYyAuqsgceoasCLC+oUWhqbYJvVdNw52cnXgo0wSKZuK0Ty9BxUXDDLuv0Q6YqmwelMb8LvRNu3T4488BV/gfdMe91lBur4W6WwS2fEK4UD6jNxYml4wuqGMI5H",
+ "not": "Kalem kalem teklif (katalogdan) ve müşteri teklif PDF'i; katalog Beacon'dan aktarılır"
 }
