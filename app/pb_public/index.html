@@ -13,7 +13,7 @@ header{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;padding
 header b{font-size:17px;flex:1;white-space:nowrap}header .rol{font-size:12px;background:rgba(255,255,255,.15);padding:3px 9px;border-radius:999px}
 main{max-width:860px;margin:0 auto;padding:14px 14px 96px}
 nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:6px 4px calc(8px + env(safe-area-inset-bottom));z-index:5}
-nav a{flex:1;text-align:center;text-decoration:none;color:#6b7a8c;font-size:11px;font-weight:600;padding:4px 0}nav a.on{color:var(--navy)}nav a i{display:block;font-style:normal;font-size:20px;line-height:1.2}
+nav a{flex:1;min-width:0;text-align:center;text-decoration:none;color:#6b7a8c;font-size:10.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;padding:4px 0}nav a.on{color:var(--navy)}nav a i{display:block;font-style:normal;font-size:20px;line-height:1.2}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
 .card h3{margin:0;padding:12px 14px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-top:1px solid #edf1f6;text-decoration:none;color:inherit}
@@ -102,6 +102,7 @@ function menu() {
     if (rol() !== "muhasebe") M.push(["adaylar", "👥", rol() === "saha" ? "Keşiflerim" : "Müşteriler"]);
     if (rol() === "satis") M.push(["yeni", "➕", "Yeni aday"]);
     if (satisci() || rol() === "muhasebe") M.push(["teklifler", "📄", "Teklifler"]);
+    M.push(["projeler", "🛠️", "Projeler"]);
     if (finansci()) M.push(["finans", "💰", "Finans"]);
     if (yon()) M.push(["ges", "☀️", "GES"]);
     if (yon()) M.push(["ekip", "⚙️", "Ekip"]);
@@ -115,7 +116,7 @@ function ciz() {
   $("app").innerHTML = '<header><b>D Solar</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
     '<nav>' + menu().map(function (m) { return '<a href="#' + m[0] + '" class="' + (m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "on" : "") + '"><i>' + m[1] + "</i>" + m[2] + "</a>"; }).join("") + "</nav><main id=\"m\"><div class=\"bos\">Yükleniyor…</div></main>";
   $("cik").onclick = cikis;
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler };
   (S[sayfa] || sBugun)(h[1]);
 }
 window.addEventListener("hashchange", ciz);
@@ -216,7 +217,9 @@ function sAday(id) {
     satisci() || rol() === "proje" || rol() === "saha" ? liste("gorusmeler", "aday = " + q(id), "-created", "yazan") : Promise.resolve([]),
     satisci() ? liste("teklifler", "aday = " + q(id), "-created") : Promise.resolve([]),
     rol() !== "saha" ? liste("users", "aktif = true") : Promise.resolve([]),
-    satisci() ? liste("ayarlar", "anahtar = 'hesap'") : Promise.resolve([])]).then(function (R) {
+    satisci() ? liste("ayarlar", "anahtar = 'hesap'") : Promise.resolve([]),
+    liste("projeler", "aday = " + q(id)).catch(function () { return []; })]).then(function (R) {
+    var PRJ = R[5][0], acT = R[2].filter(function (t) { return t.durum === "Anlaşıldı"; })[0];
     var a = R[0], G = R[1], T = R[2], U = R[3], x = a.expand || {}, H = R[4][0] && R[4][0].deger, O = satisci() ? onHesap(a, H) : null;
     var sahalar = U.filter(function (u) { return u.rol === "saha" || u.rol === "yonetici"; }), ortaklar = U.filter(function (u) { return u.rol === "ortak"; });
     var duzenle = satisci();
@@ -229,6 +232,7 @@ function sAday(id) {
       '<div><small>Kaynak</small><b>' + esc(a.kaynak || "—") + '</b></div><div><small>İYS izni</small><b>' + esc(a.iys || "—") + "</b></div></div>" +
       (a.iys !== "İzinli" ? '<div class="uyari">İYS izni yok ya da sorulmadı: bu kişiye kampanya/tanıtım mesajı ve araması yapılmamalı. Kendi başvurusuna cevap verilebilir.</div>' : "") +
       (a.not ? '<div class="not"><small>Not</small>' + esc(a.not) + "</div>" : "") + "</div>" +
+      (PRJ ? prjKart(PRJ, a, U, H) : a.asama === "Sözleşme" && satisci() ? '<div class="card"><h3>Proje takibi</h3><div class="f"><div class="f2"><label>Sözleşme / başlangıç tarihi<input id="pBas" type="date" value="' + bugun() + '"></label><label>Sözleşme bedeli (USD)<input id="pBed0" inputmode="decimal" value="' + esc(acT ? acT.fiyatUSD : "") + '"></label></div><button class="btn or" id="pBasla">Projeyi başlat</button><small style="color:var(--muted)">Saha ve resmi süreç adımları açılır; geciken adımlar Projeler sayfasında kırmızı görünür.</small></div></div>' : "") +
       (duzenle || rol() === "saha" ? '<div class="card"><h3>Durum ve sıradaki iş</h3><div class="f"><div class="f2"><label>Aşama<select id="dA">' + ASAMA.map(function (s) { return "<option" + (s === a.asama ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></label>" +
         '<label>Sıradaki tarih<input id="dT" type="date" value="' + esc((a.sonraki || "").slice(0, 10)) + '"></label></div><label>Sıradaki iş<input id="dI" value="' + esc(a.sonrakiIs || "") + '"></label>' +
         (duzenle ? '<div class="f2"><label>Keşif sorumlusu<select id="dK">' + opt(sahalar, a.kesifci) + '</select></label><label>İş ortağı<select id="dO">' + opt(ortaklar, a.ortak) + "</select></label></div>" +
@@ -249,6 +253,9 @@ function sAday(id) {
       (yon() ? '<div class="card"><h3>Kaydı sil</h3><div class="f">' + (T.length ? '<div class="uyari" style="margin:0">Bu müşterinin ' + T.length + ' teklifi var. Teklif geçmişi ve satış istatistikleri bozulmasın diye silmek yerine aşamayı "Kaybedildi" yapın.</div><button class="btn" id="aKay">Kaybedildi olarak işaretle</button>' :
         '<button class="btn" id="aSil" style="color:var(--bad);border-color:#f3c4c4">Müşteriyi sil</button><small style="color:var(--muted)">Kayıt ve görüşme notları kalıcı olarak silinir. Mükerrer ya da yanlış girilmiş kayıtlar için.</small>') + "</div></div>" : "");
     var bag = function (i, f) { var e = $(i); if (e) e.onclick = f; };
+    if (PRJ) prjBagla(PRJ, a, U, function () { sAday(id); });
+    bag("pBasla", function () { if (!$("pBas").value) { toast("Tarih gerekli"); return; }
+      api("/api/collections/projeler/records", { method: "POST", body: { aday: id, teklif: acT ? acT.id : "", basla: $("pBas").value + " 12:00:00.000Z", bedelUsd: num($("pBed0").value), kwp: acT ? acT.kwp : null, adimlar: {}, durum: "Sürüyor" } }).then(function () { toast("Proje başladı"); sAday(id); }).catch(hata); });
     bag("dK2", function () {
       var v = { asama: $("dA").value, sonrakiIs: $("dI").value.trim(), sonraki: $("dT").value ? $("dT").value + " 09:00:00.000Z" : "" };
       if (duzenle) { v.kesifci = $("dK").value; v.ortak = $("dO").value; v.iys = $("dY").value; v.kayipNedeni = $("dN").value.trim();
@@ -274,14 +281,16 @@ function sAday(id) {
 function teklifRow(t) {
   var bt = "";
   if (yon() && (t.durum === "Onay bekliyor" || t.durum === "Taslak")) bt = '<button class="btn sm pri" data-t="' + t.id + '" data-d="Gönderildi">Onayla</button>';
-  else if (satisci() && t.durum === "Gönderildi") bt = '<button class="btn sm" data-t="' + t.id + '" data-d="Anlaşıldı">Anlaşıldı</button><button class="btn sm" data-t="' + t.id + '" data-d="Kaybedildi">Kaybedildi</button>';
+  else if (satisci() && t.durum === "Gönderildi") bt = '<button class="btn sm" data-t="' + t.id + '" data-ad="' + t.aday + '" data-d="Anlaşıldı">Anlaşıldı</button><button class="btn sm" data-t="' + t.id + '" data-d="Kaybedildi">Kaybedildi</button>';
   if (t.kalemler && t.kalemler.length) bt = '<a class="btn sm" href="#tpdf/' + t.id + '" style="text-decoration:none;display:inline-flex;align-items:center">PDF</a>' + (satisci() && t.durum !== "Anlaşıldı" && t.durum !== "Kaybedildi" ? '<a class="btn sm" href="#teklif/' + t.aday + "," + t.id + '" style="text-decoration:none;display:inline-flex;align-items:center">' + (t.durum === "Gönderildi" ? "Revize" : "Düzenle") + "</a>" : "") + bt;
   return '<div class="row" style="flex-wrap:wrap"><div class="t" style="min-width:60%"><b style="white-space:normal">' + esc(t.no || "") + " · " + sayi(t.kwp, 1) + " kWp · USD " + sayi(t.fiyatUSD) + '</b><small>' + tarih(t.created) + (t.not ? " · " + esc(t.not) : "") + (t.expand && t.expand.aday ? " · " + esc(t.expand.aday.ad) : "") + '</small></div><span class="pill">' + esc(t.durum) + "</span>" + bt + "</div>";
 }
 function teklifBagla(sonra) {
   Array.prototype.forEach.call(document.querySelectorAll("[data-t]"), function (b) { b.onclick = function () {
     if (b.dataset.d === "Gönderildi" && !confirm("Teklif onaylansın mı? Uygulama müşteriye bir şey göndermez; teklifi ekip kendisi iletir.")) return;
-    api("/api/collections/teklifler/records/" + b.dataset.t, { method: "PATCH", body: { durum: b.dataset.d } }).then(function () { toast("Güncellendi"); sonra(); }).catch(hata); }; });
+    api("/api/collections/teklifler/records/" + b.dataset.t, { method: "PATCH", body: { durum: b.dataset.d } })
+      .then(function () { return b.dataset.d === "Anlaşıldı" && b.dataset.ad ? api("/api/collections/adaylar/records/" + b.dataset.ad, { method: "PATCH", body: { asama: "Sözleşme" } }) : null; })
+      .then(function () { toast(b.dataset.d === "Anlaşıldı" ? "Anlaşıldı; müşteri Sözleşme aşamasına alındı" : "Güncellendi"); sonra(); }).catch(hata); }; });
 }
 
 /* ---------- Teklifler ---------- */
@@ -849,6 +858,68 @@ function sTeklifPdf(id) {
     });
   }).catch(hata);
 }
+
+/* ---------- Proje takibi (Beacon'daki adım yapısı: saha + resmi süreç) ---------- */
+var PRJ_KOL = { saha: { ad: "Saha", adim: [["ges_uygunluk", "Belediye GES uygunluk yazısı", 15], ["siparis", "Malzeme siparişi", 7], ["montaj", "Montaj", 14], ["test", "Test ve devreye alma", 3]] },
+  resmi: { ad: "Resmi süreç", adim: [["cagri_basvuru", "Çağrı mektubu başvurusu", 5], ["cagri", "Çağrı mektubu", 30], ["proje", "Proje çizimi", 10], ["tedas", "TEDAŞ proje onayı", 30], ["baglanti", "Bağlantı anlaşması", 10], ["kabul", "Geçici kabul", 30], ["sku", "Sistem kullanım anlaşması", 10], ["enerji", "Enerjilendirme", 10]] } };
+function gunFark(a, b) { return Math.round((new Date(b.slice(0, 10)) - new Date(a.slice(0, 10))) / 864e5); }
+function prjDurum(P) {
+  var out = { kirmizi: [], sonraki: [], bitti: true, tamam: 0, top: 0 }, b = bugun(), A = P.adimlar || {};
+  Object.keys(PRJ_KOL).forEach(function (kol) { var onc = (P.basla || b).slice(0, 10);
+    PRJ_KOL[kol].adim.forEach(function (s) { out.top++; if ((A[s[0]] || {}).durum === "tamam") out.tamam++; });
+    PRJ_KOL[kol].adim.some(function (s) { var x = A[s[0]] || {}; if (x.durum === "tamam") { onc = x.tarih || onc; return false; }
+      out.bitti = false; var kilit = s[0] === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam", gec = gunFark(onc, b) - s[2];
+      out.sonraki.push({ kol: kol, k: s[0], ad: s[1], kilit: kilit, gec: gec, son: new Date(new Date(onc).getTime() + s[2] * 864e5).toISOString().slice(0, 10) });
+      if (gec > 0 && !kilit) out.kirmizi.push(s[1] + " (" + gec + " gün gecikti)"); return true; }); });
+  return out;
+}
+function prjKart(P, a, U, H) {
+  var D = prjDurum(P), A = P.adimlar || {}, duz = satisci() || rol() === "proje" || rol() === "saha";
+  var kol = function (k) { return '<div><b style="font-size:13px">' + PRJ_KOL[k].ad + "</b>" + PRJ_KOL[k].adim.map(function (s) { var x = A[s[0]] || {}, kilit = s[0] === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam" && x.durum !== "tamam";
+    return '<div class="row" ' + (duz ? 'data-pa="' + s[0] + '" style="cursor:pointer;padding:9px 4px"' : 'style="padding:9px 4px"') + '><div class="t"><b class="w" style="font-size:14px;font-weight:600">' + (x.durum === "tamam" ? "✅ " : kilit ? "🔒 " : "⬜ ") + esc(s[1]) + "</b><small>" + esc([x.tarih ? tarih(x.tarih) : kilit ? "uygunluk yazısı bekleniyor" : "", x.sorumlu, x.not].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>"; };
+  return '<div class="card" id="prjKart"><h3>Proje takibi <small style="color:var(--muted)">' + D.tamam + "/" + D.top + " adım · başlangıç " + tarih(P.basla) + "</small></h3>" +
+    (P.durum !== "Sürüyor" ? '<div class="bilgi">Proje durumu: ' + esc(P.durum) + "</div>" : D.kirmizi.length ? '<div class="uyari">Geciken: ' + esc(D.kirmizi.join(", ")) + "</div>" : D.bitti ? '<div class="bilgi">Tüm adımlar tamamlandı.</div>' : '<div class="bilgi">Sıradaki: ' + esc(D.sonraki.filter(function (x) { return !x.kilit; }).map(function (x) { return x.ad + " (hedef " + tarih(x.son) + ")"; }).join(", ")) + "</div>") +
+    '<div class="f" style="grid-template-columns:1fr 1fr;gap:14px">' + kol("saha") + kol("resmi") + "</div>" + '<div id="paForm"></div>' +
+    (yon() ? '<div class="f"><div class="f2"><label>Proje durumu<select id="pDur">' + sec(["Sürüyor", "Tamamlandı", "İptal"], P.durum) + '</select></label><label>Sözleşme bedeli (USD)<input id="pBed" inputmode="decimal" value="' + esc(P.bedelUsd || "") + '"></label></div><button class="btn" id="pKay">Proje bilgisini kaydet</button></div>' : "") +
+    '<div id="prjKar"></div></div>';
+}
+function prjBagla(P, a, U, yenile) {
+  var duz = $("paForm"); if (!duz) return;
+  var adimAd = {}; Object.keys(PRJ_KOL).forEach(function (k) { PRJ_KOL[k].adim.forEach(function (s) { adimAd[s[0]] = s[1]; }); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pa]"), function (e) { e.onclick = function () {
+    var k = e.dataset.pa, A = P.adimlar || {}, x = A[k] || {};
+    if (k === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam" && x.durum !== "tamam") { toast("Montaj, belediye GES uygunluk yazısı gelince açılır"); return; }
+    var ekip = U.filter(function (u) { return u.aktif; }).map(function (u) { return u.name || u.email; });
+    duz.innerHTML = '<div class="f" style="border-top:1px solid #edf1f6;padding-top:12px"><b>' + esc(adimAd[k]) + '</b><div class="f2"><label>Durum<select id="paD">' + sec(["Bekliyor", "Tamamlandı"], x.durum === "tamam" ? "Tamamlandı" : "Bekliyor") + '</select></label><label>Tarih<input id="paT" type="date" value="' + esc((x.tarih || bugun()).slice(0, 10)) + '"></label></div>' +
+      '<div class="f2"><label>Sorumlu<input id="paS" list="ekipL" value="' + esc(x.sorumlu || "") + '"></label><label>Not / evrak no<input id="paN" value="' + esc(x.not || "") + '"></label></div><datalist id="ekipL">' + ekip.map(function (n) { return "<option>" + esc(n) + "</option>"; }).join("") + '</datalist><div class="f2"><button class="btn" id="paV">Vazgeç</button><button class="btn pri" id="paK">Kaydet</button></div></div>';
+    duz.scrollIntoView({ behavior: "smooth", block: "center" });
+    $("paV").onclick = function () { duz.innerHTML = ""; };
+    $("paK").onclick = function () { var Y = JSON.parse(JSON.stringify(P.adimlar || {})); Y[k] = { durum: $("paD").value === "Tamamlandı" ? "tamam" : "bekliyor", tarih: $("paT").value, sorumlu: $("paS").value.trim(), not: $("paN").value.trim() };
+      var D2 = prjDurum({ basla: P.basla, adimlar: Y }), b = { adimlar: Y }; if (D2.bitti && P.durum === "Sürüyor" && yon()) b.durum = "Tamamlandı";
+      api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: b }).then(function () { toast("Kaydedildi"); yenile(); }).catch(hata); };
+  }; });
+  var pk = $("pKay"); if (pk) pk.onclick = function () { api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: { durum: $("pDur").value, bedelUsd: num($("pBed").value) } }).then(function () { toast("Kaydedildi"); yenile(); }).catch(hata); };
+  if (finansci() && $("prjKar")) liste("fin_hareketler", "aday = " + q(a.id), "tarih").then(function (M) {
+    var g = {}, c = {}; M.forEach(function (m) { var p = m.pb || "TRY", o = m.yon === "Giriş" ? g : c; if (m.durum === "Gerçekleşti") o[p] = (o[p] || 0) + (+m.tutar || 0); });
+    var pb = Object.keys(Object.assign({}, g, c));
+    $("prjKar").innerHTML = '<div class="not"><small>Proje kârlılığı (Finans\'ta bu müşteriye bağlanmış gerçekleşen hareketlerden)</small>' + (pb.length ? pb.map(function (p) { return PB_AD[p] + ": tahsil " + sayi(g[p] || 0) + " · harcanan " + sayi(c[p] || 0) + " · <b>fark " + sayi((g[p] || 0) - (c[p] || 0)) + "</b>"; }).join("<br>") +
+      (P.bedelUsd ? "<br>Sözleşme bedeli: " + sayi(P.bedelUsd) + " USD" : "") : "Henüz bu müşteriye bağlı hareket yok. Finans › Hareketler'de kayıt girerken \"Proje\" alanından bu müşteriyi seçin.") + "</div>";
+  }).catch(function () {});
+}
+function sProjeler() {
+  Promise.all([liste("projeler", "", "-basla", "aday")]).then(function (R) {
+    var P = R[0], f = PF.d;
+    var L = P.filter(function (p) { return f === "Tümü" || p.durum === f; }).map(function (p) { return { p: p, D: prjDurum(p) }; });
+    L.sort(function (x, y) { return y.D.kirmizi.length - x.D.kirmizi.length; });
+    var gec = P.filter(function (p) { return p.durum === "Sürüyor" && prjDurum(p).kirmizi.length; }).length;
+    $("m").innerHTML = '<div class="ozet"><div><b>' + P.filter(function (p) { return p.durum === "Sürüyor"; }).length + '</b><small>süren</small></div><div style="background:var(--warnbg)"><b style="color:var(--warn)">' + gec + '</b><small>gecikmeli</small></div><div><b>' + P.filter(function (p) { return p.durum === "Tamamlandı"; }).length + "</b><small>biten</small></div></div>" +
+      '<div class="chips">' + ["Sürüyor", "Tamamlandı", "İptal", "Tümü"].map(function (c) { return '<button data-pf="' + c + '" class="' + (f === c ? "on" : "") + '">' + c + "</button>"; }).join("") + "</div>" +
+      '<div class="card"><h3>Projeler</h3>' + (L.map(function (x) { var a = (x.p.expand || {}).aday || {}, nx = x.D.sonraki.filter(function (s) { return !s.kilit; });
+        return '<a class="row" href="#aday/' + x.p.aday + '"><div class="t"><b>' + esc(a.ad || "—") + "</b><small" + (x.D.kirmizi.length ? ' style="color:var(--bad)"' : "") + ">" + esc([a.ilce, x.p.kwp ? sayi(x.p.kwp, 1) + " kWp" : "", x.D.kirmizi.length ? "geciken: " + x.D.kirmizi.join(", ") : nx.length ? "sıradaki: " + nx.map(function (s) { return s.ad; }).join(", ") : "adımlar tamam"].filter(Boolean).join(" · ")) + '</small></div><span class="pill">' + x.D.tamam + "/" + x.D.top + "</span></a>"; }).join("") || '<div class="bos">Proje yok. Sözleşme aşamasındaki müşterinin kartından "Projeyi başlat" ile açılır.</div>') + "</div>";
+    Array.prototype.forEach.call(document.querySelectorAll("[data-pf]"), function (b) { b.onclick = function () { PF.d = b.dataset.pf; sProjeler(); }; });
+  }).catch(hata);
+}
+var PF = { d: "Sürüyor" };
 
 ciz();
 </script>
