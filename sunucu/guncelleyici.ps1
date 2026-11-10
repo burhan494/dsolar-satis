@@ -17,7 +17,8 @@ function Durum($surum, $durum, $mesaj) {
   Set-Content -Path "$Kok\guncelleme-durum.json" -Value $o -Encoding UTF8
   if (Test-Path "$Kok\pb_public") { Set-Content -Path "$Kok\pb_public\surum.json" -Value $o -Encoding UTF8 }
 }
-function Saglik { for ($i = 0; $i -lt 30; $i++) { Start-Sleep 2; try { $r = Invoke-RestMethod "http://127.0.0.1:$Port/api/health" -TimeoutSec 5; if ($r.code -eq 200) { return $true } } catch {} }; return $false }
+$SaglikUrl = "http://127.0.0.1:$Port"; if (Test-Path "$Kok\saglik-adresi.txt") { $SaglikUrl = (Get-Content "$Kok\saglik-adresi.txt" -Raw).Trim() }
+function Saglik { for ($i = 0; $i -lt 30; $i++) { Start-Sleep 2; try { $r = Invoke-RestMethod "$SaglikUrl/api/health" -TimeoutSec 5; if ($r.code -eq 200) { return $true } } catch {} }; return $false }
 function Durdur { Stop-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue; Start-Sleep 2; Get-Process pocketbase -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep 1 }
 
 New-Item -ItemType Directory -Force -Path "$Kok\log" | Out-Null

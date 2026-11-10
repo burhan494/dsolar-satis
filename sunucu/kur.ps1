@@ -16,6 +16,7 @@ param(
   [string]$YoneticiEposta = "sunucu-yonetici@dsolar.net"
 )
 $ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $PB_SHA256 = "21A9D960BA98F92C7A307AF5835CAE474506D22DA5735AF18BCD2217EB5B4B0B"
 $GorevAdi = "DSolar Satis Sunucusu"
 $Rapor = New-Object System.Collections.Generic.List[string]
@@ -90,6 +91,9 @@ if ($Alan) {
   if (-not $ip) { throw "$Alan DNS'te bulunamadi. Once DNS A kaydi eklenmeli." }
   Yaz "DNS: $Alan -> $ip"
   $servis = "serve $Alan"; $adres = "https://$Alan"; $saglik = "https://$Alan"
+  # Sunucu kendi adresini yerelden cozsun (saglik kontrolu ve guncelleyici icin; router NAT donusu gerekmez)
+  $hosts = "$env:SystemRoot\System32\drivers\etc\hosts"
+  if (-not (Select-String -Path $hosts -Pattern ("\s" + [regex]::Escape($Alan) + "\s*$") -Quiet)) { Add-Content -Path $hosts -Value ("`r`n127.0.0.1`t" + $Alan) -Encoding ASCII; Yaz "hosts dosyasina eklendi: 127.0.0.1 $Alan" }
   $kuralPort = "80,443"; $kuralUzak = "Any"
 } else {
   $servis = "serve --http=0.0.0.0:$Port"; $adres = "http://192.168.1.254:$Port"; $saglik = "http://127.0.0.1:$Port"
@@ -113,6 +117,10 @@ $kim = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -Ru
 Register-ScheduledTask -TaskName $GorevAdi -Action $eylem -Trigger $tetik -Settings $ayar -Principal $kim -Force | Out-Null
 Start-ScheduledTask -TaskName $GorevAdi
 Yaz "Otomatik baslayan gorev kuruldu ve calistirildi: '$GorevAdi'"
+
+# 8b) Otomatik guncelleyiciye saglik adresini bildir; yeni guncelleyici pakette varsa kur
+Set-Content -Path "$Kok\saglik-adresi.txt" -Value $saglik -Encoding ASCII
+if (Test-Path "$kaynak\guncelleyici.ps1") { Copy-Item "$kaynak\guncelleyici.ps1" "$Kok\app\guncelleyici.ps1" -Force; SadeceYonetici "$Kok\app\guncelleyici.ps1"; Yaz "Otomatik guncelleyici yenilendi." }
 
 # 9) Saglik kontrolu
 $tamam = $false
