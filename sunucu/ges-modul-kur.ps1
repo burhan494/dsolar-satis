@@ -16,6 +16,8 @@ $GorevAdi = "DSolar Satis Sunucusu"
 $Rapor = New-Object System.Collections.Generic.List[string]
 function Yaz($m) { $s = "[{0}] {1}" -f (Get-Date -Format "HH:mm:ss"), $m; Write-Host $s; $Rapor.Add($s) }
 function SadeceYonetici($yol) { & icacls $yol /inheritance:r /grant:r "*S-1-5-32-544:F" "*S-1-5-18:F" | Out-Null }
+# Klasorler icin miras bayraklari sart: (OI)(CI) olmadan icerideki dosyalar hic izin almaz ve sunucu "Access is denied" ile acilmaz.
+function SadeceYoneticiKlasor($yol) { & icacls $yol /inheritance:r /grant:r "*S-1-5-32-544:(OI)(CI)F" "*S-1-5-18:(OI)(CI)F" /T /C | Out-Null }
 $kaynak = $PSScriptRoot
 if (-not (Test-Path "$Kok\app\pocketbase.exe")) { throw "Kurulum bulunamadi ($Kok)." }
 foreach ($f in @("pb_hooks\isc.pb.js", "pb_hooks\isc_lib.js", "guncelleyici.ps1")) { if (-not (Test-Path "$kaynak\$f")) { throw "Pakette $f yok." } }
@@ -36,7 +38,7 @@ Stop-ScheduledTask -TaskName $GorevAdi -ErrorAction SilentlyContinue; Start-Slee
 Get-Process pocketbase -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep 1
 New-Item -ItemType Directory -Force -Path "$Kok\pb_hooks" | Out-Null
 Copy-Item "$kaynak\pb_hooks\*" "$Kok\pb_hooks\" -Recurse -Force
-SadeceYonetici "$Kok\pb_hooks"
+SadeceYoneticiKlasor "$Kok\pb_hooks"
 Yaz "Sunucu modulleri kopyalandi: $Kok\pb_hooks"
 $bat = "$Kok\app\baslat.cmd"; $icerik = Get-Content $bat -Raw
 if ($icerik -notmatch "--hooksDir") {
