@@ -1,7 +1,7 @@
 {
- "surum": 14,
- "paket": "surumler/dsolar-14.zip",
- "sha256": "1cdefd1e95a56d49170616759e5f14a75eaec82209627b6e61fee62dbe9987de",
- "imza": "UY0qmGM2f68LczMYxeKtzMKZKjx7d9mQ6doMADPlPqmK7+4B0gIS5ZzO6wVgIxuKddydMRrqeJPM6tHogRAYvZhIN4zd+cpyH17n11diYAN59sJwGk7QcfeGKFgw/tNK0hNCYhKT2w+qFBsAdaJ68I7P4Dd7t/2z0xcaXvCGx0M6+NCLv6seQW5rFpmzGheaFc2MdNF+JDTbPUM+jeJkMKql/a/26Zm2snfnnqjRYVisNJUMX6DE1fgPJDxvig45/UF2LdRTS2YqQZPryhZJkNWIwkF3vhxgPGaXcZtWVU0UN4aaLw3D0htprAyYJS0ecwqjGxXu6GKgf5DTi5ILYwHqvkujvHYBCXP3EQ6xiHFFS8rrL+LWrnd9HuVRHgXvtGTREbyABgD5gQjNsXXJ8B3+0MFpqj39jwLuOAHsDcH2y836aAow/L7lP/mR+uWAbm0I/0204i6XlpbY5XxtKjRGD7v4kfl6aG7eKdVVjfhfWKp8Yl5FfPHn7WjxmpKC",
- "not": "Daha derli toplu ekranlar (masaüstünde yan yana kartlar, katlanır gruplar), renkli ikonlar, banka rozetleri"
+ "surum": 15,
+ "paket": "surumler/dsolar-15.zip",
+ "sha256": "8161e57ec0f8b206676b4b049262b61d20bd3098d5abddbce3d9e6c2eb0128e2",
+ "imza": "OddEBZt7O0LaFRUWUdQeCJn65XUDV1gEQIHMveYreAW2x6wp1tqc3kOdNgHaxVTeWf1RuPofn+zx6huPJ6gLCoBa880KqL47E0txyu+/Y4oNQniIvjTk+aqSP4UlqySl4W4ax++Ti4C+h921HPGi47jYjEEAqFZLWCnngIifJ0YHv07AKKoPzQ3ozS9yugWviVshVfmsYTnaX8Lp972pjxsCFnu0YIXtRjV+7Tvho6QiOnFwh8q/chSNGKAB5wBZCsGJhakNM9ZlbnVCAB2BuzT6gaD9USCgqO0aLyV+7YwzmoXHzufFTMqrxwJkEwS0tVzmMP4aJgCEjnLoKjgqmKjAPqivNZ3ZMwJ/qIhPPFnS3bmnK236gmFzxZofUEUlf2DBM7VXdsQNx5SwO6/IvF625DzpMmYLvoWv3fYMDvtLwVolr9+FlutRVgIWclRpsv9BbObtaUBYRU/NVeH+L6Lpkr+qXkw5kWygIln2H7wF73mWbq6Y4YUvW9wzUZvK",
+ "not": "GES: iSolarCloud bağlantısı (sunucu modülü), günlük üretim grafiği, arızalar, Amcor kira tahmini (B kuralı) ve tahsilat; nakit akışında GES geliri"
 }

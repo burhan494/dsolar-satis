@@ -630,35 +630,96 @@ function fVarlik() {
   }).catch(hata);
 }
 
-/* ---------- GES (yalnız yönetici) ---------- */
+/* ---------- GES (yalnız yönetici): iSolarCloud, OSOS, Amcor kirası ---------- */
+function gesParam(BG) { BG = BG || {}; var K = BG.kira || {}, ta = BG.tarifeArtis, sen = BG.senaryo || "Baz";
+  return { K: K, kdv: BG.kdv != null ? +BG.kdv : 0.2, lag: BG.kiraGecikme != null ? +BG.kiraGecikme : 2, gun: +BG.kiraGun || 11, kural: BG.kural || "B", artis: ta && typeof ta === "object" ? (+ta[sen] || +ta.Baz || 0) : (+ta || 0), teslim: K.teslim || "2026-09" }; }
+function gesBeklenenKwh(ay, P) { var mo = +ay.slice(5, 7), y = +ay.slice(0, 4); return ((P.K.profil || [])[mo - 1] || 0) * Math.pow(1 - (P.K.verimKaybi || 0), y - 2026); }
+function iscTop(g) { var t = 0, n = 0; Object.keys((g && g.iscGun) || {}).forEach(function (k) { var v = +g.iscGun[k]; if (v > 0) { t += v; n++; } }); return { t: t, n: n }; }
+function gesOranHesap(G) { var a = 0, b = 0; G.forEach(function (g) { var i = iscTop(g); if (g.uretimKwh > 0 && i.n >= 25) { a += +g.uretimKwh; b += i.t; } }); return b > 0 ? a / b : 1; }
+function gesUretim(g, ay, P, oran) {
+  if (g && g.uretimKwh > 0) return { kwh: +g.uretimKwh, kaynak: "OSOS" };
+  var i = iscTop(g); if (i.n) { var gs = new Date(+ay.slice(0, 4), +ay.slice(5, 7), 0).getDate(), bek = gesBeklenenKwh(ay, P) / gs, eksik = Math.max(0, gs - i.n), bugunAy = bugun().slice(0, 7) === ay;
+    return { kwh: i.t * oran + (bugunAy ? 0 : eksik * bek), kaynak: "iSolarCloud" + (oran !== 1 ? " × " + sayi(oran, 3) : "") + (eksik && !bugunAy ? " + " + eksik + " gün tahmin" : ""), kismi: bugunAy }; }
+  return { kwh: gesBeklenenKwh(ay, P), kaynak: "profil tahmini" };
+}
+function kiraMatrah(ay, kwh, P) {
+  var K = P.K, idx = (+ay.slice(0, 4) - +P.teslim.slice(0, 4)) * 12 + (+ay.slice(5, 7) - +P.teslim.slice(5, 7)) + 1; if (idx < 1 || !K.birimFiyat) return null;
+  var y = +ay.slice(0, 4), ti = 1; for (var t = 2027; t <= y; t++) ti *= 1 + P.artis;
+  var birim = K.birimFiyat * ti, skb = (K.skb || 0) * ti, dag = 0;
+  if (P.kural !== "A") { var DA = K.dagitimAy || {}; if (DA[ay] != null) dag = +DA[ay]; else { var onc = Object.keys(DA).filter(function (k) { return k < ay; }).sort().pop(); dag = onc ? +DA[onc] * ti : (K.dagitim || 0) * ti; } }
+  var oran = idx <= (K.donem1Ay || 96) ? K.oran1 : idx <= 180 ? K.oran2 : 0;
+  return Math.round((kwh * birim - kwh * skb - dag) * oran * 100) / 100;
+}
+/* nakit akışı için: tahsil ayı a'ya düşen Amcor kirası (fatura varsa o, yoksa üretimden tahmin) */
+function gesKiraTahsil(a, G, P, oran) {
+  var kiraAy = ayEkle(a + "-01", -P.lag); if (kiraAy < P.teslim) return null;
+  var g = G.filter(function (x) { return x.donem === kiraAy; })[0];
+  if (g && g.kiraTahsil) return null;
+  var U = gesUretim(g, kiraAy, P, oran), m = g && g.kiraTl > 0 ? +g.kiraTl : kiraMatrah(kiraAy, U.kwh, P); if (!(m > 0)) return null;
+  return { kiraAy: kiraAy, matrah: m, tutar: Math.round(m * (1 + P.kdv) * 100) / 100, fatura: !!(g && g.kiraTl > 0), kaynak: g && g.kiraTl > 0 ? "fatura" : U.kaynak, tarih: a + "-" + String(Math.min(P.gun, new Date(+a.slice(0, 4), +a.slice(5, 7), 0).getDate())).padStart(2, "0") };
+}
+function gesGrafik(g, ay, P) {
+  var gs = new Date(+ay.slice(0, 4), +ay.slice(5, 7), 0).getDate(), I = (g && g.iscGun) || {}, T = (g && g.iscT) || {}, mx = 1;
+  for (var d = 1; d <= gs; d++) { var k = String(d).padStart(2, "0"); mx = Math.max(mx, +I[k] || 0, +T[k] || 0); }
+  var W = 620, Hh = 150, bw = W / gs, bars = "", cizgi = [];
+  for (var d2 = 1; d2 <= gs; d2++) { var k2 = String(d2).padStart(2, "0"), v = +I[k2] || 0, t = +T[k2] || 0, h = v / mx * (Hh - 18), x = (d2 - 1) * bw;
+    var dus = t > 0 && v < 0.8 * t; bars += '<rect x="' + (x + 1).toFixed(1) + '" y="' + (Hh - h).toFixed(1) + '" width="' + (bw - 2).toFixed(1) + '" height="' + h.toFixed(1) + '" rx="2" fill="' + (dus ? "#f97316" : "#f59e0b") + '"><title>' + d2 + " " + AYLAR[+ay.slice(5, 7) - 1] + ": " + sayi(v) + " kWh" + (t ? " / teorik " + sayi(t) : "") + "</title></rect>";
+    if (t > 0) cizgi.push((x + bw / 2).toFixed(1) + "," + (Hh - t / mx * (Hh - 18)).toFixed(1)); }
+  return '<svg viewBox="0 0 ' + W + " " + (Hh + 16) + '" style="width:100%;height:auto;display:block">' + bars + (cizgi.length > 1 ? '<polyline points="' + cizgi.join(" ") + '" fill="none" stroke="#1d3557" stroke-width="1.5" stroke-dasharray="4 3"/>' : "") +
+    '<text x="0" y="' + (Hh + 13) + '" font-size="10" fill="#5f6f82">1</text><text x="' + (W - 12) + '" y="' + (Hh + 13) + '" font-size="10" fill="#5f6f82">' + gs + "</text></svg>";
+}
 function sGes() {
   if (!yon()) { location.hash = "#bugun"; return; }
-  liste("ges_aylik", "", "-donem").then(function (G) {
-    var b = bugun(), yil = b.slice(0, 4), Y = G.filter(function (g) { return g.donem.slice(0, 4) === yil; });
-    var t = function (L, k) { return L.reduce(function (s, g) { return s + (+g[k] || 0); }, 0); };
-    var uY = t(Y, "uretimKwh"), tY = t(Y.filter(function (g) { return g.tahminKwh > 0 && g.uretimKwh > 0; }), "tahminKwh"), uT = t(Y.filter(function (g) { return g.tahminKwh > 0 && g.uretimKwh > 0; }), "uretimKwh");
-    var bekleyen = G.filter(function (g) { return g.kiraTl > 0 && !g.kiraTahsil; });
-    var html = '<div class="card"><h3>' + yil + ' özeti</h3><div class="kv"><div><small>Üretim (OSOS)</small><b>' + sayi(uY) + ' kWh</b></div><div><small>Tahmine göre</small><b>' + (tY ? (uT >= tY ? "+" : "") + sayi((uT / tY - 1) * 100, 1) + "%" : "—") + "</b></div>" +
-      '<div><small>Amcor kira (KDV dahil)</small><b>' + sayi(t(Y, "kiraTl")) + ' TL</b></div><div><small>Giderler (reaktif + diğer)</small><b>' + sayi(t(Y, "reaktifTl") + t(Y, "digerGiderTl")) + " TL</b></div></div>" +
-      (bekleyen.length ? '<div class="uyari">Tahsil edilmemiş kira: ' + bekleyen.map(function (g) { var v = ayEkle(g.donem + "-01", 2); return ayAd(g.donem) + " " + sayi(g.kiraTl) + " TL (beklenen " + ayAd(v) + (v < b.slice(0, 7) ? ", gecikti" : "") + ")"; }).join("; ") + "</div>" : "") + "</div>";
-    html += '<div class="card"><h3 id="gBas">Ay ekle / düzelt</h3><div class="f"><div class="f2"><label>Dönem<input id="gD" type="month" value="' + ayEkle(b, -1) + '"></label><label>Üretim, OSOS (kWh)<input id="gU" inputmode="decimal"></label></div>' +
-      '<div class="f2"><label>Tahmini üretim (kWh)<input id="gT" inputmode="decimal"></label><label>Amcor kira faturası (TL, KDV dahil)<input id="gK" inputmode="decimal"></label></div>' +
-      '<div class="f2"><label>Kira tahsil tarihi<input id="gH" type="date"></label><label>Reaktif bedel (TL)<input id="gR" inputmode="decimal"></label></div>' +
-      '<div class="f2"><label>Diğer gider (TL)<input id="gO" inputmode="decimal"></label><label>Not<input id="gN"></label></div><button class="btn pri" id="gK2">Kaydet</button>' +
-      '<small style="color:var(--muted)">Kira, iki ay sonra tahsil edilir (ör. Eylül kirası Kasım\'da). Kira tutarı faturadaki değerdir; hesaplama (B kuralı) sonraki sürümde. Reaktif bedel D Solar gideri olarak tutulur.</small></div></div>';
-    html += '<div class="card"><h3>Aylar</h3>' + (G.map(function (g) { var s = g.tahminKwh > 0 && g.uretimKwh > 0 ? (g.uretimKwh / g.tahminKwh - 1) * 100 : null;
-      return '<div class="row" data-ge="' + g.id + '" style="cursor:pointer"><div class="t"><b>' + ayAd(g.donem) + "</b><small>" + [g.uretimKwh ? sayi(g.uretimKwh) + " kWh" + (s != null ? " (" + (s >= 0 ? "+" : "") + sayi(s, 1) + "%)" : "") : "üretim girilmedi", g.kiraTl ? "kira " + sayi(g.kiraTl) + " TL · " + (g.kiraTahsil ? "tahsil " + tarih(g.kiraTahsil) : "tahsil bekleniyor") : "", (g.reaktifTl || g.digerGiderTl) ? "gider " + sayi((+g.reaktifTl || 0) + (+g.digerGiderTl || 0)) + " TL" : ""].filter(Boolean).join(" · ") + "</small></div>" +
-        '<button class="btn sm" data-gx="' + g.id + '">✕</button></div>'; }).join("") || '<div class="bos">Henüz ay girilmedi.</div>') + "</div>";
+  $("m").classList.add("genis");
+  Promise.all([liste("ges_aylik", "", "-donem"), liste("isc_ayar", "").catch(function () { return []; }), liste("fin_ayarlar", "anahtar = 'beacon_genel'").catch(function () { return []; }),
+    liste("fin_hareketler", "kategori = 'Amcor kira'", "tarih").catch(function () { return []; }), liste("fin_hesaplar", "aktif = true && pb = 'TRY'", "sirket,ad").catch(function () { return []; })]).then(function (R) {
+    var G = R[0], IS = R[1][0], P = gesParam(R[2][0] && R[2][0].deger), AH = R[3], HS = R[4], b = bugun(), ay0 = b.slice(0, 7), oran = gesOranHesap(G), C = (IS && IS.canli) || {};
+    var aylar = []; for (var a = P.teslim; a <= ay0; a = ayEkle(a + "-01", 1)) aylar.unshift(a);
+    var gAy = {}; G.forEach(function (g) { gAy[g.donem] = g; });
+    var acikAr = ((IS && IS.alarm) || []).filter(function (x) { return x.durum !== 4 && x.durum !== 9 && !x.bit; });
+    var gecSenk = IS && IS.sonSenk ? Math.round((Date.now() - new Date(IS.sonSenk).getTime()) / 6e4) : null;
+    var html = '<div class="izgara"><div class="card hero" style="background:linear-gradient(135deg,#b45309,#f59e0b)"><h3>D Solar GES · iSolarCloud</h3><div class="kv">' +
+      "<div><small>Bugün üretim</small><b>" + (C.bugunKwh != null ? sayi(C.bugunKwh / 1000, 1) + " MWh" : "—") + "</b></div><div><small>Anlık güç</small><b>" + (C.gucKw != null ? sayi(C.gucKw / 1000, 2) + " MW" : "—") + "</b></div>" +
+      "<div><small>Toplam üretim</small><b>" + (C.toplamKwh != null ? sayi(C.toplamKwh / 1000, 0) + " MWh" : "—") + "</b></div><div><small>Alarm</small><b>" + (C.alarm != null ? C.alarm : "—") + "</b></div></div>" +
+      '<div class="not"><small>' + (IS && IS.hata ? "⚠ " + esc(IS.hata) + " · " : "") + (IS && IS.sonSenk ? "Son senkron " + (gecSenk < 60 ? gecSenk + " dk önce" : tarih(IS.sonSenk) + " " + IS.sonSenk.slice(11, 16)) + " · sunucu saatte bir otomatik çeker" : "Bağlantı henüz kurulmadı (aşağıdaki \"iSolarCloud bağlantısı\")") + '</small><button class="btn sm" id="gSenk" style="margin-top:8px;background:#fff;color:#b45309">Şimdi çek</button></div></div>';
+    var buG = gAy[ay0], buU = gesUretim(buG, ay0, P, oran), buB = gesBeklenenKwh(ay0, P);
+    html += '<div class="card ust3"><h3>' + ikon("gunes", "#f59e0b", "kucuk") + ayAd(ay0) + ' günlük üretim <small style="color:var(--muted)">' + sayi(iscTop(buG).t) + " kWh · ay hedefi " + sayi(buB) + "</small></h3><div style=\"padding:6px 14px 4px\">" + gesGrafik(buG, ay0, P) + '</div><div class="not" style="margin-top:0"><small>Turuncu: teorik üretimin %80\'inin altında kalan günler. Kesik çizgi: iSolarCloud teorik üretim.</small></div></div></div>';
+    if (acikAr.length) html += '<div class="card"><h3 style="color:var(--bad)">Açık arızalar (' + acikAr.length + ")</h3>" + acikAr.map(function (x) { return '<div class="row sk"><div class="t"><b class="w">' + esc((x.cihaz ? x.cihaz + " · " : "") + x.ad) + "</b><small>" + esc([x.bas, x.acik].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>";
+    var ahAy = {}; AH.forEach(function (h) { var k = h.not && /kira ay[ıi]: (\d{4}-\d{2})/.exec(h.not); if (k) ahAy[k[1]] = h; });
+    html += '<div class="card"><h3>Aylar · üretim ve Amcor kirası <small style="color:var(--muted)">kira = B kuralı, KDV %' + sayi(P.kdv * 100) + ", " + P.lag + " ay sonra ayın " + P.gun + "'inde tahsil</small></h3>" +
+      '<div style="overflow-x:auto"><table class="nt" style="border-collapse:collapse;width:100%;font-size:13px"><thead><tr style="background:#f4f7fb"><th style="text-align:left;padding:8px">Ay</th><th style="text-align:right">Üretim (kWh)</th><th style="text-align:right">Hedef</th><th style="text-align:right">Fark</th><th style="text-align:right">Kira matrahı</th><th style="text-align:right">Tahsil (KDV dahil)</th><th style="text-align:left;padding-left:10px">Durum</th></tr></thead><tbody>' +
+      aylar.map(function (a) { var g = gAy[a], U = gesUretim(g, a, P, oran), hd = gesBeklenenKwh(a, P), fk = hd ? (U.kwh / hd - 1) * 100 : null, fat = g && g.kiraTl > 0, m = fat ? +g.kiraTl : kiraMatrah(a, U.kwh, P), th = m ? m * (1 + P.kdv) : 0, tAy = ayEkle(a + "-01", P.lag), h = ahAy[a];
+        var drm = g && g.kiraTahsil ? '<span class="pill" style="background:#e8f6ee;color:var(--ok)">tahsil ' + tarih(g.kiraTahsil) + "</span>" : U.kismi ? '<span class="pill">ay sürüyor</span>' : '<span class="pill"' + (tAy < ay0 ? ' style="background:#fde8e8;color:var(--bad)"' : "") + ">" + (tAy < ay0 ? "gecikti · " : "beklenen ") + ayAd(tAy) + '</span> <button class="btn sm" data-kt="' + a + '" data-v="' + Math.round(th * 100) / 100 + '">Tahsil edildi</button>';
+        return '<tr style="border-top:1px solid #edf1f6"><td style="padding:8px;white-space:nowrap"><a href="#" data-ga="' + a + '" style="color:var(--text);font-weight:700;text-decoration:none">' + ayAd(a) + "</a><br><small style=\"color:var(--muted)\">" + esc(U.kaynak) + "</small></td><td style=\"text-align:right\">" + sayi(U.kwh) + '</td><td style="text-align:right;color:var(--muted)">' + sayi(hd) + '</td><td style="text-align:right;' + (fk != null && fk < -5 ? "color:var(--bad)" : fk > 0 ? "color:var(--ok)" : "") + '">' + (fk != null && !U.kismi ? (fk >= 0 ? "+" : "") + sayi(fk, 1) + "%" : "–") + "</td>" +
+          '<td style="text-align:right">' + (m ? sayi(m) : "–") + "<br><small style=\"color:var(--muted)\">" + (fat ? "fatura" : "tahmini") + '</small></td><td style="text-align:right;font-weight:700">' + (th ? sayi(th) : "–") + '</td><td style="padding-left:10px;white-space:nowrap">' + drm + "</td></tr>"; }).join("") + "</tbody></table></div>" +
+      '<div class="not"><small>Fatura kesilince ay adına dokunup "Kira matrahı (fatura, KDV hariç)" alanına girin; tahmin yerine o kullanılır. "Tahsil edildi" tutarı seçtiğiniz banka hesabına işler, nakit akışındaki tahmin kalkar.</small></div><div id="gKt"></div></div>';
+    html += '<details class="card" id="gAyK"><summary><h3>Ay bilgisi gir / düzelt (OSOS, fatura, gider)</h3></summary><div class="f"><div class="f2"><label>Dönem<input id="gD" type="month" value="' + ayEkle(b, -1) + '"></label><label>Üretim, OSOS (kWh)<input id="gU" inputmode="decimal"></label></div>' +
+      '<div class="f2"><label>Kira matrahı (fatura, KDV hariç TL)<input id="gK" inputmode="decimal"></label><label>Reaktif bedel (TL)<input id="gR" inputmode="decimal"></label></div><div class="f2"><label>Diğer gider (TL)<input id="gO" inputmode="decimal"></label><label>Not<input id="gN"></label></div><button class="btn pri" id="gK2">Kaydet</button></div></details>' +
+      '<details class="card"><summary><h3>iSolarCloud bağlantısı</h3></summary><div class="f"><div class="bilgi" style="margin:0">Bilgiler sunucuda saklanır, bir daha ekranda gösterilmez. Değiştirmek istemediğiniz alanı boş bırakın. Beacon\'da: GES › Detaylar › OSOS ve bağlantı.</div>' +
+      '<div class="f2"><label>Appkey<input id="iA" autocomplete="off" placeholder="' + (IS ? "kayıtlı · değiştirmek için yazın" : "") + '"></label><label>Secret key<input id="iS" type="password" autocomplete="off" placeholder="' + (IS ? "kayıtlı" : "") + '"></label></div>' +
+      '<div class="f2"><label>Kullanıcı (e-posta)<input id="iU" autocomplete="off" value="' + esc((IS && IS.kullanici) || "") + '"></label><label>Şifre<input id="iP" type="password" autocomplete="new-password" placeholder="' + (IS ? "kayıtlı" : "") + '"></label></div>' +
+      '<div class="f2"><label>Sunucu<select id="iG">' + sec([["https://gateway.isolarcloud.eu", "Avrupa (eu)"], ["https://gateway.isolarcloud.com.hk", "Uluslararası"]], (IS && IS.gw) || "https://gateway.isolarcloud.eu") + '</select></label><label>Veri başlangıcı<input id="iB" type="date" value="' + esc((IS && IS.baslangic) || P.teslim + "-01") + '"></label></div>' +
+      (IS && IS.psAd ? "<small>Bağlı santral: " + esc(IS.psAd) + "</small>" : "") + '<button class="btn pri" id="iK">Kaydet ve bağlan</button><div id="iD"></div></div></details>';
     $("m").innerHTML = html;
-    var doldur = function (g) { $("gD").value = g.donem; $("gU").value = g.uretimKwh || ""; $("gT").value = g.tahminKwh || ""; $("gK").value = g.kiraTl || ""; $("gH").value = (g.kiraTahsil || "").slice(0, 10); $("gR").value = g.reaktifTl || ""; $("gO").value = g.digerGiderTl || ""; $("gN").value = g.not || ""; };
-    $("gD").onchange = function () { var g = G.filter(function (x) { return x.donem === $("gD").value; })[0]; doldur(g || { donem: $("gD").value }); };
-    $("gD").onchange();
-    Array.prototype.forEach.call(document.querySelectorAll("[data-ge]"), function (e) { e.onclick = function () { doldur(G.filter(function (x) { return x.id === e.dataset.ge; })[0]); $("gBas").scrollIntoView({ behavior: "smooth" }); }; });
+    var senk = function () { $("gSenk").disabled = true; $("gSenk").textContent = "Çekiliyor…"; return api("/api/dsolar/isc-senk", { method: "POST" }).then(function (r) { toast(r.mesaj || "Tamam"); sGes(); }).catch(function (e) { $("gSenk").disabled = false; $("gSenk").textContent = "Şimdi çek"; toast(/404|not found/i.test(e.message) ? "Sunucunun iSolarCloud modülü henüz kurulmadı (BT adımı)" : e.message); }); };
+    $("gSenk").onclick = senk;
+    $("iK").onclick = function () { var b2 = { appkey: $("iA").value.trim(), secret: $("iS").value.trim(), kullanici: $("iU").value.trim(), sifre: $("iP").value, gw: $("iG").value, baslangic: $("iB").value };
+      if (!IS && (!b2.appkey || !b2.secret || !b2.kullanici || !b2.sifre)) { toast("Dört alan da gerekli"); return; }
+      api("/api/dsolar/isc-ayar", { method: "POST", body: b2 }).then(function () { $("iD").innerHTML = '<div class="bilgi" style="margin:0">Kaydedildi, bağlanılıyor…</div>'; return senk(); }).catch(function (e) { $("iD").innerHTML = '<div class="uyari" style="margin:0">' + esc(/404|not found/i.test(e.message) ? "Sunucunun iSolarCloud modülü henüz kurulmadı. BT paketi kurulunca buradan kaydedebilirsiniz." : e.message) + "</div>"; }); };
+    var doldur = function (d) { var g = gAy[d] || {}; $("gD").value = d; $("gU").value = g.uretimKwh || ""; $("gK").value = g.kiraTl || ""; $("gR").value = g.reaktifTl || ""; $("gO").value = g.digerGiderTl || ""; $("gN").value = g.not || ""; };
+    $("gD").onchange = function () { doldur(this.value); }; doldur($("gD").value);
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ga]"), function (x) { x.onclick = function (ev) { ev.preventDefault(); $("gAyK").open = true; doldur(x.dataset.ga); $("gAyK").scrollIntoView({ behavior: "smooth" }); }; });
     $("gK2").onclick = function () { var d = $("gD").value; if (!/^\d{4}-\d{2}$/.test(d)) { toast("Dönem gerekli"); return; }
-      var v = { donem: d, uretimKwh: num($("gU").value), tahminKwh: num($("gT").value), kiraTl: num($("gK").value), kiraTahsil: $("gH").value ? $("gH").value + " 12:00:00.000Z" : "", reaktifTl: num($("gR").value), digerGiderTl: num($("gO").value), not: $("gN").value.trim() };
-      var g = G.filter(function (x) { return x.donem === d; })[0];
+      var v = { donem: d, uretimKwh: num($("gU").value), kiraTl: num($("gK").value), reaktifTl: num($("gR").value), digerGiderTl: num($("gO").value), not: $("gN").value.trim() }, g = gAy[d];
       api("/api/collections/ges_aylik/records" + (g ? "/" + g.id : ""), { method: g ? "PATCH" : "POST", body: v }).then(function () { toast(ayAd(d) + " kaydedildi"); sGes(); }).catch(hata); };
-    bagT("[data-gx]", function (e) { if (confirm("Bu ay silinsin mi?")) api("/api/collections/ges_aylik/records/" + e.dataset.gx, { method: "DELETE" }).then(sGes).catch(hata); });
+    bagT("[data-kt]", function (e) { var a = e.dataset.kt, tAy = ayEkle(a + "-01", P.lag), dflt = tAy + "-" + String(P.gun).padStart(2, "0");
+      $("gKt").innerHTML = '<div class="f" style="background:#f7f9fc;border-radius:12px;margin:0 14px 14px;padding:12px"><b>' + ayAd(a) + ' kirası tahsil edildi</b><div class="f2"><label>Tarih<input id="ktT" type="date" value="' + (dflt > b ? b : dflt) + '"></label><label>Tutar (TL, KDV dahil)<input id="ktU" inputmode="decimal" value="' + String(e.dataset.v).replace(".", ",") + '"></label></div>' +
+        '<label>Hesap<select id="ktH">' + sec(HS.map(function (h) { return [h.id, h.ad]; })) + '</select></label><div class="f2"><button class="btn" id="ktV">Vazgeç</button><button class="btn pri" id="ktK">Kaydet</button></div></div>';
+      $("gKt").scrollIntoView({ behavior: "smooth", block: "nearest" }); $("ktV").onclick = function () { $("gKt").innerHTML = ""; };
+      $("ktK").onclick = function () { var u = num($("ktU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; } var t = $("ktT").value + " 12:00:00.000Z", g = gAy[a];
+        api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: t, yon: "Giriş", kategori: "Amcor kira", tutar: u, pb: "TRY", hesap: $("ktH").value, durum: "Gerçekleşti", karsiTaraf: "Amcor", aciklama: ayAd(a) + " kirası", not: "kira ayı: " + a, giren: BEN.id, kontrol: true } })
+          .then(function () { return api("/api/collections/ges_aylik/records" + (g ? "/" + g.id : ""), { method: g ? "PATCH" : "POST", body: g ? { kiraTahsil: t } : { donem: a, kiraTahsil: t } }); })
+          .then(function () { toast("Kira tahsilatı kaydedildi; kasa güncellendi"); sGes(); }).catch(hata); }; });
   }).catch(hata);
 }
 
@@ -1229,8 +1290,10 @@ function nakitAkis(D, KU, ayN) {
     ekle(ma, m.yon, g, usdKarsilik(+m.tutar || 0, m.pb || "TRY", KU), { t: m.tarih.slice(0, 10), ad: [m.karsiTaraf, m.aciklama].filter(Boolean).join(" · ") || m.kategori, tutar: +m.tutar, pb: m.pb || "TRY", id: m.id, gec: m.tarih.slice(0, 10) < b }); });
   D.S.forEach(function (s) { aylar.forEach(function (a) { if (!sabitAyda(s, a) || (a === ay0 && (s.gun || 1) < gun0)) return;
     ekle(a, s.yon, s.yon === "Giriş" ? "Cari alacak" : "Sabit giderler", usdKarsilik(+s.tutar || 0, s.pb || "TRY", KU), { t: a + "-" + String(s.gun || 1).padStart(2, "0"), ad: s.ad + " (sabit)", tutar: +s.tutar, pb: s.pb || "TRY", sabit: true }); }); });
-  (D.G || []).forEach(function (g) { if (!(g.kiraTl > 0) || g.kiraTahsil) return; var a = ayEkle(g.donem + "-01", 2); if (a < ay0) a = ay0; if (amcorAy[a]) return;
-    ekle(a, "Giriş", "GES geliri", usdKarsilik(+g.kiraTl, "TRY", KU), { t: a + "-11", ad: "Amcor kira · " + ayAd(g.donem) + " (GES kaydından)", tutar: +g.kiraTl, pb: "TRY", ges: true }); });
+  if (D.BG && D.BG.kira) { var GP = gesParam(D.BG), GO = gesOranHesap(D.G || []), amcorHer = {};
+    D.M.forEach(function (m) { if (grupOf(m) !== "GES geliri") return; var ka = /kira ay[ıi]: (\d{4}-\d{2})/.exec(m.not || ""); amcorHer[ka ? ka[1] : ayEkle(m.tarih.slice(0, 7) + "-01", -GP.lag)] = true; });
+    aylar.forEach(function (a) { if (amcorHer[ayEkle(a + "-01", -GP.lag)]) return; var k = gesKiraTahsil(a, D.G || [], GP, GO); if (!k) return;
+      ekle(a, "Giriş", "GES geliri", usdKarsilik(k.tutar, "TRY", KU), { t: k.tarih, ad: "Amcor kira · " + ayAd(k.kiraAy) + " (" + (k.fatura ? "fatura" : "tahmini: " + k.kaynak) + ", KDV dahil)", tutar: k.tutar, pb: "TRY", ges: true }); }); }
   aylar.forEach(function (a) { A[a].kal.sort(function (x, y) { return x.t < y.t ? -1 : 1; }); });
   return { aylar: aylar, A: A };
 }
@@ -1244,7 +1307,7 @@ function fNakit() {
     var H = R[0], M = R[1], KU = R[3], B = bakiyeler(H, M.filter(function (m) { return m.durum === "Gerçekleşti"; })), K = kasaHesap(H, B, KU), AY = {};
     R[6].forEach(function (x) { AY[x.anahtar] = x.deger; });
     var tampon = AY.nakit_ayar && AY.nakit_ayar.tamponUsd != null ? +AY.nakit_ayar.tamponUsd : AY.beacon_genel && AY.beacon_genel.tampon ? Math.round(usdKarsilik(+AY.beacon_genel.tampon.tutar || 0, AY.beacon_genel.tampon.pb === "TL" ? "TRY" : AY.beacon_genel.tampon.pb, KU)) : 0;
-    var N = nakitAkis({ M: M, S: R[2], G: R[4] }, KU, 12), net = ortakNet(R[5]), kasa = K.T.kul, satir = [], ihtiyacTop = 0, enDusuk = null;
+    var N = nakitAkis({ M: M, S: R[2], G: R[4], BG: AY.beacon_genel }, KU, 12), net = ortakNet(R[5]), kasa = K.T.kul, satir = [], ihtiyacTop = 0, enDusuk = null;
     N.aylar.forEach(function (a) { var x = N.A[a], gel = 0, git = 0; Object.keys(x.gel).forEach(function (g) { gel += x.gel[g]; }); Object.keys(x.git).forEach(function (g) { git += x.git[g]; });
       var bas = kasa, son = bas + gel - git, giris = 0, bol = null;
       if (yon() && son < tampon) { giris = Math.ceil((tampon - son) / 1000) * 1000; bol = ortakBol(net.Burhan, net.Batur, giris); net.Burhan -= bol.B; net.Batur -= bol.T; ihtiyacTop += giris; }

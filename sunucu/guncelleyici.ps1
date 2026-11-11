@@ -4,7 +4,8 @@
   2) Yeni surum varsa paketi indirir; SHA256 ozetini ve RSA imzasini ACIK anahtarla dogrular. Dogrulanmayan paket UYGULANMAZ.
   3) Sunucuyu durdurur, veri kopyasi alir, ekranlari ve sema dosyalarini gunceller, semayi calistirir, sunucuyu baslatir.
   4) Saglik kontrolu gecmezse eski hale doner (veri, ekranlar, sema dosyalari) ve sunucuyu eski haliyle baslatir.
-  Paket yalnizca pb_public ve pb_migrations icerigi tasir; betik veya program calistirmaz.
+  Paket pb_public, pb_migrations ve (varsa) pb_hooks icerigi tasir; yalniz izinli uzantilar kabul edilir, imzasiz paket uygulanmaz.
+  pb_hooks: sunucu modulleri (orn. iSolarCloud senkronu). Yalnizca baslat.cmd --hooksDir iceriyorsa kopyalanir.
 #>
 param([string]$Kok = "C:\dsolar", [int]$Port = 8090,
       [string]$ManifestUrl = "https://raw.githubusercontent.com/burhan494/dsolar-satis/main/surumler/manifest.json")
@@ -58,11 +59,14 @@ try {
   Get-ChildItem "$Kok\pb_data" -Force | Where-Object { $_.Name -ne "backups" } | Copy-Item -Destination "$yedek\pb_data" -Recurse -Force
   Copy-Item "$Kok\pb_migrations" "$yedek\pb_migrations" -Recurse -Force
   Copy-Item "$Kok\pb_public" "$yedek\pb_public" -Recurse -Force
+  $hooksVar = (Test-Path "$acik\pb_hooks") -and ((Get-Content "$Kok\app\baslat.cmd" -Raw) -match "--hooksDir")
+  if ($hooksVar) { New-Item -ItemType Directory -Force -Path "$Kok\pb_hooks" | Out-Null; Copy-Item "$Kok\pb_hooks" "$yedek\pb_hooks" -Recurse -Force }
   Yaz "Veri kopyasi: $yedek"
   try {
     Remove-Item "$Kok\pb_public\*" -Recurse -Force
     Copy-Item "$acik\pb_public\*" "$Kok\pb_public\" -Recurse -Force
     Copy-Item "$acik\pb_migrations\*" "$Kok\pb_migrations\" -Force
+    if ($hooksVar) { Remove-Item "$Kok\pb_hooks\*" -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item "$acik\pb_hooks\*" "$Kok\pb_hooks\" -Recurse -Force; Yaz "Sunucu modulleri guncellendi." }
     $env:DSOLAR_PB_KEY = (Get-Content "$Kok\app\anahtar.txt" -Raw).Trim()
     $eap = $ErrorActionPreference; $ErrorActionPreference = "Continue"
     $o = & "$Kok\app\pocketbase.exe" migrate up --dir "$Kok\pb_data" --migrationsDir "$Kok\pb_migrations" --encryptionEnv DSOLAR_PB_KEY 2>&1; $kod = $LASTEXITCODE
@@ -82,6 +86,7 @@ try {
     Copy-Item "$yedek\pb_data\*" "$Kok\pb_data\" -Recurse -Force
     Remove-Item "$Kok\pb_public\*" -Recurse -Force; Copy-Item "$yedek\pb_public\*" "$Kok\pb_public\" -Recurse -Force
     Remove-Item "$Kok\pb_migrations\*" -Force; Copy-Item "$yedek\pb_migrations\*" "$Kok\pb_migrations\" -Force
+    if ($hooksVar -and (Test-Path "$yedek\pb_hooks")) { Remove-Item "$Kok\pb_hooks\*" -Recurse -Force -ErrorAction SilentlyContinue; Copy-Item "$yedek\pb_hooks\*" "$Kok\pb_hooks\" -Recurse -Force }
     Start-ScheduledTask -TaskName $GorevAdi
     $ok = Saglik
     Durum $mevcut "geri_alindi" ("Surum $yeni uygulanamadi: $neden. Eski surum " + $(if ($ok) { "calisiyor." } else { "baslamadi; BT kontrol etmeli." }))

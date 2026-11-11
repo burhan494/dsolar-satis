@@ -2,7 +2,7 @@
 """D Solar güncelleme paketi üretir ve imzalar.
 Kullanım: python3 araclar/paketle.py SURUM "kısa not" /yol/imza-ozel.pem
 Çıktı: surumler/dsolar-SURUM.zip ve surumler/manifest.json
-Paket yalnız app/pb_public ve app/pb_migrations içerir. Gizli anahtar depoya KONMAZ.
+Paket app/pb_public, app/pb_migrations ve app/pb_hooks içerir. Gizli anahtar depoya KONMAZ.
 """
 import sys, os, json, zipfile, hashlib, base64
 from cryptography.hazmat.primitives import hashes, serialization
@@ -12,7 +12,8 @@ surum, not_, anahtar = int(sys.argv[1]), sys.argv[2], sys.argv[3]
 izin = {".html", ".js", ".css", ".json", ".png", ".svg", ".ico", ".webmanifest", ".txt"}
 yol = os.path.join(kok, "surumler", f"dsolar-{surum}.zip")
 with zipfile.ZipFile(yol, "w", zipfile.ZIP_DEFLATED) as z:
-    for d in ("pb_public", "pb_migrations"):
+    for d in ("pb_public", "pb_migrations", "pb_hooks"):
+        if not os.path.isdir(os.path.join(kok, "app", d)): continue
         for kd, _, dosyalar in os.walk(os.path.join(kok, "app", d)):
             for f in sorted(dosyalar):
                 if os.path.splitext(f)[1].lower() not in izin: raise SystemExit("izin verilmeyen dosya: " + f)
