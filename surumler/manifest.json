@@ -1,7 +1,7 @@
 {
- "surum": 15,
- "paket": "surumler/dsolar-15.zip",
- "sha256": "8161e57ec0f8b206676b4b049262b61d20bd3098d5abddbce3d9e6c2eb0128e2",
- "imza": "OddEBZt7O0LaFRUWUdQeCJn65XUDV1gEQIHMveYreAW2x6wp1tqc3kOdNgHaxVTeWf1RuPofn+zx6huPJ6gLCoBa880KqL47E0txyu+/Y4oNQniIvjTk+aqSP4UlqySl4W4ax++Ti4C+h921HPGi47jYjEEAqFZLWCnngIifJ0YHv07AKKoPzQ3ozS9yugWviVshVfmsYTnaX8Lp972pjxsCFnu0YIXtRjV+7Tvho6QiOnFwh8q/chSNGKAB5wBZCsGJhakNM9ZlbnVCAB2BuzT6gaD9USCgqO0aLyV+7YwzmoXHzufFTMqrxwJkEwS0tVzmMP4aJgCEjnLoKjgqmKjAPqivNZ3ZMwJ/qIhPPFnS3bmnK236gmFzxZofUEUlf2DBM7VXdsQNx5SwO6/IvF625DzpMmYLvoWv3fYMDvtLwVolr9+FlutRVgIWclRpsv9BbObtaUBYRU/NVeH+L6Lpkr+qXkw5kWygIln2H7wF73mWbq6Y4YUvW9wzUZvK",
- "not": "GES: iSolarCloud bağlantısı (sunucu modülü), günlük üretim grafiği, arızalar, Amcor kira tahmini (B kuralı) ve tahsilat; nakit akışında GES geliri"
+ "surum": 16,
+ "paket": "surumler/dsolar-16.zip",
+ "sha256": "a75ababad68480f38a9afb1f37e623c5f5ebb711a084c4a35a026a8d82661d48",
+ "imza": "arYemh0Jqn2zrwbdCNhiQ0lwmBO+wMNFa2Yx4+4XPGY2FcVkaSvSqIttSIhW8RaRgNjIRkzuN7mk+g7WW4b2Cpp0R61nPt/3jb7bU9hbSA1KzZgI4OvSP1761+s2CtFtVvgK7G3iGcJxP6kOFltH9VaPMva06t0pY1Thc+7jeDce3tkNkvuoorATYKPVwuOievuVgNsrI+0zcCE/xr8m9tXb1UnbiCHIlTcoEs0GKTUiqPh4xz0tsS/hoefPz5QKFMyvX0hl/Du5rKzalr/aXLBEKj7yD81g/EJARvTb0VMtlekVDPcMnSmj4882dgqmuCQ4Fe9YImFjsQC81w9w06V+ApzFXbp+MoPbB3I9/KipZdoH5U1FX84lCUTKCHIzN247B72mZTrokRzyzwvaqhw1yOilwDGrFGgha1Vj0vYGjC1LewD3jDhy5oHjN06umpU3l2Yjm/FV2LeLX4K1iCEAzTZ6GJrEexSXkgSzp2KIuK8lX46irtCG9gbNVEl9",
+ "not": "Nakit akışı yeni görünüm (özet kutuları, ay sonu kasası grafiği, bin $ tablo, 6/12 ay) ve nakit açığı karar paneli"
 }
