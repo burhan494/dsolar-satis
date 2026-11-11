@@ -1,7 +1,7 @@
 {
- "surum": 25,
- "paket": "surumler/dsolar-25.zip",
- "sha256": "979eff92d57212f81c8f0c57e3f95d1454e10710b6d21d13a53e13747bf4767e",
- "imza": "JDQq715y+4rYFV2tKLMFONmWQ3oQR9RyLmg0NlzRyadoRxEhiMDmL7Emui9uMDKJIgmR9VUKWRm5vr3dn7epDB2lGT8IRTwMEsygPaYP1v+s9i+odFp8qdHBHRNYJtmEFkzAWu4dvdcsOIMnP5mW4oZhh+6AZ3wtLgJhb+NJUGAoEHnQpi1MrChurgXWxSomukSQRiJt0F/ntEhkEq4nzyoEuZPkspYJb9NZo18IHjdKcvqCZ2Z+ANWWIszTVboQOjnH4z3VtnkekF/vMGdXJ50gbHI6y5hPsvtbokTlUINJ6MFrpWL659NwWQOCHwXc5XrjQf5omV1Q5jqbknro7aI8g0GN3mPikWgeWILa9BPtXepQMGim53AbPWhmC29yegeJQmkjibhKlCml0/JcAWdjnVNFmvKX1/OXKzXkqG53RemUioaLAMtXeIaprBLr+zrd9FMqyE66zO3c3dfwpEGmATCw/mXw2NQiYTNyDINhuKSdP3GGSREyXi8sSmw0",
- "not": "Beacon müşteri listesini aktarma (önizlemeli, tekrar ve aynı telefon atlanır), müşteri kartında eski teklifler"
+ "surum": 26,
+ "paket": "surumler/dsolar-26.zip",
+ "sha256": "c39c71504460e600799a35f6306989afa64f5053da1f4c19c9026ce09806accc",
+ "imza": "FZ9pulxAdjOd29VMYkAoG/520o+oXwJEOkcolQm0vBdwKgIlQpP6OAn1YY+uKWL8/FRg2iQJ1C0h76/PnQLCqTcJ9Dp/PZnIwBt/uztjg4anQF1LeOdFeIW3KMfViiYS9goaVlKHgU1RzrBg56n5T6NuQxrFDRxG/H/DkL/5onpc4gPHWE5YEipQ6XEd2bCswaE03UNQYxrBQYFVbuwTX+nTVsZtncC59ovxKHKO5WzVrJ5mPpVEE2YWq6v7ZdRRhM34ESgZ5UjZxr4npJnXCG9HZ0MT8DR+efDp/kqXycEI1lqD8m0WecllNA93onH2WTDu53GV46zNcmWwa4UmWeNxpYCyufQjLe/Rm3hXyWUDI40IDlGKB0F//1Gn4QOFiq2ic89iWzHCYrZUImRNh9+knCoZJJseV4v1wwaDIl7ME4ABM64ktZE2BRJTzAURT1dG1Jhir3b/tbwLCWTwzdf/ih16aeFosMCJ3KpIqIShthQL/ZRTG5xiZi1bmddX",
+ "not": "Karar paneli eklemelerini tek tuşla geri alma; planlı ortak girişi gerçekleşince ortak cariye otomatik işleme"
 }

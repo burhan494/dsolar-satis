@@ -1463,9 +1463,10 @@ function fNakit() {
       var acik = pr.map(function (p) { return { p: p, kalan: p.bedelUsd - (tah[p.aday] || 0) }; }).filter(function (x) { return x.kalan > 1; });
       if (acik.length) html += '<div class="card"><h3>Tarihi belirsiz proje alacakları <small style="color:var(--muted)">akışa dahil değil</small></h3>' + acik.map(function (x) { var a = (x.p.expand || {}).aday || {}; return '<div class="row"><div class="t"><b>' + esc(a.ad || "Proje") + "</b><small>sözleşme " + sayi(x.p.bedelUsd) + " $ · planlanan/tahsil " + sayi(x.p.bedelUsd - x.kalan) + ' $</small></div><b>' + sayi(x.kalan) + ' $</b><button class="btn sm" data-pt="' + x.p.aday + '" data-k="' + Math.round(x.kalan) + '">Tarih ver</button></div>'; }).join("") +
         '<div class="not"><small>"Tarih ver" ile beklenen tahsilatı plana ekleyin; akışa girer.</small></div></div>'; }
+    html = html.replace('<div id="nDet"></div>', '<div id="nDet"></div>' + kararGeriKarti(M));
     var KP = kararPaneli(satir.slice(0, 12), tampon, N, M, KU, R[8], R[9], R[5], typeof acik !== "undefined" && acik ? acik.reduce(function (s, x) { return s + x.kalan; }, 0) : 0, AY.nakit_ayar);
     html = html.replace('<div id="nDet"></div>', '<div id="nDet"></div>' + KP.html);
-    $("fm").innerHTML = html; KP.bag();
+    $("fm").innerHTML = html; KP.bag(); kararGeriBagla(M, fNakit);
     Array.prototype.forEach.call(document.querySelectorAll("[data-na]"), function (x) { x.onclick = function () { FN.ay = +x.dataset.na; fNakit(); }; });
     Array.prototype.forEach.call(document.querySelectorAll("[data-ng]"), function (x) { x.onclick = function () { FN.giris = x.dataset.ng === "1"; fNakit(); }; });
     if ($("nVd")) $("nVd").onchange = function () { FN.vadeli = this.checked; fNakit(); };
@@ -1581,15 +1582,15 @@ function kararPaneli(satir, tampon, N, M, KU, LM, VR, C, PRacik, AYN) {
     '<div class="not"><small>Sıra bir finans yöneticisinin önceliğiyle: önce maliyetsiz ve hızlı yollar, sonra borçlanma, en son varlık satışı ve sermaye. Uyguladığınız karar plana eklenir, tablo yeniden hesaplanır.</small></div></div>';
   var bag = function () { bagT("[data-kr]", function (e) { var o = sec_[+e.dataset.i], t = e.dataset.kr, gun = P + "-15 12:00:00.000Z";
     if (t.indexOf("git:") === 0) { location.hash = t.slice(4); return; }
-    var is;
-    if (t === "ertele") { if (!confirm(o.esnek.length + " esnek ödeme bir ay ertelensin mi?")) return; is = Promise.all(o.esnek.map(function (k) { var m = Mi[k.id], yeni = ayEkle(m.tarih.slice(0, 10), 1) + m.tarih.slice(7, 10); return api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { tarih: yeni + " 12:00:00.000Z", not: [m.not, "karar paneli: ertelendi"].filter(Boolean).join(" · ") } }); })); }
+    var is, kid = "karar:" + Date.now().toString(36);
+    if (t === "ertele") { if (!confirm(o.esnek.length + " esnek ödeme bir ay ertelensin mi?")) return; is = Promise.all(o.esnek.map(function (k) { var m = Mi[k.id], yeni = ayEkle(m.tarih.slice(0, 10), 1) + m.tarih.slice(7, 10); return api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { tarih: yeni + " 12:00:00.000Z", not: [m.not, "karar paneli: ertelendi", kid + " eski:" + m.tarih.slice(0, 10)].filter(Boolean).join(" · ") } }); })); }
     else if (t === "kredi") { var tl = Math.round(o.kul * KU.usd / 1000) * 1000, geri = Math.round(tl * (1 + faiz / 100 * 3 / 12)); if (!confirm(sayi(tl) + " TL kredi kullanımı (" + ayAd(P) + ") ve 3 ay sonraki geri ödemesi (" + sayi(geri) + " TL) plana eklensin mi?")) return;
-      is = Promise.all([api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: P + "-01 12:00:00.000Z", yon: "Giriş", kategori: "Kredi kullanımı", tutar: tl, pb: "TRY", durum: "Planlandı", aciklama: "Karar paneli: limit kullanımı", giren: BEN.id } }),
-        api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: ayEkle(P + "-01", 3) + "-01 12:00:00.000Z", yon: "Çıkış", kategori: "Kredi taksiti", tutar: geri, pb: "TRY", durum: "Planlandı", oncelik: "Kritik", aciklama: "Karar paneli: limit kullanımı geri ödemesi (%" + faiz + " faiz varsayımı)", giren: BEN.id } })]); }
+      is = Promise.all([api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: P + "-01 12:00:00.000Z", yon: "Giriş", kategori: "Kredi kullanımı", tutar: tl, pb: "TRY", durum: "Planlandı", aciklama: "Karar paneli: limit kullanımı", not: kid, giren: BEN.id } }),
+        api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: ayEkle(P + "-01", 3) + "-01 12:00:00.000Z", yon: "Çıkış", kategori: "Kredi taksiti", tutar: geri, pb: "TRY", durum: "Planlandı", oncelik: "Kritik", aciklama: "Karar paneli: limit kullanımı geri ödemesi (%" + faiz + " faiz varsayımı)", not: kid, giren: BEN.id } })]); }
     else if (t === "vadeli") { if (!confirm("Vadeli hesaplar 'Vadesiz' yapılıp kullanılabilir kasaya alınsın mı? (Bankadan bozdurduğunuzda yapın.)")) return;
       is = liste("fin_hesaplar", "tur = 'Vadeli' && aktif = true").then(function (L) { return Promise.all(L.map(function (h) { return api("/api/collections/fin_hesaplar/records/" + h.id, { method: "PATCH", body: { tur: "Vadesiz", not: [h.not, "vadeli bozduruldu " + tarih(b)].filter(Boolean).join(" · ") } }); })); }); }
     else if (t === "ortak") { if (!confirm("Burhan " + sayi(o.bol.B) + " $ + Batur " + sayi(o.bol.T) + " $ ortak girişi " + ayAd(P) + " ayına plan olarak eklensin mi?")) return;
-      is = Promise.all([["Burhan", o.bol.B], ["Batur", o.bol.T]].filter(function (x) { return x[1] > 0; }).map(function (x) { return api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: gun, yon: "Giriş", kategori: "Ortak koydu", tutar: x[1], pb: "USD", durum: "Planlandı", karsiTaraf: x[0], aciklama: "Karar paneli: sermaye girişi (planlı)", giren: BEN.id } }); })); }
+      is = Promise.all([["Burhan", o.bol.B], ["Batur", o.bol.T]].filter(function (x) { return x[1] > 0; }).map(function (x) { return api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: gun, yon: "Giriş", kategori: "Ortak koydu", tutar: x[1], pb: "USD", durum: "Planlandı", karsiTaraf: x[0], aciklama: "Karar paneli: sermaye girişi (planlı)", not: kid, giren: BEN.id } }); })); }
     if (is) is.then(function () { toast("Plana eklendi"); fNakit(); }).catch(hata); }); };
   return { html: html, bag: bag };
 }
@@ -1817,7 +1818,34 @@ function gercekFormu(yer, m, H, sonra) {
   $("odV").onclick = function () { d.remove(); };
   $("odK").onclick = function () { var u = num($("odU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; } this.disabled = true;
     api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { durum: "Gerçekleşti", tarih: $("odT").value + " 12:00:00.000Z", tutar: u, hesap: $("odH").value, kontrol: true, kontrolEden: BEN.name || BEN.email, kontrolTarihi: b + " 12:00:00.000Z" } })
-      .then(function () { toast("Kaydedildi" + ($("odH").value ? "; kasa güncellendi" : "")); sonra(); }).catch(hata); };
+      .then(function () { var o = /^(Burhan|Batur)$/.test(m.karsiTaraf || "") && /^ortak (koydu|aldı)$/i.test(m.kategori || "");
+        if (!o) return "";
+        return kurKartiGetir().then(function (KU) { var pb = m.pb || "TRY", kur = pb === "USD" ? 1 : pb === "EUR" ? KU.eur / KU.usd : KU.usd;
+          return api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: $("odT").value + " 12:00:00.000Z", ortak: m.karsiTaraf, yon: /koydu/i.test(m.kategori) ? "Koydu" : "Aldı", tutar: u, pb: pb, kur: pb === "USD" ? 1 : pb === "EUR" ? KU.eur : KU.usd, tutarUsd: Math.round(u / kur * 100) / 100, sirket: "D Solar", aciklama: m.aciklama || "Planlı ortak hareketi", kaynak: "Plan" } })
+            .then(function () { return api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { not: [m.not, "ortak cariye işlendi"].filter(Boolean).join(" · ") } }); })
+            .then(function () { return "; ortak cariye işlendi"; }, function () { return "; ortak cariye İŞLENEMEDİ (yetki): Ortaklar'dan elle girin"; }); }); })
+      .then(function (ek) { toast("Kaydedildi" + ($("odH").value ? "; kasa güncellendi" : "") + (ek || "")); sonra(); }).catch(hata); };
+}
+/* karar panelinden plana eklenenleri tek tuşla geri al */
+function kararGruplari(M) {
+  var G = {};
+  M.forEach(function (m) { if (m.durum === "Gerçekleşti") return; var r = /karar:([a-z0-9]+)(?: eski:(\d{4}-\d{2}-\d{2}))?/.exec(m.not || ""), k;
+    if (r) k = r[1]; else if (/^Karar paneli:/.test(m.aciklama || "")) k = "e" + (m.created || "").slice(0, 16); else return;
+    (G[k] = G[k] || { k: k, L: [], t: m.created || "" }).L.push({ m: m, eski: r && r[2] }); });
+  return Object.keys(G).map(function (k) { return G[k]; }).sort(function (a, b) { return a.t < b.t ? 1 : -1; });
+}
+function kararGeriKarti(M) {
+  var G = kararGruplari(M); if (!G.length) return "";
+  return '<div class="card"><h3>' + ikon("liste", "#4f46e5", "kucuk") + 'Karar panelinden plana eklenenler <small style="color:var(--muted);font-weight:500;margin-left:auto">henüz gerçekleşmedi · geri alınabilir</small></h3>' + G.map(function (g) {
+    var ad = g.L.some(function (x) { return x.eski; }) ? "Esnek ödemeler ertelendi" : /sermaye/i.test(g.L[0].m.aciklama || "") ? "Ortak sermaye girişi" : /limit/i.test(g.L[0].m.aciklama || "") ? "Banka limiti kullanımı" : "Karar paneli";
+    return '<div class="row" style="flex-wrap:wrap"><div class="t"><b class="w">' + ad + "</b><small>" + g.L.map(function (x) { var m = x.m; return esc([tarih(m.tarih), m.karsiTaraf, (m.yon === "Giriş" ? "+" : "−") + para(m.tutar, m.pb || "TRY"), x.eski ? "eski tarih " + tarih(x.eski) : ""].filter(Boolean).join(" · ")); }).join("<br>") + '</small></div><button class="btn sm" data-kga="' + esc(g.k) + '">Geri al</button></div>'; }).join("") + "</div>";
+}
+function kararGeriBagla(M, sonra) {
+  var G = kararGruplari(M);
+  bagT("[data-kga]", function (e) { var g = G.filter(function (x) { return x.k === e.dataset.kga; })[0]; if (!g) return;
+    if (!confirm(g.L.length + " kalem geri alınsın mı? (Eklenenler silinir, ertelenenler eski tarihine döner.)")) return; e.disabled = true;
+    sirali(g.L, function (x) { var m = x.m; return x.eski ? api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { tarih: x.eski + " 12:00:00.000Z", not: (m.not || "").replace(/ · karar paneli: ertelendi/, "").replace(/ ?· ?karar:[a-z0-9]+ eski:\d{4}-\d{2}-\d{2}/, "").replace(/^karar paneli: ertelendi( · )?/, "").replace(/^karar:[a-z0-9]+ eski:\d{4}-\d{2}-\d{2}/, "") } }) : api("/api/collections/fin_hareketler/records/" + m.id, { method: "DELETE" }); })
+      .then(function () { toast("Geri alındı"); sonra(); }).catch(hata); });
 }
 function vadeKutu(d, kapali) { var g = gunFark(bugun(), d), r = kapali ? "var(--muted)" : g < 0 ? "var(--bad)" : g <= 7 ? "var(--warn)" : "var(--muted)";
   return '<div class="vK"><b>' + +d.slice(8, 10) + " " + AYLAR[+d.slice(5, 7) - 1].slice(0, 3) + "</b><small" + ' style="color:' + r + '">' + (kapali ? d.slice(0, 4) : g < 0 ? -g + " gün geçti" : g === 0 ? "bugün" : g + " gün") + "</small></div>"; }
