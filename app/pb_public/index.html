@@ -1431,8 +1431,16 @@ function fDiger() {
   if (yon()) L.splice(1, 0, ["varlik", "Varlıklar", "Arsa, dükkan, araç; satış durumu"]);
   $("fm").innerHTML = '<div class="card">' + L.map(function (x) { return '<a class="row" href="#finans/' + x[0] + '"><div class="t"><b>' + x[1] + "</b><small>" + x[2] + '</small></div><span style="color:var(--muted)">›</span></a>'; }).join("") + "</div>";
 }
+/* dengeyi kurmak için tek başına konması gereken tutar: B fazla çektiyse B'nin, T fazla çektiyse T'nin */
+function ortakDenge(net) { var nB = net.Burhan, nT = net.Batur, xB = nB - 1.5 * nT, xT = nT - nB * 2 / 3, T = nB + nT;
+  return { kim: xB > 100 ? "Burhan" : xT > 100 ? "Batur" : "", tutar: Math.round(xB > 0 ? xB : xT > 0 ? xT : 0), fazla: Math.round(Math.abs(nB - 0.6 * T)), pB: T ? nB / T * 100 : 60 }; }
+var SG = { mod: "denge" };
 function sermayeKarti(net, H, KU) {
-  return '<details class="card"><summary><h3>Ortak sermaye girişi (60/40 önerili)</h3></summary><div class="f"><div class="bilgi" style="margin:0">Toplam tutarı yazın; bölüşüm ortak cariyi 60/40\'a yaklaştıracak şekilde önerilir (şu an net çekilen: Burhan ' + sayi(net.Burhan) + " $, Batur " + sayi(net.Batur) + " $). Kaydedince ortak cariye \"koydu\" olarak, seçtiğiniz banka hesabına da tahsilat olarak işlenir.</div>" +
+  var D = ortakDenge(net);
+  return '<details class="card"><summary><h3>Ortak sermaye girişi (60/40)</h3></summary><div class="f"><div class="bilgi" style="margin:0">Şu an net çekilen: Burhan ' + sayi(net.Burhan) + " $, Batur " + sayi(net.Batur) + " $ → pay Burhan %" + sayi(D.pB, 1) + " / Batur %" + sayi(100 - D.pB, 1) + "." +
+    (D.kim ? "<br><b>Dengelenecek fark:</b> " + D.kim + ", 60/40'a göre " + sayi(D.fazla) + " $ önde (fazla çekmiş ya da eksik koymuş). 60/40'ı kurmak için " + D.kim + "'un tek başına <b>" + sayi(D.tutar) + " $</b> koyması gerekir (koyulan her 1 $ toplamı da düşürdüğü için fark 0,40 $ kapanır)." : "<br>Ortak cari 60/40 dengede.") +
+    " Kaydedince ortak cariye \"koydu\" olarak, seçtiğiniz banka hesabına da tahsilat olarak işlenir.</div>" +
+    '<label>Bölüşüm<select id="sgM">' + sec([["denge", "Önce farkı kapat, kalanı 60/40"], ["duz", "Düz 60/40 (fark ayrıca izlenir)"]], SG.mod) + "</select></label>" +
     '<div class="f2"><label>Toplam giriş (USD)<input id="sgT" inputmode="decimal"></label><label>Tarih<input id="sgD" type="date" value="' + bugun() + '"></label></div>' +
     '<div class="f2"><label>Burhan (USD)<input id="sgB" inputmode="decimal"></label><label>Batur (USD)<input id="sgBt" inputmode="decimal"></label></div><div id="sgN" class="not" style="margin:0"></div>' +
     '<label>Paranın girdiği hesap<select id="sgH">' + sec(H.map(function (h) { return [h.id, h.ad]; }).concat([["", "— yalnız ortak cariye işle"]]), (H.filter(function (h) { return h.pb === "USD"; })[0] || H[0] || {}).id || "") + "</select></label>" +
@@ -1441,8 +1449,10 @@ function sermayeKarti(net, H, KU) {
 function sermayeBagla(net, H, KU, sonra) {
   if (!$("sgT")) return;
   var not = function () { var b = num($("sgB").value) || 0, t = num($("sgBt").value) || 0, nb = net.Burhan - b, nt = net.Batur - t, T = nb + nt;
-    $("sgN").innerHTML = "<small>Giriş sonrası net çekilen: Burhan " + sayi(nb) + " $ · Batur " + sayi(nt) + " $" + (T ? " → pay Burhan %" + sayi(nb / T * 100, 1) + " / Batur %" + sayi(nt / T * 100, 1) : "") + "</small>"; };
-  $("sgT").oninput = function () { var I = num(this.value) || 0, o = ortakBol(net.Burhan, net.Batur, I); $("sgB").value = sayi(o.B); $("sgBt").value = sayi(o.T); not(); };
+    var D2 = ortakDenge({ Burhan: nb, Batur: nt });
+    $("sgN").innerHTML = "<small>Giriş sonrası net çekilen: Burhan " + sayi(nb) + " $ · Batur " + sayi(nt) + " $" + (T ? " → pay Burhan %" + sayi(nb / T * 100, 1) + " / Batur %" + sayi(nt / T * 100, 1) : "") + (D2.kim ? " · kalan dengelenecek fark: " + D2.kim + " " + sayi(D2.tutar) + " $" : " · 60/40 dengede") + "</small>"; };
+  var bol = function () { var I = num($("sgT").value) || 0, o = SG.mod === "duz" ? { B: Math.round(I * 0.6), T: I - Math.round(I * 0.6) } : ortakBol(net.Burhan, net.Batur, I); $("sgB").value = sayi(o.B); $("sgBt").value = sayi(o.T); not(); };
+  $("sgT").oninput = bol; $("sgM").onchange = function () { SG.mod = this.value; bol(); };
   $("sgB").oninput = not; $("sgBt").oninput = not;
   $("sgK").onclick = function () { var b = num($("sgB").value) || 0, t = num($("sgBt").value) || 0, d = $("sgD").value + " 12:00:00.000Z", h = H.filter(function (x) { return x.id === $("sgH").value; })[0];
     if (!(b + t > 0)) { toast("Tutar gerekli"); return; }

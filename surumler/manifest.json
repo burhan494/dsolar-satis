@@ -1,7 +1,7 @@
 {
- "surum": 20,
- "paket": "surumler/dsolar-20.zip",
- "sha256": "3316eeab13e1e0265de995ec176e7b2da3e37cc7d5df25617480c28cda08a6f1",
- "imza": "eZlMMdkYdb0f33mKxNn8H/TpEVYB9MPHSGHGlwTMM4e5Z4zu/VV0M/8ZIlBKYY9tA8yzbMqtrgGfP+5Eb+gpgXXV8zhl7DAZVDWc+yJJAsRo/d+l+/o+TwlWDYjlLyEHtjjH+/nCCOkTxO7dBgCRVn2WGRkjdA6GjDnun5TMlO8uXulh75uoU8Ug0KMzz7spaSLHRe+FW2MZh1M8HWiGgXjMJEMAmnPS2TZqMGy+sAGQFgXBYL9YSMw7BtIW3HY3dRvRLa5ig7Pkh+231pw0PFSmvLgtDPL434EH1xNRFEfypoVd4OrCCgif9rtTJmB0xoxWne/UxQVEg4aP+stIrI5gGOYhfHO8Xst3j6x7j10CNnm4Nq3dP/JTwvIEJCvmc1tZszx7USyUfTdYxxm1qScUOKbsEHpyXTKfNs1oZDUGlzmFcO5EwbUA6vqgVrSqhYXbadBy1eRVcd3Id4upPeT1N3Ep5hcTBF4SRuYemlNII/3FJjEzf2JcG5nzgsej",
- "not": "GES olay defteri (arıza/bakım/temizlik, iSolarCloud alarmından deftere alma) ve PDF indirilebilir aylık GES raporu"
+ "surum": 21,
+ "paket": "surumler/dsolar-21.zip",
+ "sha256": "7e8193a66e21798e77c6ba15f76731497dfc5691a47671a60f136f4f07c78e1e",
+ "imza": "cnlMu4npglU/2ABGFdVYREr6e6kCqNbmn+icQ9F29tZSXgZOAi8ihUJ2Wi8WhjDgyWue4wo0fYo8W2VxU3V7Y/i5FVALvhqrAHiv2hPFpDoevsA77eWNwqHfPo5OtWgSTA3U0tcKGNPUq8P46lwTJ0sloMr1ncAb9BSK/LAD5JPi9J66bmjYisizDgWSD2I55ZjM1hsksALR2N3tvj1OKBkfCf+M/B6Fy/9LpTEWgv6aHyv4DLRFzZ8vgK33qzpXW9M1UfIg0SXbuLQ87b9+Z2w1IijwpF5vnRepK9EgiLOPbB+zi8O7BYtGnNG08a5DG1+O2SScud5/pDotGybfbYccW7lZ+P/34ts4CFdOxxuSMZrQHcKGhmmWRUg/lFbwYbxdRLnDYVolTM4gXwpvKHfnkdJC2JHmzePiMujtkHMwi4GPsl/iG7JSd/bt4frJEyDBX6DduaV4vbdBBCTbleGx8dQ5KeHypdwBPy2OIY2sw0X0P4ntb6Xk2bzgHOMX",
+ "not": "Sermaye girişi: bölüşüm seçeneği (önce farkı kapat / düz 60/40) ve dengelenecek fark gösterimi"
 }
