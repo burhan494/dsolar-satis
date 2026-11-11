@@ -1,7 +1,7 @@
 {
- "surum": 21,
- "paket": "surumler/dsolar-21.zip",
- "sha256": "7e8193a66e21798e77c6ba15f76731497dfc5691a47671a60f136f4f07c78e1e",
- "imza": "cnlMu4npglU/2ABGFdVYREr6e6kCqNbmn+icQ9F29tZSXgZOAi8ihUJ2Wi8WhjDgyWue4wo0fYo8W2VxU3V7Y/i5FVALvhqrAHiv2hPFpDoevsA77eWNwqHfPo5OtWgSTA3U0tcKGNPUq8P46lwTJ0sloMr1ncAb9BSK/LAD5JPi9J66bmjYisizDgWSD2I55ZjM1hsksALR2N3tvj1OKBkfCf+M/B6Fy/9LpTEWgv6aHyv4DLRFzZ8vgK33qzpXW9M1UfIg0SXbuLQ87b9+Z2w1IijwpF5vnRepK9EgiLOPbB+zi8O7BYtGnNG08a5DG1+O2SScud5/pDotGybfbYccW7lZ+P/34ts4CFdOxxuSMZrQHcKGhmmWRUg/lFbwYbxdRLnDYVolTM4gXwpvKHfnkdJC2JHmzePiMujtkHMwi4GPsl/iG7JSd/bt4frJEyDBX6DduaV4vbdBBCTbleGx8dQ5KeHypdwBPy2OIY2sw0X0P4ntb6Xk2bzgHOMX",
- "not": "Sermaye girişi: bölüşüm seçeneği (önce farkı kapat / düz 60/40) ve dengelenecek fark gösterimi"
+ "surum": 22,
+ "paket": "surumler/dsolar-22.zip",
+ "sha256": "4ce13f5da6554b652369d932f2543242f7c9b1dd8ae24b3d12a34cbfdbe45b11",
+ "imza": "WUrkdOIgM9LkCUQGYTMTE2G8uoQE+sx5ly7cPn8r41ama2jVVnRvclAC30w6W+ejfqX21JI8Q1hQBUfWP3Myla0IOa/ZBh8iexTyVrxDDBk80hFmRv5ZsNgCE6iZ+RDQjNyr3jo60P3alrMn35A/gH+pTn+8ViBCML92M6Ukb6T7v45dpkCYGOSsp1o74bvZyEK1Y/b0SFmTIjACAqhgF3suR8GIcxMmSsgccHyVICYHW+VdX6wvWEPhpsrzORwEmvwOsT8pin5W1462zE5OB3qXHkArno6WwJTbbN8bEGdqKceFGzl5vY+LBOLYBUg+alF2hYUi2U7sx2O2QgUDlZ6FKfzzra5v+YKnAz8xIDwzFqLloERkQOFjubUikmhjd5ThnuB6s6JExeYKokefWVZx7Fnxfa6hjCdlluiJjxrb2ZL5PWNOfScS1xcwRY4ZIsLNWQjQEsqSqsA8kZXRs+lhEjgueCLl6ZebaBL/LSoQ8F/JdKqFLASFTFXZ2ZV5",
+ "not": "Krediler ekranı yenilendi: kalan/ödenen/taksit/bitiş/faiz, taksit planı, Ödendi işaretleme, Excel'den plan yükleme, aylık yük grafiği, 60 günlük takvim; kart/limit/teminat alt sekmeleri"
 }
