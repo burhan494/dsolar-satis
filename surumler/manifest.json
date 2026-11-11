@@ -1,7 +1,7 @@
 {
- "surum": 29,
- "paket": "surumler/dsolar-29.zip",
- "sha256": "ee6b734f190ef08dbc8d18302b24ed50ef21722600e6ac133c1448c97914aded",
- "imza": "UghuX8mdTjekM4z5P5U6Cyx3MmxhpJ7cnEpckcDtxq6rXD//Pkc9byJU9MEzFqrnKR+CUgV1gcGG7c0LYnwZgPjdm4Kg+aSLMfZtDvVKIkaOgaClZ22KztjrSITP/qsEus64a2n2ZVOhvT+w+ufzPMTmj1hf+3KU7oU0ftPFjKVzmEX3eJ7rcY+wpu75Ise413Sxu4Xlw0pepFy4MAhSGr/GOLZ8xi8GNA3TLiUUVeCqvt+X1MNbzRvajDFvWaTc4AqscODUPd0fT5ZszHIkWPt29ZvXqWrrBQ7VAtAjaJ1s4dqy2awdYhGTdUD/n1bMMNsbrSVJOazL/b9Mk1sWXbXlRTXeICfz5UVNZwn8qpgD+HaIxgq8PahD5p2aKIgNnE0X0J+e33iIsj185PkmTOYDqKfbUk9ekG8RiRaqnGMtFTRYOw97sBXobyP+NZ20KDq8oF9wF9gwEDY04LlSbgwmvoGwKJ8Nv24PYMmt4ddugtC2+SGqCb8nL1tF0HLU",
- "not": "Düzeltmeler: yeni müşteride aynı telefon kontrolü ve 0'lı telefon, proje tahsilatında müşteri adı, bakiye girildikten sonra aynı gün işaretlenen ödeme/tahsilatlar kasaya yansır"
+ "surum": 30,
+ "paket": "surumler/dsolar-30.zip",
+ "sha256": "3939d12ffd184d2e70d1e89e3c3586f543fbcb57bdf1c07102299deb38ad6f16",
+ "imza": "WNg3mHSFIFfoc9UDDDezB/HZyBAde1SIOb9G8D+taD8iXCY/xymcWg0idEAipLkExlcWWolKnmpyQBTYH+Les3j2mx/5r9A43oKz5bUwiJ59SYJ78RC1MFbNlJVBfwz8m/+7jJAJPteda4nCZ8GTtA7v9ttf5Du5TGbvy3BIyO02GBAVKJQPJWPvZjzile9H+jSOzdWFdwZ1GugvUDXhITgQ1E0wIXo0KRxwzHrs5Ra+jJc669942ScnD/PV4tlKk+tdcE+qOGsCvDEluws1xm4PhN2fbvSz2rUlo6EoS35w8Fs0y/ExIpPvKM/ZE9nuYMci7RDZ2jyfIycRx1w9o9oqbolY9R8KaXSmRT3zlOMkTXxb9WNHgqaHCaWN/6JmhVgkEaOL86CYzx/uS6E9/w268cCJ7OqRtCeYq0HxAo/HQxlCpz9IvWHG0n0dgS/q19fsy1FloFclvQ5EM3ih27/qLy4PX0pn4FFtrgkc0BtE5Y5ZSOVJ58DCHLXKuuHK",
+ "not": "Düzeltme: 500'den fazla kayıt olan listeler (müşteriler, hareketler) eksik yükleniyordu; artık sayfa sayfa tamamı geliyor"
 }

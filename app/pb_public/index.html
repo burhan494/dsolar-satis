@@ -79,8 +79,11 @@ function api(yol, opt) {
   });
 }
 function liste(col, filtre, sirala, genis) {
+  // 500'den fazla kayıt sayfa sayfa çekilir (müşteri, hareket listeleri büyüdükçe eksik kalmasın)
   var u = "/api/collections/" + col + "/records?perPage=500" + (filtre ? "&filter=" + filtreQ(filtre) : "") + (sirala ? "&sort=" + sirala : "") + (genis ? "&expand=" + genis : "");
-  return api(u).then(function (j) { return j.items || []; });
+  return api(u + "&page=1").then(function (j) { var L = j.items || [], top = j.totalPages || 1; if (top <= 1) return L;
+    var is = []; for (var p = 2; p <= top; p++) is.push(api(u + "&page=" + p).then(function (k) { return k.items || []; }));
+    return Promise.all(is).then(function (R) { R.forEach(function (x) { L = L.concat(x); }); return L; }); });
 }
 function hata(e) { toast(e.message || String(e)); }
 function cikis() { TOK = null; BEN = null; try { localStorage.removeItem("dsTok"); localStorage.removeItem("dsBen"); } catch (e) {} location.hash = ""; ciz(); }
