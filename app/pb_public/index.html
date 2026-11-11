@@ -240,7 +240,9 @@ function sAday(id) {
       (a.yillikKwh ? '<div><small>Yıllık tüketim</small><b>' + sayi(a.yillikKwh) + ' kWh</b></div><div></div>' : "") +
       '<div><small>Kaynak</small><b>' + esc(a.kaynak || "—") + '</b></div><div><small>İYS izni</small><b>' + esc(a.iys || "—") + "</b></div></div>" +
       (a.iys !== "İzinli" ? '<div class="uyari">İYS izni yok ya da sorulmadı: bu kişiye kampanya/tanıtım mesajı ve araması yapılmamalı. Kendi başvurusuna cevap verilebilir.</div>' : "") +
-      (a.not ? '<div class="not"><small>Not</small>' + esc(a.not) + "</div>" : "") + "</div>" +
+      (a.oncelik || a.segment || a.adres ? '<div class="not"><small>' + esc([a.oncelik ? "Öncelik " + a.oncelik : "", a.segment, [a.adres, a.sehir].filter(Boolean).join(", ")].filter(Boolean).join(" · ")) + "</small></div>" : "") +
+      (a.not ? '<div class="not"><small>Not</small>' + esc(a.not) + "</div>" : "") +
+      (a.eskiTeklifler && a.eskiTeklifler.length ? '<div class="not"><small>Eski teklifler (Beacon)</small>' + a.eskiTeklifler.map(function (t) { return esc([t.no, t.tarih ? tarih(t.tarih) : "", t.kwp ? sayi(t.kwp, 1) + " kWp" : "", t.fiyatUSD ? sayi(t.fiyatUSD) + " $" : "", t.kategori, t.durum].filter(Boolean).join(" · ")); }).join("<br>") + "</div>" : "") + "</div>" +
       (PRJ ? prjKart(PRJ, a, U, H) : a.asama === "Sözleşme" && satisci() ? '<div class="card"><h3>Proje takibi</h3><div class="f"><div class="f2"><label>Sözleşme / başlangıç tarihi<input id="pBas" type="date" value="' + bugun() + '"></label><label>Sözleşme bedeli (USD)<input id="pBed0" inputmode="decimal" value="' + esc(acT ? acT.fiyatUSD : "") + '"></label></div><button class="btn or" id="pBasla">Projeyi başlat</button><small style="color:var(--muted)">Saha ve resmi süreç adımları açılır; geciken adımlar Projeler sayfasında kırmızı görünür.</small></div></div>' : "") +
       (duzenle || rol() === "saha" ? '<div class="card"><h3>Durum ve sıradaki iş</h3><div class="f"><div class="f2"><label>Aşama<select id="dA">' + ASAMA.map(function (s) { return "<option" + (s === a.asama ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></label>" +
         '<label>Sıradaki tarih<input id="dT" type="date" value="' + esc((a.sonraki || "").slice(0, 10)) + '"></label></div><label>Sıradaki iş<input id="dI" value="' + esc(a.sonrakiIs || "") + '"></label>' +
@@ -335,9 +337,9 @@ function sEkip() {
         (u.id === BEN.id ? "" : '<button class="btn sm" data-a="' + u.id + '" data-v="' + (u.aktif ? "0" : "1") + '">' + (u.aktif ? "Kapat" : "Aç") + '</button><button class="btn sm" data-s="' + u.id + '" data-e="' + esc(u.email) + '">Şifre</button>') + "</div>"; }).join("") + "</div>" +
       '<div class="card"><h3>Kişi ekle</h3><div class="f"><div class="f2"><label>Ad soyad<input id="eAd"></label><label>Rol<select id="eRol">' + Object.keys(ROL_AD).map(function (k) { return '<option value="' + k + '">' + ROL_AD[k] + "</option>"; }).join("") + '</select></label></div>' +
       '<div class="f2"><label>E-posta<input id="eEm" type="email"></label><label>Telefon<input id="eTel" inputmode="tel"></label></div><button class="btn pri" id="eK">Ekle</button>' +
-      '<small style="color:var(--muted)">İş ortakları yalnız kendi yönlendirdiği müşterinin adını, ilçesini ve aşamasını görür; telefon ve fiyat görmez.</small></div></div>' + '<div id="opKutu"></div>' + ayarKarti(A) + aktarKarti();
+      '<small style="color:var(--muted)">İş ortakları yalnız kendi yönlendirdiği müşterinin adını, ilçesini ve aşamasını görür; telefon ve fiyat görmez.</small></div></div>' + '<div id="opKutu"></div>' + ayarKarti(A) + musteriAktarKarti() + aktarKarti();
     ortakProgram($("opKutu"));
-    aktarBagla();
+    aktarBagla(); musteriAktarBagla();
     var ak = $("ayK"); if (ak) ak.onclick = function () { var H = Object.assign({}, A.deger), hata2 = "";
       document.querySelectorAll("[data-ay]").forEach(function (e) { var v = parseFloat(String(e.value).replace(/\s/g, "").replace(",", ".")); if (!(v > 0)) hata2 = e.parentNode.firstChild.textContent; else H[e.dataset.ay] = v; });
       if (hata2) { toast("Geçersiz değer: " + hata2); return; } H.tarifeDonem = $("ayD").value.trim();
@@ -1912,6 +1914,37 @@ function fPlan() {
     bagT("[data-od]", function (e) { gercekFormu(e.closest(".row"), MM[e.dataset.od], H, fPlan); });
     edBagla(M, fPlan);
   }).catch(hata);
+}
+
+/* ---------- Beacon müşteri listesini aktar (yönetici; dosya tarayıcıda okunur) ---------- */
+var BEACON_ASAMA = { "Aday": "Aday", "Teklif verildi": "Teklif", "Anlaşıldı": "Sözleşme", "Kaybedildi": "Kaybedildi", "Nitelikli": "Nitelikli", "Keşif": "Keşif" };
+function musteriCevir(j) {
+  if (!j || j.tur !== "dsolar-yedek" || !j.veri) throw new Error("Bu dosya Beacon D Solar yedeği değil.");
+  var v = j.veri;
+  return Object.keys(v).filter(function (k) { return k.split("/")[0] === "adaylar"; }).map(function (k) { var a = v[k] || {}, T = Array.isArray(a.teklifler) ? a.teklifler : [];
+    var kay = a.kaynak === "Instagram" ? "Instagram" : a.kaynak === "WhatsApp" ? "WhatsApp" : /referans/i.test(a.kaynak || "") ? "Referans" : T.length ? "Eski teklif" : "Teklifsiz aday";
+    return { kaynakId: "beacon/" + k.split("/").slice(1).join("/"), ad: String(a.ad || "").trim() || "(adsız)", tel: String(a.tel || "").trim(), email: String(a.email || "").trim(), ilce: String(a.ilce || "").trim(), sehir: String(a.sehir || "").trim(), adres: String(a.adres || "").trim().slice(0, 500),
+      kaynak: kay, asama: BEACON_ASAMA[a.asama] || "Aday", iys: ["İzinli", "İzinsiz"].indexOf(a.iys) >= 0 ? a.iys : "Sorulacak", oncelik: String(a.oncelik || ""), segment: String(a.segment || ""),
+      not: [a.not, a.portalId ? "Portal no " + a.portalId : ""].filter(Boolean).join(" · ").slice(0, 2000), eskiTeklifler: T.map(function (t) { return { no: t.no || "", tarih: (t.tarih || "").slice(0, 10), kwp: t.kwp, fiyatUSD: t.fiyatUSD, durum: t.durum || "", kategori: t.kategori || "" }; }) }; });
+}
+function musteriAktarKarti() {
+  return '<div class="card"><h3>Beacon müşteri listesini aktar</h3><div class="f"><div class="bilgi" style="margin:0">Beacon yedek dosyasını (dsolar-yedek-….json) seçin. Dosya yalnız bu tarayıcıda okunur; önce özet gösterilir, "Aktar" demeden hiçbir şey yazılmaz. Daha önce aktarılan kişiler ve uygulamada aynı telefonla zaten kayıtlı olanlar atlanır. Herkesin İYS izni "Sorulacak" olarak gelir.</div>' +
+    '<input id="maD" type="file" accept=".json,application/json"><div id="maO"></div></div></div>';
+}
+function musteriAktarBagla() {
+  var d = $("maD"); if (!d) return;
+  d.onchange = function () { var f = this.files[0]; if (!f) return; $("maO").innerHTML = '<div class="bos">Okunuyor…</div>';
+    f.text().then(function (t) { var L = musteriCevir(JSON.parse(t)); return liste("adaylar", "", "-created").then(function (E) {
+      var kid = {}, tel = {}; E.forEach(function (a) { if (a.kaynakId) kid[a.kaynakId] = 1; var n = telNorm(a.tel); if (n.length >= 10) tel[n] = a; });
+      var yeni = [], zaten = 0, ayniTel = 0, gor = {};
+      L.forEach(function (x) { var n = telNorm(x.tel); if (kid[x.kaynakId]) { zaten++; return; } if (n.length >= 10 && (tel[n] || gor[n])) { ayniTel++; return; } if (n.length >= 10) gor[n] = 1; yeni.push(x); });
+      var say = function (k) { var o = {}; yeni.forEach(function (x) { o[x[k]] = (o[x[k]] || 0) + 1; }); return Object.keys(o).map(function (a) { return esc(a) + " " + o[a]; }).join(" · "); };
+      $("maO").innerHTML = '<div class="bilgi" style="margin:8px 0 0">Dosyada <b>' + L.length + "</b> kişi. Aktarılacak <b>" + yeni.length + "</b> · daha önce aktarılmış " + zaten + " · uygulamada aynı telefon " + ayniTel + "<br>Aşama: " + say("asama") + "<br>Kaynak: " + say("kaynak") + "<br>Telefonu olmayan: " + yeni.filter(function (x) { return telNorm(x.tel).length < 10; }).length + "</div>" +
+        (yeni.length ? '<button class="btn pri" id="maK" style="margin-top:8px">' + yeni.length + " kişiyi aktar</button>" : "");
+      var k = $("maK"); if (k) k.onclick = function () { k.disabled = true; var n = 0, hataS = 0, S = $("maO");
+        sirali(yeni, function (x) { return apiSabirli("/api/collections/adaylar/records", { method: "POST", body: Object.assign({ sorumlu: BEN.id }, x) }).then(function () { n++; if (n % 20 === 0) k.textContent = "Yazılıyor " + n + "/" + yeni.length + "…"; }).catch(function () { hataS++; }); })
+          .then(function () { S.innerHTML = '<div class="bilgi" style="margin:8px 0 0">' + n + " kişi aktarıldı" + (hataS ? ", " + hataS + " kayıt yazılamadı" : "") + '. Müşteriler sekmesinde görünüyor.</div>'; toast(n + " müşteri aktarıldı"); }); };
+    }); }).catch(function (e) { $("maO").innerHTML = '<div class="uyari" style="margin:8px 0 0">' + esc(e.message) + "</div>"; }); };
 }
 
 ciz();
