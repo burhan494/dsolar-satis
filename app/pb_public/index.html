@@ -341,7 +341,9 @@ function bagT(sel, f) { Array.prototype.forEach.call(document.querySelectorAll(s
 function bakiyeler(H, M) {
   var B = {}; H.forEach(function (h) { B[h.id] = +h.acilis || 0; });
   M.forEach(function (m) { if (m.durum !== "Gerçekleşti" || !(m.hesap in B)) return; var h = H.filter(function (x) { return x.id === m.hesap; })[0];
-    if (h.acilisTarihi && m.tarih <= h.acilisTarihi) return; B[m.hesap] += (m.yon === "Giriş" ? 1 : -1) * (+m.tutar || 0); });
+    // bakiye tarihinden önceki hareketler bakiyeye zaten dahil; bakiye girildiği GÜN işaretlenenlerden yalnız bakiye girildikten SONRA işaretlenenler eklenir
+    if (h.acilisTarihi) { var at = h.acilisTarihi.slice(0, 10), mt = m.tarih.slice(0, 10); if (mt < at) return; if (mt === at && !((m.updated || m.created || "") > (h.updated || ""))) return; }
+    B[m.hesap] += (m.yon === "Giriş" ? 1 : -1) * (+m.tutar || 0); });
   return B;
 }
 function sFinans(alt) {
@@ -1419,7 +1421,7 @@ function fNakit() {
     var pr = R[7].filter(function (p) { return p.bedelUsd > 0; });
     if (pr.length) { var tah = {}; M.forEach(function (m) { if (m.aday && m.yon === "Giriş") tah[m.aday] = (tah[m.aday] || 0) + usdKarsilik(+m.tutar || 0, m.pb || "TRY", KU); });
       var acik = pr.map(function (p) { return { p: p, kalan: p.bedelUsd - (tah[p.aday] || 0) }; }).filter(function (x) { return x.kalan > 1; });
-      if (acik.length) html += '<div class="card"><h3>Tarihi belirsiz proje alacakları <small style="color:var(--muted)">akışa dahil değil</small></h3>' + acik.map(function (x) { var a = (x.p.expand || {}).aday || {}; return '<div class="row"><div class="t"><b>' + esc(a.ad || "Proje") + "</b><small>sözleşme " + sayi(x.p.bedelUsd) + " $ · planlanan/tahsil " + sayi(x.p.bedelUsd - x.kalan) + ' $</small></div><b>' + sayi(x.kalan) + ' $</b><button class="btn sm" data-pt="' + x.p.aday + '" data-k="' + Math.round(x.kalan) + '">Tarih ver</button></div>'; }).join("") +
+      if (acik.length) html += '<div class="card"><h3>Tarihi belirsiz proje alacakları <small style="color:var(--muted)">akışa dahil değil</small></h3>' + acik.map(function (x) { var a = (x.p.expand || {}).aday || {}; return '<div class="row"><div class="t"><b>' + esc(a.ad || "Proje") + "</b><small>sözleşme " + sayi(x.p.bedelUsd) + " $ · planlanan/tahsil " + sayi(x.p.bedelUsd - x.kalan) + ' $</small></div><b>' + sayi(x.kalan) + ' $</b><button class="btn sm" data-pt="' + x.p.aday + '" data-ad="' + esc(a.ad || "") + '" data-k="' + Math.round(x.kalan) + '">Tarih ver</button></div>'; }).join("") +
         '<div class="not"><small>"Tarih ver" ile beklenen tahsilatı plana ekleyin; akışa girer.</small></div></div>'; }
     html = html.replace('<div id="nDet"></div>', '<div id="nDet"></div>' + kararGeriKarti(M));
     var KP = kararPaneli(satir.slice(0, 12), tampon, N, M, KU, R[8], R[9], R[5], typeof acik !== "undefined" && acik ? acik.reduce(function (s, x) { return s + x.kalan; }, 0) : 0, AY.nakit_ayar);
@@ -1436,7 +1438,7 @@ function fNakit() {
         .then(function () { toast("Tampon kaydedildi"); fNakit(); }).catch(hata); };
     bagT("[data-pt]", function (e) { var t = prompt("Beklenen tahsilat tarihi (GG.AA.YYYY):", tarih(ayEkle(bugun(), 1) + "-15")); if (!t) return; var m = t.match(/(\d{1,2})\.(\d{1,2})\.(\d{4})/); if (!m) { toast("Tarih GG.AA.YYYY olmalı"); return; }
       var u = prompt("Tutar (USD):", e.dataset.k); if (u == null) return; var n = num(u); if (!(n > 0)) { toast("Geçersiz tutar"); return; }
-      api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: m[3] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[1]).slice(-2) + " 12:00:00.000Z", yon: "Giriş", tutar: n, pb: "USD", kategori: "Proje tahsilatı", durum: "Planlandı", aday: e.dataset.pt, giren: BEN.id } }).then(function () { toast("Plana eklendi"); fNakit(); }).catch(hata); });
+      api("/api/collections/fin_hareketler/records", { method: "POST", body: { tarih: m[3] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[1]).slice(-2) + " 12:00:00.000Z", yon: "Giriş", tutar: n, pb: "USD", kategori: "Proje tahsilatı", durum: "Planlandı", aday: e.dataset.pt, karsiTaraf: e.dataset.ad || "", aciklama: "Proje tahsilatı", giren: BEN.id } }).then(function () { toast("Plana eklendi"); fNakit(); }).catch(hata); });
   }).catch(hata);
 }
 /* --- Gelecek / Gidecek listesi --- */
@@ -1611,7 +1613,6 @@ function sKatalog() {
 }
 
 /* ---------- İş ortağı programı ---------- */
-function telNorm(t) { return String(t || "").replace(/\D/g, "").replace(/^90/, "").replace(/^0/, ""); }
 function yonlendirmeKarti(Y, A, tamListe) {
   var tel = {}; A.forEach(function (a) { var n = telNorm(a.tel); if (n.length >= 10) tel[n] = a; });
   var L = Y.filter(function (y) { return tamListe || y.durum === "Yeni" || !y.durum; });
@@ -1663,7 +1664,7 @@ function ortakProgram(kutu) {
     bagT("[data-dv]", function (e) { var o = O.filter(function (x) { return x.id === e.dataset.dv; })[0], t = (P.davet || DAVET_VARS).replace(/\{ad\}/g, (o.name || "").split(" ")[0] || "").replace(/\{email\}/g, o.email || "");
       $("dvK").innerHTML = '<div class="f" style="border-top:1px solid #edf1f6;padding-top:12px"><b>Davet mesajı: ' + esc(o.name || o.email) + '</b><textarea id="dvT" rows="12">' + esc(t) + '</textarea><div class="f2"><button class="btn" id="dvC">Kopyala</button>' + (o.tel ? '<a class="btn" target="_blank" rel="noopener" id="dvW" href="#">WhatsApp\'ta aç</a>' : "") + '</div><small style="color:var(--muted)">Mesajı siz gönderirsiniz; uygulama kimseye otomatik mesaj atmaz. Geçici şifreyi bu mesaja yazmayın, ayrı iletin.</small></div>';
       $("dvC").onclick = function () { var x = $("dvT"); x.select(); try { navigator.clipboard.writeText(x.value).then(function () { toast("Kopyalandı"); }, function () { document.execCommand("copy"); toast("Kopyalandı"); }); } catch (er) { document.execCommand("copy"); toast("Kopyalandı"); } };
-      var w = $("dvW"); if (w) w.onclick = function () { w.href = "https://wa.me/90" + telNorm(o.tel) + "?text=" + encodeURIComponent($("dvT").value); };
+      var w = $("dvW"); if (w) w.onclick = function () { w.href = "https://wa.me/9" + telNorm(o.tel) + "?text=" + encodeURIComponent($("dvT").value); };
       $("dvK").scrollIntoView({ behavior: "smooth", block: "center" }); });
   }).catch(hata);
 }
