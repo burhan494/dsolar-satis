@@ -1,7 +1,7 @@
 {
- "surum": 9,
- "paket": "surumler/dsolar-9.zip",
- "sha256": "0d1223879c3850189855bbf0616f43b54218a118ef70fe3d927a6d4c668eedac",
- "imza": "SBEyws3JL9fgebg/nXb4AAVN5cxGQqOsQK0WSQAnYa/2e/0HamxhjHEBSTIrKxAfJi/rB+WSuFgU83HWOyZ/yQ36M6NHNVMW3aI//5VTkydGnuDCmPXUCucICbK/tGyVeLlwMCV1+jWUCxIOyG0+t9Z2Xl0Z+/DBYPRBeiB/TOIhWN4EdFUrN/KtQ8eVszE7teTD4B28Aya92QJms9ZvfLFX/iqtxDWVi15Ht+CGXj7ksUYuHLuGhYMfpNEn23TwYVy+oDT4cC/Y5KKvMRbP1NmqvPpruX2cH5nSXbT9vUYLnvqQsOjb11AABLQ74raxEjuCDS0my5yiyhIN7eUO4wWxhZrBjMDyZIhASRutUd7hqZ+rS8kj4RuVw1aUJF8oCRySjUr5V2IoSiPJOlsP3IUymxCFk3HFMBs/kEbh9K3zoZ7QY4Nx4qpr7byTk7K0zoL/iVn2LjTRBwKwmiO0OuFwE9K3bB6q+9Mx2WyIXydeymFJeH8alOfvQABhhr+3",
- "not": "Aktarma: tutarı 0 olan kayıtlar da aktarılır; hatalı kayıt aktarmayı durdurmaz, raporda gösterilir"
+ "surum": 10,
+ "paket": "surumler/dsolar-10.zip",
+ "sha256": "7cfdb8efe7a87535eadc613915cdca06be9fd5be4feef0aee404c08f5174ea3d",
+ "imza": "FOYQjiGoG9MliVcE9mYSRpqzPrDOiZLxIJNhJNMByFiiETMmXGUmji61C8Fsq1bbsb12dklhYbOVt8OcHrmvzh+CZ6kDVSgfndLAV/gpOKRm8NQu7tK9+kjoAklzTZzusgaTccAjqUitDtDax52lMbCQTkaY8dvTsMCSD62Rpvj3wOGrx6fuvgUIZmYlInZvDqaPIWuVQKTtqZSemYxlvgo4GkS2OCCnVy9JWlGfGtjE0AIbfIVwCioua5is2d81G4eZWIlvRMeGP8A8Qca2vualsWWjWf8kOeGDPtWolhWLAvQjHxmZYZAeivijRatzixLfz6ym2UaEjfqX0VL+e4IIkqzuSUKg0g8RGP7/PxoNaTn6vtFzeTprw3wqeh0SEriZbniEWJOnt5d8MMMlqcWgwRASu1fBjAzzxSk71YRkQdNrfxztnHdCO83Z3cqXCow4zHaJcLuzhYehjJ9+4pj2cztCyC2cM6zxlHPwZuUYoUrJe4pOwBP6i+g+9VAf",
+ "not": "Hesapları kasa tablosundan yeniden kur (yönetici); şirket bazlı hesaplar ve USD karşılığı kullanılabilir toplam"
 }

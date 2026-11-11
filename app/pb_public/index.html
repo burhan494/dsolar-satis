@@ -398,13 +398,14 @@ function sFinans(alt) {
 function pbOf(m, ha) { return m.pb || ((ha || {})[m.hesap] || {}).pb || "TRY"; }
 function sabitAyda(s, a) { return (!s.bas || s.bas <= a) && (!s.bit || s.bit >= a); }
 function fOzet() {
-  Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", "", "tarih"), liste("fin_sabitler", "", "ad")]).then(function (R) {
-    var H = R[0], M = R[1], S = R[2], B = bakiyeler(H, M), b = bugun(), ay0 = b.slice(0, 7), gun0 = +b.slice(8, 10), ha = {}, top = {}, grup = {};
+  Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", "", "tarih"), liste("fin_sabitler", "", "ad"), kurKartiGetir()]).then(function (R) {
+    var H = R[0], M = R[1], S = R[2], KU = R[3], B = bakiyeler(H, M), b = bugun(), ay0 = b.slice(0, 7), gun0 = +b.slice(8, 10), ha = {}, top = {}, grup = {};
     H.forEach(function (h) { ha[h.id] = h; if (!h.aktif) return; top[h.pb] = (top[h.pb] || 0) + B[h.id]; var k = h.sirket || "Diğer"; grup[k] = grup[k] || {}; grup[k][h.pb] = (grup[k][h.pb] || 0) + B[h.id]; });
     var acik = function (m) { return m.durum !== "Gerçekleşti" && m.kategori !== "Hesaplar arası"; };
     var gec = M.filter(function (m) { return acik(m) && m.tarih.slice(0, 10) < b; });
     var tarihler = H.filter(function (h) { return h.aktif && h.acilisTarihi; }).map(function (h) { return h.acilisTarihi.slice(0, 10); }).sort();
-    var html = '<div class="card"><h3>Banka bakiyeleri</h3>' + (Object.keys(grup).map(function (k) { return '<div class="row"><div class="t"><b>' + esc(k) + "</b></div><b>" + Object.keys(grup[k]).map(function (p) { return '<span style="' + (grup[k][p] < 0 ? "color:var(--bad)" : "") + '">' + para(grup[k][p], p) + "</span>"; }).join("<br>") + "</b></div>"; }).join("") ||
+    var kulTop = H.filter(function (h) { return h.aktif; }).reduce(function (s, h) { return s + usdKarsilik(B[h.id], h.pb, KU); }, 0);
+    var html = '<div class="card"><h3>Banka bakiyeleri <small style="color:var(--muted)">kullanılabilir ' + sayi(kulTop) + " $</small></h3>" + (Object.keys(grup).map(function (k) { return '<div class="row"><div class="t"><b>' + esc(k) + "</b></div><b>" + Object.keys(grup[k]).map(function (p) { return '<span style="' + (grup[k][p] < 0 ? "color:var(--bad)" : "") + '">' + para(grup[k][p], p) + "</span>"; }).join("<br>") + "</b></div>"; }).join("") ||
       '<div class="bilgi">Önce "Hesaplar" sekmesinden hesap ekleyin ya da Ekip sayfasından Beacon verisini aktarın.</div>') +
       (tarihler.length ? '<div class="not"><small>Bakiyeler ' + tarih(tarihler[0]) + (tarihler[0] !== tarihler[tarihler.length - 1] ? "–" + tarih(tarihler[tarihler.length - 1]) : "") + ' tarihli ekstrelerden; sonrasında yalnız hesaba bağlanmış gerçekleşen hareketlerle güncellenir. Bankayla eşitlemek için "Hesaplar"dan açılış bakiyesini güncelleyin.</small></div>' : "") + "</div>";
     if (gec.length) html += '<div class="uyari" style="margin:0 0 12px">Tarihi geçmiş ' + gec.length + " planlı kalem var (" + gec.slice(0, 3).map(function (m) { return tarih(m.tarih) + " " + esc(m.kategori || ""); }).join(", ") + (gec.length > 3 ? "…" : "") + '). Gerçekleştiyse "Hareketler"den işaretleyin; tahmine bu ay içinde katılıyorlar.</div>';
@@ -463,15 +464,20 @@ function fHareket() {
   }).catch(hata);
 }
 function fHesap() {
-  Promise.all([liste("fin_hesaplar", "", "-aktif,ad"), liste("fin_hareketler", "durum = 'Gerçekleşti'", "tarih")]).then(function (R) {
-    var H = R[0], B = bakiyeler(H, R[1]);
-    $("fm").innerHTML = '<div class="card"><h3>Hesaplar</h3>' + (H.map(function (h) { return '<div class="row"><div class="t"><b' + (h.aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(h.ad) + "</b><small>" + esc([h.tur, h.hesapNo, "açılış " + para(h.acilis, h.pb) + (h.acilisTarihi ? " (" + tarih(h.acilisTarihi) + ")" : ""), h.not].filter(Boolean).join(" · ")) + "</small></div>" +
-      '<div style="display:grid;justify-items:end;gap:6px"><b style="white-space:nowrap">' + para(B[h.id], h.pb) + '</b><div style="display:flex;gap:6px"><button class="btn sm" data-ab="' + h.id + '">Bakiye</button><button class="btn sm" data-ak="' + h.id + '" data-v="' + (h.aktif ? 0 : 1) + '">' + (h.aktif ? "Kapat" : "Aç") + "</button></div></div></div>"; }).join("") || '<div class="bos">Hesap yok.</div>') + "</div>" +
+  Promise.all([liste("fin_hesaplar", "", "sirket,ad"), liste("fin_hareketler", "durum = 'Gerçekleşti'", "tarih"), kurKartiGetir()]).then(function (R) {
+    var H = R[0], B = bakiyeler(H, R[1]), KU = R[2], sirk = [];
+    H.forEach(function (h) { if (sirk.indexOf(h.sirket || "Diğer") < 0) sirk.push(h.sirket || "Diğer"); });
+    var gTop = function (L) { return L.filter(function (h) { return h.aktif; }).reduce(function (s, h) { return s + usdKarsilik(B[h.id], h.pb, KU); }, 0); };
+    $("fm").innerHTML = (yon() ? yenidenKurKarti() : "") + '<div class="card"><h3>Kullanılabilir toplam <small style="color:var(--muted)">USD karşılığı · kur ' + sayi(KU.usd, 4) + " (" + KU.kaynak + (KU.tarih ? " " + tarih(KU.tarih) : "") + ')</small></h3><div class="kv">' +
+      sirk.map(function (k) { return "<div><small>" + esc(k) + "</small><b>" + sayi(gTop(H.filter(function (h) { return (h.sirket || "Diğer") === k; }))) + " $</b></div>"; }).join("") + "<div><small>Toplam</small><b>" + sayi(gTop(H)) + " $</b></div></div></div>" +
+      sirk.map(function (k) { var L = H.filter(function (h) { return (h.sirket || "Diğer") === k; }); return '<div class="card"><h3>' + esc(k) + ' <small style="color:var(--muted)">' + L.length + " hesap</small></h3>" + L.map(function (h) { return '<div class="row"><div class="t"><b' + (h.aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(h.ad) + "</b><small>" + esc([h.tur, h.hesapNo, "açılış " + para(h.acilis, h.pb) + (h.acilisTarihi ? " (" + tarih(h.acilisTarihi) + ")" : ""), h.not].filter(Boolean).join(" · ")) + "</small></div>" +
+      '<div style="display:grid;justify-items:end;gap:6px"><b style="white-space:nowrap">' + para(B[h.id], h.pb) + '</b><div style="display:flex;gap:6px"><button class="btn sm" data-ab="' + h.id + '">Bakiye</button><button class="btn sm" data-ak="' + h.id + '" data-v="' + (h.aktif ? 0 : 1) + '">' + (h.aktif ? "Kapat" : "Aç") + "</button></div></div></div>"; }).join("") + "</div>"; }).join("") + (H.length ? "" : '<div class="card"><div class="bos">Hesap yok.</div></div>') +
       '<div class="card"><h3>Hesap ekle</h3><div class="f"><div class="f2"><label>Ad<input id="kA" placeholder="ör. D Solar Ziraat TL"></label><label>Şirket<input id="kS" list="sirL" value="D Solar"></label></div><datalist id="sirL"><option>D Solar<option>DRK</datalist><div class="f2"><label>Tür<select id="kT">' + sec(["Vadesiz", "KMH", "Vadeli", "Kasa", "Diğer"]) + '</select></label><label>Para birimi<select id="kP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + "</select></label></div>" +
       '<div class="f2"><label>Açılış bakiyesi<input id="kB" inputmode="decimal" placeholder="eksi olabilir"></label><label>Açılış tarihi<input id="kD" type="date" value="' + bugun() + '"></label></div><label>Not<input id="kN"></label><button class="btn pri" id="kK">Ekle</button>' +
       '<small style="color:var(--muted)">Açılış tarihinden önceki hareketler bakiyeye katılmaz. Bankadaki bakiyeyle eşitlemek için açılış bakiyesini o günün ekstresinden girin.</small></div></div>';
     $("kK").onclick = function () { if (!$("kA").value.trim()) { toast("Ad gerekli"); return; } var b = String($("kB").value).trim(), n = num(b.replace(/^[-−]/, "")) || 0; if (/^[-−]/.test(b)) n = -n;
       api("/api/collections/fin_hesaplar/records", { method: "POST", body: { ad: $("kA").value.trim(), sirket: $("kS").value.trim(), tur: $("kT").value, pb: $("kP").value, acilis: n, acilisTarihi: $("kD").value ? $("kD").value + " 00:00:00.000Z" : "", aktif: true, not: $("kN").value.trim() } }).then(function () { toast("Hesap eklendi"); fHesap(); }).catch(hata); };
+    yenidenKurBagla(fHesap);
     bagT("[data-ab]", function (e) { var h = H.filter(function (x) { return x.id === e.dataset.ab; })[0];
       var v = prompt(h.ad + " için bugünkü banka bakiyesi (ekstreden; eksi olabilir):", String(B[h.id]).replace(".", ",")); if (v == null) return; var neg = /^\s*[-−]/.test(v), n = num(String(v).replace(/^\s*[-−]/, "")); if (n == null) { toast("Geçersiz tutar"); return; }
       api("/api/collections/fin_hesaplar/records/" + h.id, { method: "PATCH", body: { acilis: neg ? -n : n, acilisTarihi: bugun() + " 23:59:00.000Z" } }).then(function () { toast("Bakiye güncellendi"); fHesap(); }).catch(hata); });
@@ -924,6 +930,53 @@ function sProjeler() {
   }).catch(hata);
 }
 var PF = { d: "Sürüyor" };
+/* ---------- Hesapları kasa tablosundan yeniden kur (yalnız yönetici) ---------- */
+function kurKartiGetir() {
+  return Promise.all([yon() ? liste("fin_ayarlar", "anahtar = 'kasa_kur'").catch(function () { return []; }) : Promise.resolve([]), liste("ayarlar", "anahtar = 'hesap'").catch(function () { return []; })]).then(function (R) {
+    var k = R[0][0] && R[0][0].deger, h = R[1][0] && R[1][0].deger || {};
+    return k && k.usd ? { usd: +k.usd, eur: +k.eur || +k.usd * 1.12, tarih: k.tarih, kaynak: "kasa tablosu" } : { usd: +h.kur || 50, eur: (+h.kur || 50) * 1.16, tarih: "", kaynak: "ön hesap ayarı" };
+  });
+}
+function usdKarsilik(t, pb, K) { return pb === "USD" ? t : pb === "EUR" ? t * K.eur / K.usd : t / K.usd; }
+function yenidenKurKarti() {
+  return '<div class="card"><h3>Hesapları kasa tablosundan yeniden kur</h3><div class="f"><div class="bilgi" style="margin:0">Claude\'un hazırladığı kasa dosyasını (dsolar-hesaplar-….json) seçin. Önce silinecek ve eklenecek hesaplar gösterilir; onay vermeden hiçbir şey değişmez. Nakit hareketleri silinmez, yalnız hesap bağlantıları kaldırılır.</div>' +
+    '<input id="ykD" type="file" accept=".json,application/json"><div id="ykO"></div></div></div>';
+}
+function yenidenKurBagla(yenile) {
+  var d = $("ykD"); if (!d) return;
+  d.onchange = function () { var f = d.files[0]; if (!f) return; var r = new FileReader();
+    r.onload = function () {
+      var J; try { J = JSON.parse(r.result); if (J.tur !== "dsolar-hesaplar" || !Array.isArray(J.hesaplar)) throw new Error("Bu dosya kasa dosyası değil (tur: dsolar-hesaplar bekleniyordu)."); } catch (e) { $("ykO").innerHTML = '<div class="uyari" style="margin:0">' + esc(e.message) + "</div>"; return; }
+      Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", "hesap != ''", "tarih"), liste("krediler", "", "ad")]).then(function (R) {
+        var E = R[0], BH = R[1], KR = R[2], K = { usd: +J.kurUsd, eur: +J.kurEur };
+        var top = {}; J.hesaplar.forEach(function (h) { top[h.pb] = (top[h.pb] || 0) + (+h.bakiye || 0); });
+        var kul = J.hesaplar.reduce(function (s, h) { return s + usdKarsilik(+h.bakiye || 0, h.pb, K); }, 0);
+        var krP = (J.krediler || []).map(function (k) { var m = KR.filter(function (x) { return x.ad.toLocaleLowerCase("tr").indexOf(String(k.eslesme || k.ad).toLocaleLowerCase("tr")) >= 0; })[0]; return { k: k, m: m }; });
+        $("ykO").innerHTML = '<div class="card" style="margin:0"><h3>Önizleme · ' + tarih(J.tarih) + '</h3>' +
+          '<div class="not"><b>Silinecek: ' + E.length + " hesap</b><small>" + esc(E.map(function (h) { return h.ad; }).join(", ") || "—") + "</small>" + (BH.length ? "<small>" + BH.length + " hareketin hesap bağlantısı kaldırılacak (hareketler silinmez).</small>" : "") + "</div>" +
+          '<div class="not"><b>Eklenecek: ' + J.hesaplar.length + " hesap</b><small>" + Object.keys(top).map(function (p) { return PB_AD[p] + " " + sayi(top[p], 2); }).join(" · ") + "<br>Kullanılabilir toplam: " + sayi(kul) + " USD (kur " + sayi(K.usd, 4) + ")</small></div>" +
+          J.hesaplar.map(function (h) { return '<div class="row" style="padding:7px 0"><div class="t"><b class="w" style="font-size:14px">' + esc(h.ad) + "</b><small>" + esc([h.tur, h.not].filter(Boolean).join(" · ")) + '</small></div><b style="white-space:nowrap;' + (h.bakiye < 0 ? "color:var(--bad)" : "") + '">' + para(h.bakiye, h.pb) + "</b></div>"; }).join("") +
+          krP.map(function (x) { return '<div class="not"><b>Kredi: ' + esc(x.k.ad) + "</b><small>" + (x.m ? "Mevcut kayıt güncellenecek: kalan " + para(x.m.kalan || 0, x.m.pb) + " → " + para(x.k.kalan, x.k.pb) : "Yeni kredi eklenecek: kalan " + para(x.k.kalan, x.k.pb)) + (x.k.not ? " · " + esc(x.k.not) : "") + "</small></div>"; }).join("") +
+          '<div class="f" style="padding-top:10px"><button class="btn or" id="ykK">Sil ve yeniden kur</button><div id="ykS"></div></div></div>';
+        $("ykK").onclick = function () {
+          if (!confirm(E.length + " hesap silinip " + J.hesaplar.length + " hesap " + tarih(J.tarih) + " bakiyeleriyle yeniden kurulacak. Devam edilsin mi?")) return;
+          $("ykK").disabled = true; var S = $("ykS"), adim = function (m) { S.innerHTML = '<div class="bos">' + esc(m) + "</div>"; };
+          var sirali = function (L, f) { return L.reduce(function (p, x) { return p.then(function () { return f(x); }); }, Promise.resolve()); };
+          adim("Hareket bağlantıları kaldırılıyor…");
+          sirali(BH, function (m) { return apiSabirli("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { hesap: "" } }); })
+            .then(function () { adim("Eski hesaplar siliniyor…"); return sirali(E, function (h) { return apiSabirli("/api/collections/fin_hesaplar/records/" + h.id, { method: "DELETE" }); }); })
+            .then(function () { adim("Yeni hesaplar yazılıyor…"); var i = 0; return sirali(J.hesaplar, function (h) { i++; return apiSabirli("/api/collections/fin_hesaplar/records", { method: "POST", body: { ad: h.ad, sirket: h.sirket || "", banka: h.banka || "", hesapNo: h.hesapNo || "", tur: h.tur || "Vadesiz", pb: h.pb, acilis: +h.bakiye || 0, acilisTarihi: J.tarih + " 23:59:00.000Z", aktif: true, not: h.not || "", kaynak: J.kaynak || "Kasa tablosu", kaynakId: "kasa/" + J.tarih + "/" + i } }); }); })
+            .then(function () { adim("Krediler güncelleniyor…"); return sirali(krP, function (x) { var b = { kalan: x.k.kalan, not: [x.m && x.m.not, x.k.not].filter(Boolean).join(" · ") };
+              return x.m ? apiSabirli("/api/collections/krediler/records/" + x.m.id, { method: "PATCH", body: b }) : apiSabirli("/api/collections/krediler/records", { method: "POST", body: { ad: x.k.ad, banka: x.k.banka || "", pb: x.k.pb, anaPara: x.k.anaPara, kalan: x.k.kalan, durum: "Aktif", not: x.k.not || "", kaynakId: "kasa/" + J.tarih + "/kredi" } }); }); })
+            .then(function () { return liste("fin_ayarlar", "anahtar = 'kasa_kur'").then(function (L) { var v = { deger: { usd: K.usd, eur: K.eur, tarih: J.tarih } };
+              return L[0] ? apiSabirli("/api/collections/fin_ayarlar/records/" + L[0].id, { method: "PATCH", body: v }) : apiSabirli("/api/collections/fin_ayarlar/records", { method: "POST", body: Object.assign({ anahtar: "kasa_kur" }, v) }); }); })
+            .then(function () { toast("Hesaplar yeniden kuruldu"); yenile(); })
+            .catch(function (e) { $("ykK").disabled = false; S.innerHTML = '<div class="uyari" style="margin:0">Yarıda kaldı: ' + esc(e.message) + ". Aynı dosyayla yeniden başlatabilirsiniz; işlem baştan, temiz kurulur.</div>"; });
+        };
+      }).catch(hata);
+    };
+    r.readAsText(f); };
+}
 
 ciz();
 </script>
