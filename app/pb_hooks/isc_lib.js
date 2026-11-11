@@ -24,6 +24,18 @@ function cagir(A, rec, path, body) {
   if (String(j.result_code) !== "1") throw new Error(hataMetni(j));
   return j.result_data;
 }
+function invSenk(A, rec, ps, eski) {
+  var L = [], sayfa = 1;
+  while (sayfa < 20) { var D = cagir(A, rec, "/openapi/getDeviceList", { ps_id: String(ps.ps_id), curPage: sayfa, size: 100, device_type_list: [1] }), pl = (D && (D.pageList || D.list)) || []; L = L.concat(pl); if (pl.length < 100) break; sayfa++; }
+  L = L.filter(function (x) { return x.ps_key && (x.device_type == null || +x.device_type === 1); });
+  if (!L.length) throw new Error("Santralde inverter bulunamadı");
+  var bas = gunEkle(bugunTR(), -35), bit = gunEkle(bugunTR(), -1), gun = (eski && eski.gun) || {}, sinir = gunEkle(bugunTR(), -90).replace(/-/g, "");
+  for (var i = 0; i < L.length; i += 50) { var parca = L.slice(i, i + 50).map(function (x) { return x.ps_key; });
+    var H = cagir(A, rec, "/openapi/getDevicePointsDayMonthYearDataList", { data_point: "p1", data_type: "2", query_type: "1", start_time: bas.replace(/-/g, ""), end_time: bit.replace(/-/g, ""), ps_key_list: parca, order: 0 });
+    parca.forEach(function (k) { ((H && H[k] && H[k].p1) || []).forEach(function (e) { var v = parseFloat(e["2"]); if (isNaN(v)) return; gun[k] = gun[k] || {}; gun[k][e.time_stamp] = Math.round(v / 10) / 100; }); }); }
+  Object.keys(gun).forEach(function (k) { Object.keys(gun[k]).forEach(function (d) { if (d < sinir) delete gun[k][d]; }); });
+  return { zaman: Date.now(), liste: L.map(function (x) { return { k: x.ps_key, ad: x.device_name || x.device_sn || x.ps_key, sn: x.device_sn || "", model: x.device_model_code || "", ariza: x.dev_fault_status, durum: x.dev_status }; }), gun: gun };
+}
 function bugunTR() { return new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10); }
 function senk(app, zorla) {
   var rec; try { rec = app.findFirstRecordByFilter("isc_ayar", "anahtar = 'ana'"); } catch (e) { return { durum: "kurulmadi", mesaj: "iSolarCloud bağlantısı kurulmadı" }; }
@@ -57,6 +69,9 @@ function senk(app, zorla) {
     try { var M = {}, ekle = function (D) { ((D && D.pageList) || []).forEach(function (x) { if (x && x.fault_code) M[x.fault_code] = { kod: x.fault_code, ad: x.fault_name || "", acik: x.fault_desc || "", tur: +x.fault_type || 0, seviye: +x.fault_level || 0, durum: +x.process_status || 0, bas: x.create_time || "", bit: x.over_time || "", cihaz: x.device_name || "" }; }); };
       ekle(cagir(A, rec, "/openapi/getFaultAlarmInfo", { curPage: "1", size: "100", ps_id: String(ps.ps_id), fault_type: "1,2,3", process_status: "8" }));
       rec.set("alarm", Object.keys(M).map(function (k) { return M[k]; })); } catch (e) {}
+    // inverterler: liste ve son 35 günün günlük üretimi (p1), 90 gün saklanır; saatte bir değil günde bir kez yeter
+    try { var invEski = {}; try { invEski = JSON.parse(rec.getString("inv") || "{}") || {}; } catch (e) { invEski = {}; }
+      if (zorla || !invEski.zaman || Date.now() - invEski.zaman > 20 * 3600e3) rec.set("inv", invSenk(A, rec, ps, invEski)); } catch (e) { console.log("inverter senk hatası", e); }
     rec.set("sonSenk", new Date().toISOString()); rec.set("hata", ""); app.save(rec);
     return { durum: "tamam", mesaj: Object.keys(yeni).length + " ay güncellendi", sonGun: sonGun };
   } catch (e) { rec.set("hata", String((e && e.message) || e)); rec.set("sonDeneme", new Date().toISOString()); try { app.save(rec); } catch (e2) {} return { durum: "hata", mesaj: String((e && e.message) || e) }; }
