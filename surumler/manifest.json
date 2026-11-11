@@ -1,7 +1,7 @@
 {
- "surum": 16,
- "paket": "surumler/dsolar-16.zip",
- "sha256": "a75ababad68480f38a9afb1f37e623c5f5ebb711a084c4a35a026a8d82661d48",
- "imza": "arYemh0Jqn2zrwbdCNhiQ0lwmBO+wMNFa2Yx4+4XPGY2FcVkaSvSqIttSIhW8RaRgNjIRkzuN7mk+g7WW4b2Cpp0R61nPt/3jb7bU9hbSA1KzZgI4OvSP1761+s2CtFtVvgK7G3iGcJxP6kOFltH9VaPMva06t0pY1Thc+7jeDce3tkNkvuoorATYKPVwuOievuVgNsrI+0zcCE/xr8m9tXb1UnbiCHIlTcoEs0GKTUiqPh4xz0tsS/hoefPz5QKFMyvX0hl/Du5rKzalr/aXLBEKj7yD81g/EJARvTb0VMtlekVDPcMnSmj4882dgqmuCQ4Fe9YImFjsQC81w9w06V+ApzFXbp+MoPbB3I9/KipZdoH5U1FX84lCUTKCHIzN247B72mZTrokRzyzwvaqhw1yOilwDGrFGgha1Vj0vYGjC1LewD3jDhy5oHjN06umpU3l2Yjm/FV2LeLX4K1iCEAzTZ6GJrEexSXkgSzp2KIuK8lX46irtCG9gbNVEl9",
- "not": "Nakit akışı yeni görünüm (özet kutuları, ay sonu kasası grafiği, bin $ tablo, 6/12 ay) ve nakit açığı karar paneli"
+ "surum": 17,
+ "paket": "surumler/dsolar-17.zip",
+ "sha256": "5083b588942ff18f3bdd7f8cc4e23aa453f00b75f8401f3f47c333b27b2b8fce",
+ "imza": "jtW6HhwKNEWRuDTw+kys5EAZns+25Jc2WQHaGhNcWQIHwV0Q7RSmrj6eiDvHheDYPjPxvKzgPkjhi2PUxAuhbEF65IG5XnBEdRYcLR6GtLSHvj7TvLFdFYvWzaxTLNUrmy/iRbGizFXbaTZ+qplGCetXO+RcNMXmIZKVw4IwpTDrYsj/ov9etYIEceZJzZUkFSO3W+MONWDlI5ke3tCDN54dH9FX5VBA99q3ahY+VX3Rc4zU/GZ/SbdGPCJfhTaW2MN8FCuf7rFor3kIVqYJtShJ5GV4Ac/01jJfCs+aEEAEuyNjZxR+3QXrKRxPPZ1v6BeWbF9eeCpIJhI6lwFpKUAjpJIfwFHiO/5yVl+OsmS9TzRpy+ozkuwaCnDxj0oKi95MGJ0jL2FUJE86rH/LZzLOUwfmzj/SU5HRg6InLU4+BHhlTgrVatC1SSao1i5YVNDbnIfqejRt+yjT++YWiu0E9Rewg9HUI7PLKx3s19Y499q738jjqdFMEa+rcN59",
+ "not": "Ortaklar ekranı yeniden: ortak kartları (pay ve 60/40 hedefi), sade filtre, tablo görünümü"
 }
