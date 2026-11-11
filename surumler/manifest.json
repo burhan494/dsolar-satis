@@ -1,7 +1,7 @@
 {
- "surum": 23,
- "paket": "surumler/dsolar-23.zip",
- "sha256": "dafd87834a93cdddf2eed3758cbbc6ac020dc39fb5386d9f47c1faaf6047c93f",
- "imza": "D2FjheVfiMF+Ea5IfMSimqKsplg/9NXVjS16wa2tUvPr5rpL7fpApHPxv2Mi0YVbg/lV9p1aquzjvkSukSyMog3TBQsV+j4E3u9765/G4mzOKR7qWdg2cOvtZhFa9M9WX9lwvL5xa20vARcqUgvqk1i+lsSatSrfetEPYeBqcCRNg1JsmbvFVQJup5mbMuFhmTqz2GRzTmk/lAcniLAh1Mr3yaIMFvLuc2v05Q/SpdhZrlM2qDmW5bL3V9MvnWIqSzlzHUdq4vZv5zLh6k73B4K0yiQc7gsz9t03R/luW5Ute5vWOhL2828CvCVW9QaJziNK6mn+Y0A4s0tNJfplm6gYrDleb5ESVlUTJfcPB/jy7KZLhIbtT0fYo7Bc5fzx7GB3zJ/wRCQTD8ZyCE6N4YX76Oc0OHyo/w+h+Sih08b2BhivZ+TkL1gcQ98yBzAh/gjyJRLunYp2ecUsOt7y3tOVR4fX90zg4svN3bQ3q6lX5omR2FRJiMr6HnCuapFb",
- "not": "Çekler ve Gelecek/Gidecek ekranları yenilendi; TCMB'den otomatik döviz kuru (elle giriş seçeneğiyle)"
+ "surum": 24,
+ "paket": "surumler/dsolar-24.zip",
+ "sha256": "2660dcb3dce6e8a6ef90f39056465d4d29e11a190393aa82b236c5ac8c7cbae7",
+ "imza": "gf0aO+P+2Z18YWQI+BCUSkxJJhEeN+CDnNBWEQsYrHw2undX+OTN8IPVFNuGB/cP7+u5NsQBLKzc61MTOVOU/8GGUPeIFUYVKh3z3oM7pD0y0R9O5P7kiJgSOtKaw9SQi+jCSXbOLMpjpYEpK6YTVwLjN1orJQ5+CFKbMtYpsujsFGOlvy+3bM0+6PJXEeX7gy4ezMzZEufeDasHNj1WSUHtiKia4VxRUkNyz6VtKbAh+V5emEYlr06MeMRgIXIGK42gJhZ/ja2axB8qnZQj2lUrsVtWB4IxLkQgEvGD8M6U6pLBq57LQYecrQx+qoFEw4HzIJo8NDJrU1Qm8lwgU6m1ITt320fUIP69FlXFXsH3ubW6RpDYqSE2BgQnlcUtp3aKER5OzKJ/gr0/MMofxAQrO682JFnqidD6Y2I0S0/lRLRnOuLwG8GJrjqoBU19zexZXANJyh9FWc/6JnftD6iMADVYxnKA5Gmgal82ETOHgbwAVaR7anTNvMxxTtkB",
+ "not": "Nakit akışı: Bugün sütunu, gerçek akış (girişsiz) varsayılan, ortak girişi senaryosu ayrı, vadeli hesap seçeneği, tarihi geçmiş kalem uyarısı"
 }
