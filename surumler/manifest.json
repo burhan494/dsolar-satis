@@ -1,7 +1,7 @@
 {
- "surum": 30,
- "paket": "surumler/dsolar-30.zip",
- "sha256": "3939d12ffd184d2e70d1e89e3c3586f543fbcb57bdf1c07102299deb38ad6f16",
- "imza": "WNg3mHSFIFfoc9UDDDezB/HZyBAde1SIOb9G8D+taD8iXCY/xymcWg0idEAipLkExlcWWolKnmpyQBTYH+Les3j2mx/5r9A43oKz5bUwiJ59SYJ78RC1MFbNlJVBfwz8m/+7jJAJPteda4nCZ8GTtA7v9ttf5Du5TGbvy3BIyO02GBAVKJQPJWPvZjzile9H+jSOzdWFdwZ1GugvUDXhITgQ1E0wIXo0KRxwzHrs5Ra+jJc669942ScnD/PV4tlKk+tdcE+qOGsCvDEluws1xm4PhN2fbvSz2rUlo6EoS35w8Fs0y/ExIpPvKM/ZE9nuYMci7RDZ2jyfIycRx1w9o9oqbolY9R8KaXSmRT3zlOMkTXxb9WNHgqaHCaWN/6JmhVgkEaOL86CYzx/uS6E9/w268cCJ7OqRtCeYq0HxAo/HQxlCpz9IvWHG0n0dgS/q19fsy1FloFclvQ5EM3ih27/qLy4PX0pn4FFtrgkc0BtE5Y5ZSOVJ58DCHLXKuuHK",
- "not": "Düzeltme: 500'den fazla kayıt olan listeler (müşteriler, hareketler) eksik yükleniyordu; artık sayfa sayfa tamamı geliyor"
+ "surum": 31,
+ "paket": "surumler/dsolar-31.zip",
+ "sha256": "5f1bc58828655948805b30cd347ffa6d2c73925d24e9759371287a87a8be8658",
+ "imza": "heppBd1jd3lm5VhTpxH2hT05C5LLi7wfqdg79NtCa1wviA1yWXIh69at9qlUCk9b/M5wbe8JLPbHUjqQkpHJD9E7orinoT8cJKk6DVmN2nkVXEltJOzk+TzHHtktTh5i4Kvh55qyLmDAozZ9IHxyvfY7pDCpC2Ie3TUU34RDOixZBdAH27sqmXeyq2dUXIYwodZ88YNQPHkl8p6lHGfjVmNSyr8DSoAWq6xqkBsUyD03axPqma6CeHX+UN+6yrmA+MdxK4YD0bGBwS2eduz18sd6ZJ0mFmibDmMiV0KJB9V+j72QbEgm+GvdyydUUKb2b/NBTMUdgh8Qn+Fwev2gGP5Int3BsI2QFVuVVBiLs6uOGupDgORP042igvf2RQojYoKBnBY9vAYCNwLmVQ1PZJbw9gazCZsytQTT/VHyhfD2DMjGBcgj3i/q3c5CxkslrwB79qxL+uJ72TYo7uOSGpGtTHZKo4Dx4YIqpboRG6aJhalgkuhs9Yr3t1uTfY6t",
+ "not": "GES: OSOS dosyası yükleme, OSOS·iSolarCloud·PVGIS üretim kıyası ve gün gün grafik, reaktif enerji takibi ve nakit akışına reaktif bedel"
 }
