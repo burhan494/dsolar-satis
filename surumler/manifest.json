@@ -1,7 +1,7 @@
 {
- "surum": 31,
- "paket": "surumler/dsolar-31.zip",
- "sha256": "5f1bc58828655948805b30cd347ffa6d2c73925d24e9759371287a87a8be8658",
- "imza": "heppBd1jd3lm5VhTpxH2hT05C5LLi7wfqdg79NtCa1wviA1yWXIh69at9qlUCk9b/M5wbe8JLPbHUjqQkpHJD9E7orinoT8cJKk6DVmN2nkVXEltJOzk+TzHHtktTh5i4Kvh55qyLmDAozZ9IHxyvfY7pDCpC2Ie3TUU34RDOixZBdAH27sqmXeyq2dUXIYwodZ88YNQPHkl8p6lHGfjVmNSyr8DSoAWq6xqkBsUyD03axPqma6CeHX+UN+6yrmA+MdxK4YD0bGBwS2eduz18sd6ZJ0mFmibDmMiV0KJB9V+j72QbEgm+GvdyydUUKb2b/NBTMUdgh8Qn+Fwev2gGP5Int3BsI2QFVuVVBiLs6uOGupDgORP042igvf2RQojYoKBnBY9vAYCNwLmVQ1PZJbw9gazCZsytQTT/VHyhfD2DMjGBcgj3i/q3c5CxkslrwB79qxL+uJ72TYo7uOSGpGtTHZKo4Dx4YIqpboRG6aJhalgkuhs9Yr3t1uTfY6t",
- "not": "GES: OSOS dosyası yükleme, OSOS·iSolarCloud·PVGIS üretim kıyası ve gün gün grafik, reaktif enerji takibi ve nakit akışına reaktif bedel"
+ "surum": 32,
+ "paket": "surumler/dsolar-32.zip",
+ "sha256": "f5807fbd13cf8a1d6ab407901f63047c09cbf783c844c53ae841244b2e08dfb9",
+ "imza": "f8w6FKsrOVgdsaW1kKOYXyQFoSwhK4ZUK7o4AzXfj8/+0p2LijFhnHuxTHcMD8eTKHUZXd/3BcwgTzBCKpiwh3exCNHJwRQlRnOZkGGQT9SJRP9Atw3+7wEbOfaIBLLrhWdTidrzqVcxfIlTvVTBEABkX69LLdSAJkpSyZZUKkSocJTln3HnI3gX7peRyJBNxMhrSz5z429gsidkbT3q+SKmidqc5ixMNjsC/Fgg1mMDG8mmwNTBICBq9hQYUXsccx5muboxcS+innR3Us2PzlHtn76zhc5mkbasTtRhX5QkQLBxOgwo8/J7RWz94Pbhzy3EorqJbDYlcY1d3r2UxqIfkU3s+ZLtvmE6JEm6y1ALHOn8LghXiEmmOkBw1GjmAtHzxuNCQil9xnUN7Z1+5VrZoQz5fq68B7YRmii6iBNLBYrWJC/mBgpDpPuiOxr3+YIN7LIevXGudWF/rsQyGnalWzosawm/uxOiT5TU5cJ//W1kKY13ARVWgKhXXUf3",
+ "not": "Teklifli ya da projeli müşteriyi (deneme/yanlış kayıt) teklifleri ve projesiyle birlikte silme"
 }

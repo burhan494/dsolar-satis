@@ -228,7 +228,7 @@ function sAday(id) {
       (satisci() ? '<div class="card"><h3>Teklifler <a class="btn sm or" href="#teklif/' + id + '" style="text-decoration:none;display:inline-flex;align-items:center">Kalem kalem teklif</a></h3>' + (T.map(teklifRow).join("") || '<div class="bos">Teklif yok.</div>') +
         '<div class="f" style="padding-top:12px;border-top:1px solid #edf1f6"><div class="f2"><label>Güç (kWp)<input id="tK" inputmode="decimal"></label><label>Fiyat (USD, KDV hariç)<input id="tF" inputmode="decimal"></label></div><label>Not<input id="tN" placeholder="ör. 18 panel, 10 kW inverter"></label>' +
         '<button class="btn" id="tE">Teklif taslağı ekle</button><small style="color:var(--muted)">Teklif müşteriye otomatik gitmez. Yönetici onayından sonra ekip kendisi gönderir.</small></div></div>' : "") +
-      (yon() ? '<div class="card"><h3>Kaydı sil</h3><div class="f">' + (T.length ? '<div class="uyari" style="margin:0">Bu müşterinin ' + T.length + ' teklifi var. Teklif geçmişi ve satış istatistikleri bozulmasın diye silmek yerine aşamayı "Kaybedildi" yapın.</div><button class="btn" id="aKay">Kaybedildi olarak işaretle</button>' :
+      (yon() ? '<div class="card"><h3>Kaydı sil</h3><div class="f">' + (T.length ? '<div class="uyari" style="margin:0">Bu müşterinin ' + T.length + ' teklifi var. Teklif geçmişi ve satış istatistikleri bozulmasın diye silmek yerine aşamayı "Kaybedildi" yapın. Deneme ya da yanlış kayıtsa teklifleriyle birlikte silebilirsiniz.</div><div class="f2"><button class="btn" id="aKay">Kaybedildi olarak işaretle</button><button class="btn" id="aSilT" style="color:var(--bad);border-color:#f3c4c4">Teklifleriyle birlikte sil</button></div>' :
         '<button class="btn" id="aSil" style="color:var(--bad);border-color:#f3c4c4">Müşteriyi sil</button><small style="color:var(--muted)">Kayıt ve görüşme notları kalıcı olarak silinir. Mükerrer ya da yanlış girilmiş kayıtlar için.</small>') + "</div></div>" : "");
     var bag = function (i, f) { var e = $(i); if (e) e.onclick = f; };
     if (PRJ) prjBagla(PRJ, a, U, function () { sAday(id); });
@@ -243,6 +243,13 @@ function sAday(id) {
     });
     bag("aSil", function () { if (!confirm(a.ad + " ve görüşme notları kalıcı olarak silinsin mi? Bu işlem geri alınamaz.")) return;
       api("/api/collections/adaylar/records/" + id, { method: "DELETE" }).then(function () { toast("Silindi"); location.hash = "#adaylar"; }).catch(function (e) { hata(new Error("Silinemedi: " + e.message)); }); });
+    bag("aSilT", function () { if (!confirm(a.ad + ", " + T.length + " teklifi" + (PRJ ? ", projesi" : "") + " ve görüşme notları kalıcı olarak silinsin mi? Bu işlem geri alınamaz.")) return;
+      if (!confirm("Emin misiniz? Silinen teklif ve proje geri getirilemez.")) return;
+      sirali([].concat(PRJ ? [["projeler", PRJ.id]] : [], T.map(function (t) { return ["teklifler", t.id]; })), function (x) { return api("/api/collections/" + x[0] + "/records/" + x[1], { method: "DELETE" }); })
+        .then(function () { return liste("komisyonlar", "aday = " + q(id)).catch(function () { return []; }); }).then(function (K) { return sirali(K, function (k) { return api("/api/collections/komisyonlar/records/" + k.id, { method: "DELETE" }); }); })
+        .then(function () { return liste("kesif_foto", "aday = " + q(id)).catch(function () { return []; }); }).then(function (F) { return sirali(F, function (k) { return api("/api/collections/kesif_foto/records/" + k.id, { method: "DELETE" }); }); })
+        .then(function () { return api("/api/collections/adaylar/records/" + id, { method: "DELETE" }); })
+        .then(function () { toast("Müşteri ve teklifleri silindi"); location.hash = "#adaylar"; }).catch(function (e) { hata(new Error("Silinemedi: " + e.message)); }); });
     bag("aKay", function () { api("/api/collections/adaylar/records/" + id, { method: "PATCH", body: { asama: "Kaybedildi" } }).then(function () { toast("Kaybedildi olarak işaretlendi"); sAday(id); }).catch(hata); });
     bag("gK", function () { var m = $("gM").value.trim(); if (!m) return; api("/api/collections/gorusmeler/records", { method: "POST", body: { aday: id, metin: m, yazan: BEN.id } }).then(function () { sAday(id); }).catch(hata); });
     bag("tE", function () { var k = parseFloat(String($("tK").value).replace(",", ".")), f = parseFloat(String($("tF").value).replace(/\./g, "").replace(",", "."));
