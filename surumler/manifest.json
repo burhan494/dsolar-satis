@@ -1,7 +1,7 @@
 {
- "surum": 34,
- "paket": "surumler/dsolar-34.zip",
- "sha256": "018cc1c555b1e1c4ca6a1301acf9cad34dcbc58f38eda3212dce669aaa1ac226",
- "imza": "IO8lgScdZJR+vVs9IyVx/ZbNWwq7TMONL9KMjYTK5a+YAz6lhiSq67pdXrsYg8fMW44+jG+6VHAXIUqugzvI5mQ9Y2eA3pzvpQG54fpzwigj64aXRlwUTdtMo/H8bhxPkkQilzqOvetJ/FXHKGfTmePAMuaznnsiZOlOa5leQqkP3bgMlRATYnRExsxWTK+DFPknRf+LJNKsuI5FktyfINF1JOuOIsFTII+yv+4+Bq8w6g37FrqSmS9vxCvAIIZEYmqM6q/vethy5nj2zpKmO2OU9oD6wp193GJIbve4Ic20h5Ub1JCG0reLrUVcf7Yal/icAO9omPBQdESGY1vyoLPQW8XMOVFrXWZNbDFbB45+ud1GyBCw9OhsrR1rmW3rSot0aSnO4L0EBzXc+HcaUPivDfahQyU2DDCAAON2XBmQPEjVlKigtkcNIj3HkDPaKgpn++GdHFsZnadksVa9N4HGWSuEvVCppWVKweIvWKvRuGRESlZPDuY2q0ZkJxjQ",
- "not": "GES sayfası sekmeli yeni tasarım (Özet/Üretim/İnverterler/Kira/Reaktif/Olaylar/Ayarlar), inverter bazlı takip ve ısı haritası"
+ "surum": 35,
+ "paket": "surumler/dsolar-35.zip",
+ "sha256": "6e55bf833d9bd84a1c645d24883926a0406f855e92467f110d9442b9e4a85fff",
+ "imza": "cK0SlQ1K/eLHdAyu9Bu91cxhFwGDtbU3e455GjfuPmDIKMSWyc4vMM0w3gDemGoPVeBoptq3s916Rqy7YZAcT0Z7T4e5MUnDJvO2/sv7JxDHzxICJYQJjqV8GkF6AIpqAyv5X8gj00HLD7JCLLUpnUKpl1/5FL0hBOas4EfiGZQmfonSatZJSxH0+PXiMKI/mGuAXQq8OTC8opkG5ayEDK2ss7OVEZS9PYje7+5n4cdMPdzFuI7hE2gp+H4+J+1AL/dETbP1QiltAOSyKUSvarcJQqpXWS6HoeX6JRLlax/ec2RxLf6B3aU430qf/RZCMXaVJ5SiDeaIHf5tiypUDJ5GHFbDj9J1D0w09xVuqle0kZUQlqBOZJGkj9PNSaUIwVHbs2dTn4hWroISMysp8s7c5ltBaBY76cppuxXWOutM7L/r+mmyr+w4hZ6rTC/M8RVcW5mFWHRkzCcKyGH/baf76OVtSH54TEv7DxDbfM+gMRs9kjRAa9TJg38o6Dci",
+ "not": "GES iş emirleri: bakımcılar, WhatsApp/e-posta/PDF gönderim, durum takibi, fotoğraf, otomatik doğrulama"
 }
