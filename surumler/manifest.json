@@ -1,7 +1,7 @@
 {
- "surum": 22,
- "paket": "surumler/dsolar-22.zip",
- "sha256": "4ce13f5da6554b652369d932f2543242f7c9b1dd8ae24b3d12a34cbfdbe45b11",
- "imza": "WUrkdOIgM9LkCUQGYTMTE2G8uoQE+sx5ly7cPn8r41ama2jVVnRvclAC30w6W+ejfqX21JI8Q1hQBUfWP3Myla0IOa/ZBh8iexTyVrxDDBk80hFmRv5ZsNgCE6iZ+RDQjNyr3jo60P3alrMn35A/gH+pTn+8ViBCML92M6Ukb6T7v45dpkCYGOSsp1o74bvZyEK1Y/b0SFmTIjACAqhgF3suR8GIcxMmSsgccHyVICYHW+VdX6wvWEPhpsrzORwEmvwOsT8pin5W1462zE5OB3qXHkArno6WwJTbbN8bEGdqKceFGzl5vY+LBOLYBUg+alF2hYUi2U7sx2O2QgUDlZ6FKfzzra5v+YKnAz8xIDwzFqLloERkQOFjubUikmhjd5ThnuB6s6JExeYKokefWVZx7Fnxfa6hjCdlluiJjxrb2ZL5PWNOfScS1xcwRY4ZIsLNWQjQEsqSqsA8kZXRs+lhEjgueCLl6ZebaBL/LSoQ8F/JdKqFLASFTFXZ2ZV5",
- "not": "Krediler ekranı yenilendi: kalan/ödenen/taksit/bitiş/faiz, taksit planı, Ödendi işaretleme, Excel'den plan yükleme, aylık yük grafiği, 60 günlük takvim; kart/limit/teminat alt sekmeleri"
+ "surum": 23,
+ "paket": "surumler/dsolar-23.zip",
+ "sha256": "dafd87834a93cdddf2eed3758cbbc6ac020dc39fb5386d9f47c1faaf6047c93f",
+ "imza": "D2FjheVfiMF+Ea5IfMSimqKsplg/9NXVjS16wa2tUvPr5rpL7fpApHPxv2Mi0YVbg/lV9p1aquzjvkSukSyMog3TBQsV+j4E3u9765/G4mzOKR7qWdg2cOvtZhFa9M9WX9lwvL5xa20vARcqUgvqk1i+lsSatSrfetEPYeBqcCRNg1JsmbvFVQJup5mbMuFhmTqz2GRzTmk/lAcniLAh1Mr3yaIMFvLuc2v05Q/SpdhZrlM2qDmW5bL3V9MvnWIqSzlzHUdq4vZv5zLh6k73B4K0yiQc7gsz9t03R/luW5Ute5vWOhL2828CvCVW9QaJziNK6mn+Y0A4s0tNJfplm6gYrDleb5ESVlUTJfcPB/jy7KZLhIbtT0fYo7Bc5fzx7GB3zJ/wRCQTD8ZyCE6N4YX76Oc0OHyo/w+h+Sih08b2BhivZ+TkL1gcQ98yBzAh/gjyJRLunYp2ecUsOt7y3tOVR4fX90zg4svN3bQ3q6lX5omR2FRJiMr6HnCuapFb",
+ "not": "Çekler ve Gelecek/Gidecek ekranları yenilendi; TCMB'den otomatik döviz kuru (elle giriş seçeneğiyle)"
 }
