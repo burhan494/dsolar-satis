@@ -123,7 +123,7 @@ function ciz() {
   $("app").innerHTML = '<header><b>D Solar</b><span class="rol">' + esc((BEN.name || BEN.email) + " · " + ROL_AD[rol()]) + '</span><a class="btn sm" href="#profil" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4);display:flex;align-items:center;text-decoration:none">Şifrem</a><button class="btn sm" id="cik" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Çıkış</button></header>' +
     '<nav>' + menu().map(function (m) { return '<a href="#' + m[0] + '" class="' + (m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "on" : "") + '"><i>' + (NAV_IK[m[0]] ? ikon(NAV_IK[m[0]][0], NAV_IK[m[0]][1], m[0] === sayfa || (sayfa === "aday" && m[0] === "adaylar") ? "dolu" : "") : m[1]) + "</i>" + m[2] + "</a>"; }).join("") + "</nav><main id=\"m\"><div class=\"bos\">Yükleniyor…</div></main>";
   $("cik").onclick = cikis;
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor };
   (S[sayfa] || sBugun)(h[1]);
 }
 window.addEventListener("hashchange", ciz);
@@ -689,9 +689,10 @@ function sGes() {
       '<div class="not"><small>' + (IS && IS.hata ? "⚠ " + esc(IS.hata) + " · " : "") + (IS && IS.sonSenk ? "Son senkron " + (gecSenk < 60 ? gecSenk + " dk önce" : tarih(IS.sonSenk) + " " + IS.sonSenk.slice(11, 16)) + " · sunucu saatte bir otomatik çeker" : "Bağlantı henüz kurulmadı (aşağıdaki \"iSolarCloud bağlantısı\")") + '</small><button class="btn sm" id="gSenk" style="margin-top:8px;background:#fff;color:#b45309">Şimdi çek</button></div></div>';
     var buG = gAy[ay0], buU = gesUretim(buG, ay0, P, oran), buB = gesBeklenenKwh(ay0, P);
     html += '<div class="card ust3"><h3>' + ikon("gunes", "#f59e0b", "kucuk") + ayAd(ay0) + ' günlük üretim <small style="color:var(--muted)">' + sayi(iscTop(buG).t) + " kWh · ay hedefi " + sayi(buB) + "</small></h3><div style=\"padding:6px 14px 4px\">" + gesGrafik(buG, ay0, P) + '</div><div class="not" style="margin-top:0"><small>Turuncu: teorik üretimin %80\'inin altında kalan günler. Kesik çizgi: iSolarCloud teorik üretim.</small></div></div></div>';
-    if (acikAr.length) html += '<div class="card"><h3 style="color:var(--bad)">Açık arızalar (' + acikAr.length + ")</h3>" + acikAr.map(function (x) { return '<div class="row sk"><div class="t"><b class="w">' + esc((x.cihaz ? x.cihaz + " · " : "") + x.ad) + "</b><small>" + esc([x.bas, x.acik].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>";
+    if (acikAr.length) html += '<div class="card"><h3 style="color:var(--bad)">iSolarCloud açık arızalar (' + acikAr.length + ")</h3>" + acikAr.map(function (x) { return '<div class="row sk"><div class="t"><b class="w">' + esc((x.cihaz ? x.cihaz + " · " : "") + x.ad) + "</b><small>" + esc([x.bas, x.acik].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>";
+    html += '<div id="olK"></div>';
     var ahAy = {}; AH.forEach(function (h) { var k = h.not && /kira ay[ıi]: (\d{4}-\d{2})/.exec(h.not); if (k) ahAy[k[1]] = h; });
-    html += '<div class="card"><h3>Aylar · üretim ve Amcor kirası <small style="color:var(--muted)">kira = B kuralı, KDV %' + sayi(P.kdv * 100) + ", " + P.lag + " ay sonra ayın " + P.gun + "'inde tahsil</small></h3>" +
+    html += '<div class="card"><h3 style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">Aylar · üretim ve Amcor kirası <a class="btn sm" href="#gesrapor/' + (ayEkle(b, -1) < P.teslim ? ay0 : ayEkle(b, -1)) + '" style="margin-left:auto;order:2">📄 Aylık rapor</a><small style="color:var(--muted);flex-basis:100%">kira = B kuralı, KDV %' + sayi(P.kdv * 100) + ", " + P.lag + " ay sonra ayın " + P.gun + "'inde tahsil</small></h3>" +
       '<div style="overflow-x:auto"><table class="nt" style="border-collapse:collapse;width:100%;font-size:13px"><thead><tr style="background:#f4f7fb"><th style="text-align:left;padding:8px">Ay</th><th style="text-align:right">Üretim (kWh)</th><th style="text-align:right">Hedef</th><th style="text-align:right">Fark</th><th style="text-align:right">Kira matrahı</th><th style="text-align:right">Tahsil (KDV dahil)</th><th style="text-align:left;padding-left:10px">Durum</th></tr></thead><tbody>' +
       aylar.map(function (a) { var g = gAy[a], U = gesUretim(g, a, P, oran), hd = gesBeklenenKwh(a, P), fk = hd ? (U.kwh / hd - 1) * 100 : null, fat = g && g.kiraTl > 0, m = fat ? +g.kiraTl : kiraMatrah(a, U.kwh, P), th = m ? m * (1 + P.kdv) : 0, tAy = ayEkle(a + "-01", P.lag), h = ahAy[a];
         var drm = g && g.kiraTahsil ? '<span class="pill" style="background:#e8f6ee;color:var(--ok)">tahsil ' + tarih(g.kiraTahsil) + "</span>" : U.kismi ? '<span class="pill">ay sürüyor</span>' : '<span class="pill"' + (tAy < ay0 ? ' style="background:#fde8e8;color:var(--bad)"' : "") + ">" + (tAy < ay0 ? "gecikti · " : "beklenen ") + ayAd(tAy) + '</span> <button class="btn sm" data-kt="' + a + '" data-v="' + Math.round(th * 100) / 100 + '">Tahsil edildi</button>';
@@ -706,6 +707,7 @@ function sGes() {
       '<div class="f2"><label>Sunucu<select id="iG">' + sec([["https://gateway.isolarcloud.eu", "Avrupa (eu)"], ["https://gateway.isolarcloud.com.hk", "Uluslararası"]], (IS && IS.gw) || "https://gateway.isolarcloud.eu") + '</select></label><label>Veri başlangıcı<input id="iB" type="date" value="' + esc((IS && IS.baslangic) || P.teslim + "-01") + '"></label></div>' +
       (IS && IS.psAd ? "<small>Bağlı santral: " + esc(IS.psAd) + "</small>" : "") + '<button class="btn pri" id="iK">Kaydet ve bağlan</button><div id="iD"></div></div></details>';
     $("m").innerHTML = html;
+    olayKarti($("olK"), acikAr);
     var senk = function () { $("gSenk").disabled = true; $("gSenk").textContent = "Çekiliyor…"; return api("/api/dsolar/isc-senk", { method: "POST" }).then(function (r) { toast(r.mesaj || "Tamam"); sGes(); }).catch(function (e) { $("gSenk").disabled = false; $("gSenk").textContent = "Şimdi çek"; toast(/404|not found/i.test(e.message) ? "Sunucunun iSolarCloud modülü henüz kurulmadı (BT adımı)" : e.message); }); };
     $("gSenk").onclick = senk;
     $("iK").onclick = function () { var b2 = { appkey: $("iA").value.trim(), secret: $("iS").value.trim(), kullanici: $("iU").value.trim(), sifre: $("iP").value, gw: $("iG").value, baslangic: $("iB").value };
@@ -1662,6 +1664,77 @@ function sOrtak() {
         api("/api/collections/yonlendirmeler/records", { method: "POST", body: { ortak: BEN.id, ad: a, tel: t, ilce: $("yoI").value.trim(), not: $("yoN").value.trim(), izin: true, durum: "Yeni" } })
           .then(function () { toast("Gönderildi, ekip en kısa sürede arayacak"); sOrtak(); }).catch(function (x) { $("yoK").disabled = false; hata(x); }); };
     };
+  }).catch(hata);
+}
+
+/* ---------- GES olay defteri ve aylık rapor ---------- */
+ALAN.ges_olaylar = [["tarih", "Tarih", "d"], ["tur", "Tür", "s", ["Arıza", "Bakım", "Temizlik", "Şebeke kesintisi", "Denetim", "Diğer"]], ["baslik", "Başlık", "t"], ["cihaz", "Cihaz / bölge", "t"], ["aciklama", "Açıklama / yapılan iş", "t"],
+  ["durum", "Durum", "s", ["Açık", "Kapandı"]], ["kapanis", "Kapanış tarihi", "d"], ["kayipKwh", "Tahmini üretim kaybı (kWh)", "n"], ["maliyetTl", "Maliyet (TL)", "n"], ["sorumlu", "Sorumlu / firma", "t"]];
+var OLAY_RENK = { "Arıza": "#dc2626", "Bakım": "#2563eb", "Temizlik": "#0d9488", "Şebeke kesintisi": "#7c3aed", "Denetim": "#475569", "Diğer": "#64748b" };
+function olayRow(o) { var r = OLAY_RENK[o.tur] || "#64748b", gun = o.durum === "Açık" ? gunFark(o.tarih, bugun()) : o.kapanis ? gunFark(o.tarih, o.kapanis) : null;
+  return '<div class="row" data-ed="ges_olaylar|' + o.id + '"><span style="width:9px;height:9px;border-radius:50%;background:' + r + ';margin-right:10px;flex:none"></span><div class="t"><b class="w">' + esc(o.baslik) + (o.durum === "Açık" ? ' <span class="pill" style="background:#fde8e8;color:var(--bad)">açık' + (gun ? " · " + gun + " gün" : "") + "</span>" : "") + "</b><small>" +
+    esc([tarih(o.tarih), o.tur, o.cihaz, o.durum === "Kapandı" && o.kapanis ? "kapandı " + tarih(o.kapanis) + (gun != null ? " (" + gun + " gün)" : "") : "", o.kayipKwh ? "kayıp " + sayi(o.kayipKwh) + " kWh" : "", o.maliyetTl ? sayi(o.maliyetTl) + " TL" : "", o.sorumlu].filter(Boolean).join(" · ")) + (o.aciklama ? "<br>" + esc(o.aciklama) : "") + "</small></div>" +
+    (o.durum === "Açık" ? '<button class="btn sm" data-ok="' + o.id + '">Kapat</button>' : "") + "</div>"; }
+function olayKarti(kutu, alarm) {
+  liste("ges_olaylar", "", "-tarih").then(function (L) {
+    var kod = {}; L.forEach(function (o) { if (o.alarmKod) kod[o.alarmKod] = 1; });
+    var yeniA = (alarm || []).filter(function (x) { return !kod[String(x.kod)]; });
+    var acik = L.filter(function (o) { return o.durum === "Açık"; }), son = L.filter(function (o) { return o.durum !== "Açık"; }).slice(0, OLF.n);
+    kutu.innerHTML = '<div class="card"><h3>' + ikon("alet", "#0d9488", "kucuk") + 'Olay defteri <small style="color:var(--muted)">' + acik.length + " açık · " + L.length + " kayıt</small></h3>" +
+      (yeniA.length ? '<div class="uyari" style="margin:0 14px 8px">iSolarCloud\'da deftere alınmamış ' + yeniA.length + " arıza var: " + yeniA.map(function (x) { return '<button class="btn sm" data-al="' + esc(String(x.kod)) + '" style="margin:4px 4px 0 0">' + esc((x.cihaz ? x.cihaz + " · " : "") + x.ad) + " → deftere al</button>"; }).join("") + "</div>" : "") +
+      (acik.map(olayRow).join("") + son.map(olayRow).join("") || '<div class="bos">Kayıt yok. Arıza, bakım, panel temizliği, şebeke kesintisi gibi olayları buraya yazın; aylık raporda görünür.</div>') +
+      (L.length - acik.length > OLF.n ? '<button class="btn sm" id="olM" style="margin:8px 14px 0">Daha fazla</button>' : "") + '<div style="padding:0 14px 12px">' + yeniBtn("ges_olaylar", "Olay ekle") + "</div></div>";
+    var yen = function () { olayKarti(kutu, alarm); };
+    edBagla(L, yen);
+    var m = $("olM"); if (m) m.onclick = function () { OLF.n += 20; yen(); };
+    var yb = kutu.querySelector("[data-yeni]"); if (yb) yb.onclick = function () { edAc(yb, "ges_olaylar", { tarih: bugun(), tur: "Arıza", durum: "Açık" }); };
+    bagT("[data-ok]", function (e) { api("/api/collections/ges_olaylar/records/" + e.dataset.ok, { method: "PATCH", body: { durum: "Kapandı", kapanis: bugun() + " 12:00:00.000Z" } }).then(function () { toast("Kapatıldı"); yen(); }).catch(hata); });
+    bagT("[data-al]", function (e) { var x = (alarm || []).filter(function (a) { return String(a.kod) === e.dataset.al; })[0]; if (!x) return;
+      api("/api/collections/ges_olaylar/records", { method: "POST", body: { tarih: (/^\d{4}-\d{2}-\d{2}/.test(x.bas || "") ? x.bas.slice(0, 10) : bugun()) + " 12:00:00.000Z", tur: "Arıza", baslik: x.ad || "iSolarCloud arızası", cihaz: x.cihaz || "", aciklama: x.acik || "", durum: "Açık", alarmKod: String(x.kod) } })
+        .then(function () { toast("Deftere alındı"); yen(); }).catch(hata); });
+  }).catch(function (e) { kutu.innerHTML = /404|not found|missing/i.test(e.message) ? "" : '<div class="uyari">' + esc(e.message) + "</div>"; });
+}
+var OLF = { n: 10 };
+function sGesRapor(ay) {
+  if (!yon()) { location.hash = "#bugun"; return; }
+  ay = /^\d{4}-\d{2}$/.test(ay || "") ? ay : ayEkle(bugun(), -1);
+  Promise.all([liste("ges_aylik", "", "donem"), liste("fin_ayarlar", "anahtar = 'beacon_genel'").catch(function () { return []; }), liste("ges_olaylar", "", "tarih").catch(function () { return []; }),
+    liste("fin_hareketler", "kategori = 'Amcor kira'", "tarih").catch(function () { return []; }), liste("isc_ayar", "").catch(function () { return []; })]).then(function (R) {
+    var G = R[0], P = gesParam(R[1][0] && R[1][0].deger), OL = R[2], AH = R[3], IS = R[4][0] || {}, oran = gesOranHesap(G), gAy = {}; G.forEach(function (g) { gAy[g.donem] = g; });
+    var g = gAy[ay], U = gesUretim(g, ay, P, oran), hd = gesBeklenenKwh(ay, P), fk = hd ? (U.kwh / hd - 1) * 100 : null, I = iscTop(g);
+    var T = (g && g.iscT) || {}, tT = 0; Object.keys(T).forEach(function (k) { tT += +T[k] || 0; });
+    var PRs = Object.keys((g && g.iscPR) || {}).map(function (k) { return +g.iscPR[k]; }).filter(function (v) { return v > 0; }), pr = PRs.length ? PRs.reduce(function (a, b) { return a + b; }, 0) / PRs.length : null; if (pr != null && pr > 1.5) pr = pr / 100;
+    var gunler = Object.keys((g && g.iscGun) || {}).map(function (k) { return { d: k, v: +g.iscGun[k] || 0, t: +T[k] || 0 }; }).filter(function (x) { return x.v > 0; });
+    var enI = gunler.slice().sort(function (a, b) { return b.v - a.v; })[0], enK = gunler.slice().sort(function (a, b) { return a.v - b.v; })[0], dusuk = gunler.filter(function (x) { return x.t > 0 && x.v < 0.8 * x.t; }).length;
+    var m = g && g.kiraTl > 0 ? +g.kiraTl : kiraMatrah(ay, U.kwh, P), th = m ? m * (1 + P.kdv) : 0, tAy = ayEkle(ay + "-01", P.lag);
+    var tah = AH.filter(function (h) { return h.not && h.not.indexOf("kira ayı: " + ay) >= 0; })[0];
+    var ayB = ay + "-01", aySon = ay + "-" + String(new Date(+ay.slice(0, 4), +ay.slice(5, 7), 0).getDate()).padStart(2, "0");
+    var olay = OL.filter(function (o) { var b = o.tarih.slice(0, 10), s = o.kapanis ? o.kapanis.slice(0, 10) : "9999"; return b <= aySon && s >= ayB; });
+    var son12 = []; for (var i = 11; i >= 0; i--) { var a = ayEkle(ay + "-01", -i); if (a < P.teslim) continue; var gg = gAy[a], uu = gesUretim(gg, a, P, oran); son12.push({ a: a, u: uu.kwh, h: gesBeklenenKwh(a, P) }); }
+    var mx = Math.max.apply(null, son12.map(function (x) { return Math.max(x.u, x.h); }).concat([1])), bw = 620 / Math.max(son12.length, 1);
+    var bar = '<svg viewBox="0 0 620 170" style="width:100%;height:auto;display:block">' + son12.map(function (x, j) { var h1 = x.u / mx * 130, h2 = x.h / mx * 130, X = j * bw;
+      return '<rect x="' + (X + bw * .18).toFixed(1) + '" y="' + (140 - h2).toFixed(1) + '" width="' + (bw * .3).toFixed(1) + '" height="' + h2.toFixed(1) + '" rx="2" fill="#cbd5e1"/><rect x="' + (X + bw * .5).toFixed(1) + '" y="' + (140 - h1).toFixed(1) + '" width="' + (bw * .3).toFixed(1) + '" height="' + h1.toFixed(1) + '" rx="2" fill="' + (x.a === ay ? "#ed7d31" : "#f59e0b") + '"/><text x="' + (X + bw / 2).toFixed(1) + '" y="158" font-size="10" text-anchor="middle" fill="#5f6f82">' + AYLAR[+x.a.slice(5, 7) - 1].slice(0, 3) + "</text>"; }).join("") + "</svg>";
+    var css = '@page{size:A4;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#e9eef5;font:10.5pt/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1d3557}.ara{position:sticky;top:0;background:#1d3557;color:#fff;padding:10px 14px;display:flex;gap:8px;align-items:center;z-index:2;flex-wrap:wrap}.ara button,.ara a,.ara input{background:#fff;color:#1d3557;border:0;border-radius:10px;padding:9px 14px;font:600 14px inherit;text-decoration:none}.ara span{font-size:12px;opacity:.8}' +
+      '.sayfa{max-width:794px;margin:14px auto;background:#fff;padding:28px 32px;box-shadow:0 2px 12px rgba(0,0,0,.08)}h1{font-size:18pt;margin:0}h2{font-size:12.5pt;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px solid #ed7d31}.ust{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:3px solid #1d3557;padding-bottom:10px}.logo{font-size:22pt;font-weight:800}.logo i{color:#ed7d31;font-style:normal}.k{font-size:9pt;color:#5f6f82}' +
+      '.oz{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.oz div{background:#f4f7fb;border-radius:8px;padding:8px 10px}.oz small{display:block;color:#5f6f82;font-size:8.5pt}.oz b{font-size:13pt}table{width:100%;border-collapse:collapse;font-size:9.5pt}th,td{border-bottom:1px solid #e3e9f1;padding:5px 6px;text-align:left}th{background:#f4f7fb;font-size:8.5pt;color:#5f6f82}td.r,th.r{text-align:right}.blok{break-inside:avoid}.iyi{color:#15803d}.kotu{color:#b42318}' +
+      'body{-webkit-print-color-adjust:exact;print-color-adjust:exact}@media print{body{background:#fff}.ara,.toast{display:none!important}.sayfa{box-shadow:none;margin:0;max-width:none;padding:0}}@media(max-width:600px){.sayfa{padding:16px}.oz{grid-template-columns:1fr 1fr}}';
+    var sinif = fk == null ? "" : fk >= 0 ? "iyi" : fk < -5 ? "kotu" : "";
+    var doc = '<div class="ara"><a href="#ges">‹ GES</a><input type="month" id="rAy" value="' + ay + '" style="padding:7px 10px"><button id="pdfI">PDF indir</button><button id="yaz">Yazdır</button><span id="pdfD"></span></div><div class="sayfa">' +
+      '<div class="ust"><div><div class="logo">D <i>Solar</i></div><div class="k">' + esc(IS.psAd || "D Solar GES") + '</div></div><div style="text-align:right"><h1>GES AYLIK RAPORU</h1><div class="k"><b>' + ayAd(ay) + "</b><br>Hazırlanma " + tarih(bugun()) + "</div></div></div>" +
+      '<h2>Özet</h2><div class="oz"><div><small>Üretim</small><b>' + sayi(U.kwh) + ' kWh</b><small>' + esc(U.kaynak) + "</small></div><div><small>Hedef (profil)</small><b>" + sayi(hd) + ' kWh</b><small class="' + sinif + '">' + (fk != null ? (fk >= 0 ? "+" : "") + sayi(fk, 1) + "% fark" : "") + "</small></div>" +
+      "<div><small>Performans oranı (PR)</small><b>" + (pr != null ? "%" + sayi(pr * 100, 1) : "—") + "</b><small>" + (tT ? "teorik " + sayi(tT) + " kWh" : "iSolarCloud verisi yok") + "</small></div><div><small>Veri günü</small><b>" + I.n + "</b><small>" + (dusuk ? dusuk + " gün teorik %80 altı" : "düşük gün yok") + "</small></div></div>" +
+      '<div class="blok"><h2>Günlük üretim</h2>' + (I.n ? gesGrafik(g, ay, P) + '<p class="k">' + (enI ? "En yüksek gün " + +enI.d + " " + AYLAR[+ay.slice(5, 7) - 1] + ": " + sayi(enI.v) + " kWh. " : "") + (enK ? "En düşük gün " + +enK.d + " " + AYLAR[+ay.slice(5, 7) - 1] + ": " + sayi(enK.v) + " kWh. " : "") + "Turuncu çubuklar teorik üretimin %80'inin altında kalan günler.</p>" : '<p class="k">Bu ay için iSolarCloud günlük verisi yok.</p>') + "</div>" +
+      '<div class="blok"><h2>Son 12 ay: üretim ve hedef</h2>' + bar + '<p class="k">Gri: profil hedefi · Turuncu: gerçekleşen (OSOS varsa OSOS, yoksa iSolarCloud).</p></div>' +
+      '<div class="blok"><h2>Amcor kirası</h2><table><tr><th>Kalem</th><th class="r">Tutar (TL)</th></tr><tr><td>Kira matrahı (' + (g && g.kiraTl > 0 ? "fatura" : "tahmini") + ', KDV hariç)</td><td class="r">' + (m ? sayi(m) : "–") + "</td></tr><tr><td>KDV dahil tahsil tutarı</td><td class=\"r\"><b>" + (th ? sayi(th) : "–") + "</b></td></tr>" +
+      "<tr><td>Tahsil durumu</td><td class=\"r\">" + (tah ? "tahsil edildi " + tarih(tah.tarih) + " · " + sayi(tah.tutar) + " TL" : g && g.kiraTahsil ? "tahsil edildi " + tarih(g.kiraTahsil) : "beklenen " + ayAd(tAy) + " (" + P.gun + "'i)") + "</td></tr>" +
+      (g && (g.reaktifTl || g.digerGiderTl) ? "<tr><td>Reaktif bedel / diğer gider</td><td class=\"r\">" + sayi(g.reaktifTl || 0) + " / " + sayi(g.digerGiderTl || 0) + "</td></tr>" : "") + "</table></div>" +
+      '<div class="blok"><h2>Olaylar (' + olay.length + ")</h2>" + (olay.length ? "<table><tr><th>Tarih</th><th>Tür</th><th>Olay</th><th>Durum</th><th class=\"r\">Kayıp kWh</th><th class=\"r\">Maliyet TL</th></tr>" + olay.map(function (o) { return "<tr><td>" + tarih(o.tarih) + "</td><td>" + esc(o.tur) + "</td><td>" + esc(o.baslik) + (o.cihaz ? " · " + esc(o.cihaz) : "") + (o.aciklama ? '<br><span class="k">' + esc(o.aciklama) + "</span>" : "") + "</td><td>" + (o.durum === "Açık" ? '<b class="kotu">Açık</b>' : "Kapandı " + (o.kapanis ? tarih(o.kapanis) : "")) + '</td><td class="r">' + (o.kayipKwh ? sayi(o.kayipKwh) : "") + '</td><td class="r">' + (o.maliyetTl ? sayi(o.maliyetTl) : "") + "</td></tr>"; }).join("") + "</table>" : '<p class="k">Bu ay kayıtlı olay yok.</p>') + "</div>" +
+      (g && g.not ? '<div class="blok"><h2>Not</h2><p>' + esc(g.not) + "</p></div>" : "") +
+      '<p class="k" style="margin-top:18px;border-top:1px solid #e3e9f1;padding-top:8px">Kaynak: ' + esc(["OSOS (ay bilgisi)", I.n ? "iSolarCloud günlük üretim" : "", "Beacon kira modeli (B kuralı)"].filter(Boolean).join(", ")) + ". Tahmini kalemler fatura/OSOS gelince kesinleşir.</p></div>";
+    $("app").innerHTML = "<style>" + css + "</style>" + doc;
+    $("yaz").onclick = function () { window.print(); };
+    $("rAy").onchange = function () { if (/^\d{4}-\d{2}$/.test(this.value)) location.hash = "#gesrapor/" + this.value; };
+    $("pdfI").onclick = function () { var b2 = this; b2.disabled = true; $("pdfD").textContent = "PDF hazırlanıyor…"; pdfIndir(document.querySelector(".sayfa"), "GES-raporu-" + ay).then(function () { $("pdfD").textContent = "PDF indirildi."; }).catch(function (e) { $("pdfD").textContent = "PDF oluşturulamadı: " + e.message; }).then(function () { b2.disabled = false; }); };
   }).catch(hata);
 }
 
