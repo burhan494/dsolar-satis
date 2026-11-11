@@ -165,7 +165,9 @@ function sBugun() {
     var gec = vade.filter(function (a) { return a.sonraki.slice(0, 10) < b; }).length;
     $("m").innerHTML = '<div class="ozet"><div><b>' + vade.length + '</b><small>bugünkü iş</small></div><div style="background:var(--warnbg)"><b style="color:var(--warn)">' + gec + '</b><small>gecikmiş</small></div><div><b>' + plansiz.length + '</b><small>planı yok</small></div></div>' +
       '<div class="card"><h3>Yapılacaklar</h3>' + (vade.map(adayRow).join("") || '<div class="bos">Bugün için planlı iş yok.</div>') + "</div>" +
-      (plansiz.length ? '<div class="card"><h3>Sıradaki işi belirlenmemiş</h3>' + plansiz.slice(0, 30).map(adayRow).join("") + "</div>" : "");
+      (plansiz.length ? '<div class="card"><h3>Sıradaki işi belirlenmemiş</h3>' + plansiz.slice(0, 30).map(adayRow).join("") + "</div>" : "") + '<div id="yonK"></div>';
+    if (satisci()) Promise.all([liste("yonlendirmeler", "durum = 'Yeni'", "-created", "ortak"), liste("adaylar", "tel != ''", "-updated")]).then(function (R) { var k = $("yonK"); if (!k || !R[0].length) return;
+      k.innerHTML = yonlendirmeKarti(R[0], R[1], false); yonlendirmeBagla(R[0], sBugun); }).catch(function () {});
   }).catch(hata);
 }
 
@@ -333,7 +335,8 @@ function sEkip() {
         (u.id === BEN.id ? "" : '<button class="btn sm" data-a="' + u.id + '" data-v="' + (u.aktif ? "0" : "1") + '">' + (u.aktif ? "Kapat" : "Aç") + '</button><button class="btn sm" data-s="' + u.id + '" data-e="' + esc(u.email) + '">Şifre</button>') + "</div>"; }).join("") + "</div>" +
       '<div class="card"><h3>Kişi ekle</h3><div class="f"><div class="f2"><label>Ad soyad<input id="eAd"></label><label>Rol<select id="eRol">' + Object.keys(ROL_AD).map(function (k) { return '<option value="' + k + '">' + ROL_AD[k] + "</option>"; }).join("") + '</select></label></div>' +
       '<div class="f2"><label>E-posta<input id="eEm" type="email"></label><label>Telefon<input id="eTel" inputmode="tel"></label></div><button class="btn pri" id="eK">Ekle</button>' +
-      '<small style="color:var(--muted)">İş ortakları yalnız kendi yönlendirdiği müşterinin adını, ilçesini ve aşamasını görür; telefon ve fiyat görmez.</small></div></div>' + ayarKarti(A) + aktarKarti();
+      '<small style="color:var(--muted)">İş ortakları yalnız kendi yönlendirdiği müşterinin adını, ilçesini ve aşamasını görür; telefon ve fiyat görmez.</small></div></div>' + '<div id="opKutu"></div>' + ayarKarti(A) + aktarKarti();
+    ortakProgram($("opKutu"));
     aktarBagla();
     var ak = $("ayK"); if (ak) ak.onclick = function () { var H = Object.assign({}, A.deger), hata2 = "";
       document.querySelectorAll("[data-ay]").forEach(function (e) { var v = parseFloat(String(e.value).replace(/\s/g, "").replace(",", ".")); if (!(v > 0)) hata2 = e.parentNode.firstChild.textContent; else H[e.dataset.ay] = v; });
@@ -366,16 +369,6 @@ function sProfil() {
 }
 
 /* ---------- İş ortağı ---------- */
-function sOrtak() {
-  Promise.all([liste("ortak_musterileri", "", "-id"), liste("komisyonlar", "", "-id", "aday")]).then(function (R) {
-    var M = R[0], K = R[1], top = K.reduce(function (s, k) { return s + (k.durum !== "Ödendi" ? +k.tutarUSD || 0 : 0); }, 0);
-    $("m").innerHTML = '<div class="ozet"><div><b>' + M.length + '</b><small>yönlendirme</small></div><div><b>' + M.filter(function (m) { return m.asama === "Sözleşme"; }).length + '</b><small>sözleşme</small></div><div style="background:var(--warnbg)"><b style="color:var(--warn)">$' + sayi(top) + '</b><small>bekleyen</small></div></div>' +
-      '<div class="card"><h3>Yönlendirdiklerim</h3>' + (M.map(function (m) { return '<div class="row"><div class="t"><b>' + esc(m.ad) + "</b><small>" + esc(m.ilce || "") + '</small></div><span class="pill p-' + esc(m.asama) + '">' + esc(m.asama) + "</span></div>"; }).join("") || '<div class="bos">Henüz yönlendirme yok.</div>') + "</div>" +
-      '<div class="card"><h3>Komisyon</h3>' + (K.map(function (k) { return '<div class="row"><div class="t"><b>USD ' + sayi(k.tutarUSD) + "</b><small>" + esc(k.expand && k.expand.aday ? k.expand.aday.ad : "") + '</small></div><span class="pill">' + esc(k.durum) + "</span></div>"; }).join("") || '<div class="bos">—</div>') +
-      '<div class="not"><small>Komisyon, müşteri peşinatı tahsil edilince hak edilir.</small></div></div>' +
-      '<div class="card"><h3>Müşteri yönlendir</h3><div class="bilgi">Yönlendirmek istediğiniz kişiyi D Solar ekibine telefonla ya da WhatsApp\'tan (0544 498 25 99) bildirin; ekip sizin adınıza kaydeder.</div></div>';
-  }).catch(hata);
-}
 /* ---------- Finans (yönetici + muhasebe; ortak cari ve varlıklar yalnız yönetici) ---------- */
 var PB_AD = { TRY: "TL", USD: "USD", EUR: "EUR" };
 var GELIR = ["Satış tahsilatı", "Amcor kira", "Diğer gelir", "Ortak koydu"];
@@ -1586,6 +1579,89 @@ function sKatalog() {
     $("m").innerHTML = html;
     var ara = $("kAra"); ara.oninput = function () { clearTimeout(ara._t); ara._t = setTimeout(function () { KF.q = ara.value; sKatalog(); setTimeout(function () { var e = $("kAra"); e.focus(); e.setSelectionRange(e.value.length, e.value.length); }, 0); }, 350); };
     edBagla(K, sKatalog);
+  }).catch(hata);
+}
+
+/* ---------- İş ortağı programı ---------- */
+function telNorm(t) { return String(t || "").replace(/\D/g, "").replace(/^90/, "").replace(/^0/, ""); }
+function yonlendirmeKarti(Y, A, tamListe) {
+  var tel = {}; A.forEach(function (a) { var n = telNorm(a.tel); if (n.length >= 10) tel[n] = a; });
+  var L = Y.filter(function (y) { return tamListe || y.durum === "Yeni" || !y.durum; });
+  if (!L.length && !tamListe) return "";
+  return '<div class="card"><h3>İş ortağından gelen yönlendirmeler <small style="color:var(--muted)">' + L.length + "</small></h3>" + (L.map(function (y) { var o = (y.expand || {}).ortak || {}, ay = tel[telNorm(y.tel)], yeni = y.durum === "Yeni" || !y.durum;
+    return '<div class="row" style="flex-wrap:wrap"><div class="t"><b>' + esc(y.ad) + "</b><small>" + esc([y.tel, y.ilce, "ortak: " + (o.name || o.email || "—"), tarih(y.created), y.izin ? "aranmaya izin var" : "izin belirtilmedi"].filter(Boolean).join(" · ")) + (y.not ? "<br>" + esc(y.not) : "") +
+      (yeni && ay ? '<br><span style="color:var(--warn)">Bu telefon zaten kayıtlı: ' + esc(ay.ad) + " (" + esc(ay.asama) + ")</span>" : "") + "</small></div>" +
+      (yeni ? (ay ? '<button class="btn sm" data-yb="' + y.id + '|' + ay.id + '">Mevcut kayda bağla</button>' : '<button class="btn sm pri" data-yk="' + y.id + '">Müşteri olarak kaydet</button>') + '<button class="btn sm" data-yu="' + y.id + '">Uygun değil</button>'
+        : '<span class="pill">' + esc(y.durum) + "</span>" + (y.aday ? '<a class="btn sm" href="#aday/' + y.aday + '">Kartı aç</a>' : "")) + "</div>"; }).join("") || '<div class="bos">Yönlendirme yok.</div>') + "</div>";
+}
+function yonlendirmeBagla(Y, yenile) {
+  var bul = function (id) { return Y.filter(function (y) { return y.id === id; })[0]; };
+  bagT("[data-yk]", function (e) { var y = bul(e.dataset.yk); e.disabled = true;
+    api("/api/collections/adaylar/records", { method: "POST", body: { ad: y.ad, tel: y.tel || "", ilce: y.ilce || "", kaynak: "İş ortağı", asama: "Aday", ortak: y.ortak, sorumlu: BEN.id, iys: y.izin ? "İzinli" : "Sorulacak", sonrakiIs: "İş ortağı yönlendirmesi: ilk arama", sonraki: bugun() + " 09:00:00.000Z", not: y.not || "" } })
+      .then(function (a) { return api("/api/collections/yonlendirmeler/records/" + y.id, { method: "PATCH", body: { durum: "Kaydedildi", aday: a.id } }); })
+      .then(function () { toast("Müşteri kaydedildi, bugünkü işlere eklendi"); yenile(); }).catch(function (x) { e.disabled = false; hata(x); }); });
+  bagT("[data-yb]", function (e) { var p = e.dataset.yb.split("|");
+    api("/api/collections/yonlendirmeler/records/" + p[0], { method: "PATCH", body: { durum: "Kaydedildi", aday: p[1] } }).then(function () { toast("Mevcut kayda bağlandı (ortak ataması kartta elle yapılır)"); yenile(); }).catch(hata); });
+  bagT("[data-yu]", function (e) { api("/api/collections/yonlendirmeler/records/" + e.dataset.yu, { method: "PATCH", body: { durum: "Uygun değil" } }).then(function () { toast("İşaretlendi"); yenile(); }).catch(hata); });
+}
+var DAVET_VARS = "Merhaba {ad},\n\nD Solar iş ortaklığı programına hoş geldiniz. Çevrenizde çatısına güneş enerjisi sistemi kurdurmak isteyenleri bize yönlendirdiğinizde, sözleşmeye dönen her iş için komisyon ödüyoruz.\n\nGiriş adresi: https://satis.dsolar.net\nKullanıcı adınız: {email}\nGeçici şifrenizi ayrıca ileteceğiz; ilk girişte değiştirmenizi rica ederiz.\n\nUygulamada \"Müşteri yönlendir\" bölümünden kişinin adını ve telefonunu girmeniz yeterli. Yönlendirdiğiniz kişilerin hangi aşamada olduğunu ve komisyonlarınızı aynı ekranda görürsünüz. Lütfen yalnız sizin aranmasına izin veren kişileri yönlendirin.\n\nD Solar · 0544 498 25 99";
+function ortakProgram(kutu) {
+  Promise.all([liste("ayarlar", "anahtar = 'ortak_program'"), liste("users", "rol = 'ortak'", "name"), liste("komisyonlar", "", "-created", "aday,ortak"), liste("yonlendirmeler", "", "-created", "ortak"), liste("projeler", "", "-basla", "aday"), liste("adaylar", "", "-updated")]).then(function (R) {
+    var AY = R[0][0], P = (AY && AY.deger) || {}, O = R[1], K = R[2], Y = R[3], PR = R[4], AD = R[5];
+    var komVar = {}; K.forEach(function (k) { komVar[k.aday] = 1; });
+    var eksik = PR.filter(function (p) { var a = (p.expand || {}).aday || {}; return a.ortak && !komVar[p.aday] && p.durum !== "İptal"; });
+    var oz = function (o) { var x = K.filter(function (k) { return k.ortak === o.id; }); var s = function (d) { return x.filter(function (k) { return k.durum === d; }).reduce(function (t, k) { return t + (+k.tutarUSD || 0); }, 0); };
+      return { yon: Y.filter(function (y) { return y.ortak === o.id; }).length + AD.filter(function (a) { return a.ortak === o.id; }).length - Y.filter(function (y) { return y.ortak === o.id && y.aday; }).length, soz: AD.filter(function (a) { return a.ortak === o.id && a.asama === "Sözleşme"; }).length, bek: s("Bekliyor"), hak: s("Hak edildi"), od: s("Ödendi") }; };
+    kutu.innerHTML = '<div class="card"><h3>İş ortağı programı</h3><div class="f"><div class="f2"><label>Komisyon oranı (sözleşme bedelinin %)<input id="opO" inputmode="decimal" value="' + esc(String(P.oran || "").replace(".", ",")) + '"></label><label>Sabit tutar (USD, iş başına)<input id="opS" inputmode="decimal" value="' + esc(String(P.sabitUsd || "").replace(".", ",")) + '"></label></div>' +
+      '<label>Hak ediş koşulu<input id="opH" value="' + esc(P.hakEdis || "Müşteri peşinatı tahsil edilince") + '"></label><button class="btn pri" id="opK">Program ayarını kaydet</button>' +
+      '<small style="color:var(--muted)">' + (+P.oran || +P.sabitUsd ? "Proje başlatıldığında komisyon " + (+P.oran ? "%" + sayi(P.oran, 1) : "") + (+P.oran && +P.sabitUsd ? " + " : "") + (+P.sabitUsd ? sayi(P.sabitUsd) + " USD" : "") + " olarak otomatik açılır." : "Oran girilmedi: komisyon kaydı 0 USD açılır, tutarı elle düzeltirsiniz.") + "</small></div></div>" +
+      yonlendirmeKarti(Y, AD, false) +
+      (eksik.length ? '<div class="card"><h3>Komisyonu açılmamış projeler</h3>' + eksik.map(function (p) { var a = p.expand.aday; return '<div class="row"><div class="t"><b>' + esc(a.ad) + "</b><small>bedel " + sayi(p.bedelUsd || 0) + " USD · başlangıç " + tarih(p.basla) + '</small></div><button class="btn sm" data-ke="' + p.id + '">Komisyon aç</button></div>'; }).join("") + "</div>" : "") +
+      '<div class="card"><h3>İş ortakları <small style="color:var(--muted)">' + O.length + "</small></h3>" + (O.map(function (o) { var z = oz(o);
+        return '<div class="row" style="flex-wrap:wrap"><div class="t"><b' + (o.aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(o.name || o.email) + "</b><small>" + z.yon + " yönlendirme · " + z.soz + " sözleşme · bekleyen " + sayi(z.bek) + " · hak edilen " + sayi(z.hak) + " · ödenen " + sayi(z.od) + ' USD</small></div><button class="btn sm" data-dv="' + o.id + '">Davet mesajı</button></div>'; }).join("") || '<div class="bos">Henüz iş ortağı yok. Yukarıdan rolü "İş ortağı" olan kişi ekleyin.</div>') + '<div id="dvK"></div></div>' +
+      '<div class="card"><h3>Komisyonlar <small style="color:var(--muted)">' + K.length + "</small></h3>" + (K.map(function (k) { var a = (k.expand || {}).aday || {}, o = (k.expand || {}).ortak || {};
+        return '<div class="row" style="flex-wrap:wrap"><div class="t"><b>' + sayi(k.tutarUSD || 0) + " USD · " + esc(a.ad || "—") + "</b><small>" + esc([o.name || o.email, k.oran ? "%" + sayi(k.oran, 1) + " × " + sayi(k.bedelUsd || 0) + " USD" : "", k.odemeTarihi ? "ödendi " + tarih(k.odemeTarihi) : "", k.not].filter(Boolean).join(" · ")) + '</small></div><input data-kt="' + k.id + '" inputmode="decimal" value="' + esc(String(k.tutarUSD || 0).replace(".", ",")) + '" style="width:90px;min-height:34px"><select data-kd="' + k.id + '" style="width:auto;min-height:34px">' + sec(["Bekliyor", "Hak edildi", "Ödendi"], k.durum) + "</select></div>"; }).join("") || '<div class="bos">Komisyon kaydı yok.</div>') +
+      '<div class="not"><small>Komisyon proje başlayınca "Bekliyor" açılır. Peşinat tahsil edilince "Hak edildi", ortağa ödeme yapılınca "Ödendi" seçin. Ödemeyi Finans › Hareketler\'e ayrıca girin.</small></div></div>';
+    var yen = function () { ortakProgram(kutu); };
+    yonlendirmeBagla(Y, yen);
+    $("opK").onclick = function () { var d = Object.assign({}, P, { oran: num($("opO").value) || 0, sabitUsd: num($("opS").value) || 0, hakEdis: $("opH").value.trim() });
+      (AY ? api("/api/collections/ayarlar/records/" + AY.id, { method: "PATCH", body: { deger: d } }) : api("/api/collections/ayarlar/records", { method: "POST", body: { anahtar: "ortak_program", deger: d } })).then(function () { toast("Kaydedildi"); yen(); }).catch(hata); };
+    bagT("[data-ke]", function (e) { var p = PR.filter(function (x) { return x.id === e.dataset.ke; })[0], a = p.expand.aday, o = +P.oran || 0;
+      api("/api/collections/komisyonlar/records", { method: "POST", body: { ortak: a.ortak, aday: a.id, proje: p.id, bedelUsd: p.bedelUsd || 0, oran: o, tutarUSD: Math.round(((p.bedelUsd || 0) * o / 100 + (+P.sabitUsd || 0)) * 100) / 100, durum: "Bekliyor", not: "Elle açıldı" } }).then(function () { toast("Komisyon açıldı"); yen(); }).catch(hata); });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-kd]"), function (s) { s.onchange = function () { var b = { durum: s.value }; if (s.value === "Ödendi") b.odemeTarihi = bugun() + " 12:00:00.000Z";
+      api("/api/collections/komisyonlar/records/" + s.dataset.kd, { method: "PATCH", body: b }).then(function () { toast("Komisyon: " + s.value); yen(); }).catch(hata); }; });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-kt]"), function (s) { s.onchange = function () { var v = num(s.value); if (v == null) { toast("Tutar geçersiz"); return; }
+      api("/api/collections/komisyonlar/records/" + s.dataset.kt, { method: "PATCH", body: { tutarUSD: v } }).then(function () { toast("Tutar güncellendi"); }).catch(hata); }; });
+    bagT("[data-dv]", function (e) { var o = O.filter(function (x) { return x.id === e.dataset.dv; })[0], t = (P.davet || DAVET_VARS).replace(/\{ad\}/g, (o.name || "").split(" ")[0] || "").replace(/\{email\}/g, o.email || "");
+      $("dvK").innerHTML = '<div class="f" style="border-top:1px solid #edf1f6;padding-top:12px"><b>Davet mesajı: ' + esc(o.name || o.email) + '</b><textarea id="dvT" rows="12">' + esc(t) + '</textarea><div class="f2"><button class="btn" id="dvC">Kopyala</button>' + (o.tel ? '<a class="btn" target="_blank" rel="noopener" id="dvW" href="#">WhatsApp\'ta aç</a>' : "") + '</div><small style="color:var(--muted)">Mesajı siz gönderirsiniz; uygulama kimseye otomatik mesaj atmaz. Geçici şifreyi bu mesaja yazmayın, ayrı iletin.</small></div>';
+      $("dvC").onclick = function () { var x = $("dvT"); x.select(); try { navigator.clipboard.writeText(x.value).then(function () { toast("Kopyalandı"); }, function () { document.execCommand("copy"); toast("Kopyalandı"); }); } catch (er) { document.execCommand("copy"); toast("Kopyalandı"); } };
+      var w = $("dvW"); if (w) w.onclick = function () { w.href = "https://wa.me/90" + telNorm(o.tel) + "?text=" + encodeURIComponent($("dvT").value); };
+      $("dvK").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  }).catch(hata);
+}
+function sOrtak() {
+  Promise.all([liste("ortak_musterileri", "", "-id"), liste("komisyonlar", "", "-id", "aday"), liste("yonlendirmeler", "", "-created").catch(function () { return []; })]).then(function (R) {
+    var M = R[0], K = R[1], Y = R[2], bek = function (d) { return K.filter(function (k) { return k.durum === d; }).reduce(function (s, k) { return s + (+k.tutarUSD || 0); }, 0); };
+    var ad = (BEN.name || "").split(" ")[0];
+    var bekleyen = Y.filter(function (y) { return !y.aday && y.durum !== "Uygun değil"; });
+    $("m").innerHTML = '<div class="card hero" style="background:linear-gradient(135deg,#1d3557,#2e5c8a);color:#fff;padding:18px 20px"><div style="font-size:15px;opacity:.85">Merhaba' + (ad ? " " + esc(ad) : "") + '</div><div style="font-size:22px;font-weight:800;margin-top:4px">Yönlendirdiğiniz her sözleşmeden komisyon</div><button class="btn or" id="yAc" style="margin-top:12px">+ Müşteri yönlendir</button></div><div id="yF"></div>' +
+      '<div class="ozet" style="grid-template-columns:repeat(4,1fr)"><div><b>' + (M.length + bekleyen.length) + '</b><small>yönlendirme</small></div><div><b>' + M.filter(function (m) { return m.asama === "Sözleşme"; }).length + '</b><small>sözleşme</small></div><div style="background:var(--warnbg)"><b style="color:var(--warn)">$' + sayi(bek("Bekliyor") + bek("Hak edildi")) + '</b><small>bekleyen</small></div><div style="background:#e8f7ee"><b style="color:var(--ok)">$' + sayi(bek("Ödendi")) + "</b><small>ödenen</small></div></div>" +
+      (bekleyen.length ? '<div class="card"><h3>İletilenler <small style="color:var(--muted)">ekip inceliyor</small></h3>' + bekleyen.map(function (y) { return '<div class="row"><div class="t"><b>' + esc(y.ad) + "</b><small>" + esc([y.ilce, tarih(y.created)].filter(Boolean).join(" · ")) + '</small></div><span class="pill">İletildi</span></div>'; }).join("") + "</div>" : "") +
+      '<div class="card"><h3>Yönlendirdiklerim</h3>' + (M.map(function (m) { return '<div class="row"><div class="t"><b>' + esc(m.ad) + "</b><small>" + esc(m.ilce || "") + '</small></div><span class="pill p-' + esc(m.asama) + '">' + esc(m.asama) + "</span></div>"; }).join("") || '<div class="bos">Henüz ekibe geçmiş yönlendirme yok.</div>') + "</div>" +
+      '<div class="card"><h3>Komisyonlarım</h3>' + (K.map(function (k) { return '<div class="row"><div class="t"><b>' + sayi(k.tutarUSD || 0) + " USD</b><small>" + esc([k.expand && k.expand.aday ? k.expand.aday.ad : (M.filter(function (m) { return m.id === k.aday; })[0] || {}).ad, k.odemeTarihi ? "ödeme " + tarih(k.odemeTarihi) : ""].filter(Boolean).join(" · ")) + '</small></div><span class="pill">' + esc(k.durum) + "</span></div>"; }).join("") || '<div class="bos">Henüz komisyon yok. Yönlendirdiğiniz müşteri sözleşme imzalayıp proje başlayınca burada görünür.</div>') +
+      '<div class="not"><small>Komisyon, müşteri peşinatı tahsil edilince hak edilir. Sorularınız için: 0544 498 25 99</small></div></div>';
+    $("yAc").onclick = function () {
+      $("yF").innerHTML = '<div class="card"><h3>Müşteri yönlendir</h3><div class="f"><label>Ad soyad<input id="yoA" autocomplete="off"></label><div class="f2"><label>Telefon<input id="yoT" inputmode="tel" autocomplete="off"></label><label>İlçe / semt<input id="yoI"></label></div>' +
+        '<label>Not (çatı tipi, fatura, ne zaman aranmalı…)<textarea id="yoN" rows="3"></textarea></label><label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input type="checkbox" id="yoZ" style="width:auto;min-height:0;margin-top:3px"> Bu kişi D Solar tarafından aranmayı kabul etti</label>' +
+        '<div class="f2"><button class="btn" id="yoV">Vazgeç</button><button class="btn pri" id="yoK">Gönder</button></div></div></div>';
+      $("yoA").focus(); $("yoV").onclick = function () { $("yF").innerHTML = ""; };
+      $("yoK").onclick = function () { var a = $("yoA").value.trim(), t = $("yoT").value.trim();
+        if (a.length < 3) { toast("Ad soyad gerekli"); return; } if (telNorm(t).length < 10) { toast("Telefon 10 haneli olmalı"); return; }
+        if (!$("yoZ").checked) { toast("Kişinin aranmayı kabul ettiğini işaretleyin"); return; }
+        $("yoK").disabled = true;
+        api("/api/collections/yonlendirmeler/records", { method: "POST", body: { ortak: BEN.id, ad: a, tel: t, ilce: $("yoI").value.trim(), not: $("yoN").value.trim(), izin: true, durum: "Yeni" } })
+          .then(function () { toast("Gönderildi, ekip en kısa sürede arayacak"); sOrtak(); }).catch(function (x) { $("yoK").disabled = false; hata(x); }); };
+    };
   }).catch(hata);
 }
 
