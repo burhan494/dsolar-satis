@@ -1,7 +1,7 @@
 {
- "surum": 13,
- "paket": "surumler/dsolar-13.zip",
- "sha256": "dee6030297651a2905a8e65b398fa608debe36f19c1a99cfcf87816acfe32663",
- "imza": "daq1Pk8snJTw5FUEEZOBPGGH7pk5/tJQTDcyAsc/KOSP7r2hP3G5J9ATFGMHDljPFEub37sJDWPcuHJqiwVXuJLqH61rjcvw4IHw+T3Uw4mo2Eg8NGgAbosXGJ2opmEvu8xuak5rmWNv9oU7KK4YPY5YN0t+yu6/2uvlyvHMJzsQSB6zL74VF42hcifCKjSOZiykyrmLqpcAxtWARj6nEdKvZW647omrvJmyJPQcnRyf4/t5jaZHqoCwh/Mgh6dRTtI2qbHIvwbekAEgiOKY6DJuwaKZHIkAjdzQhZsLOrAHiDNiPQEYkMsLHjzGIXoknRCBEBKtShwG8oFfExUmT0baB8B5wZ0kMWxtIsiksa3qt+zqtluEX50FCHwffSOno7WrjXQSaQMLgwEBYL7hGNACHQOuQAFs1nQC7WsSgAO2eaqXRGh76A9KTinsAxrKd0jmcn0YnndT+wK5OWVpUPMNfS4wb16Mprp10067TZs7Mk+GAYt2RqKDD/7rtJ9y",
- "not": "Finans yeniden düzenlendi: Kasa, 12 aylık nakit akışı (ortak girişi 60/40 önerisi), Gelecek/Gidecek, sermaye girişi; Ödendi/Tahsil edildi; yeni sürüm uyarısı"
+ "surum": 14,
+ "paket": "surumler/dsolar-14.zip",
+ "sha256": "1cdefd1e95a56d49170616759e5f14a75eaec82209627b6e61fee62dbe9987de",
+ "imza": "UY0qmGM2f68LczMYxeKtzMKZKjx7d9mQ6doMADPlPqmK7+4B0gIS5ZzO6wVgIxuKddydMRrqeJPM6tHogRAYvZhIN4zd+cpyH17n11diYAN59sJwGk7QcfeGKFgw/tNK0hNCYhKT2w+qFBsAdaJ68I7P4Dd7t/2z0xcaXvCGx0M6+NCLv6seQW5rFpmzGheaFc2MdNF+JDTbPUM+jeJkMKql/a/26Zm2snfnnqjRYVisNJUMX6DE1fgPJDxvig45/UF2LdRTS2YqQZPryhZJkNWIwkF3vhxgPGaXcZtWVU0UN4aaLw3D0htprAyYJS0ecwqjGxXu6GKgf5DTi5ILYwHqvkujvHYBCXP3EQ6xiHFFS8rrL+LWrnd9HuVRHgXvtGTREbyABgD5gQjNsXXJ8B3+0MFpqj39jwLuOAHsDcH2y836aAow/L7lP/mR+uWAbm0I/0204i6XlpbY5XxtKjRGD7v4kfl6aG7eKdVVjfhfWKp8Yl5FfPHn7WjxmpKC",
+ "not": "Daha derli toplu ekranlar (masaüstünde yan yana kartlar, katlanır gruplar), renkli ikonlar, banka rozetleri"
 }
