@@ -1,7 +1,7 @@
 {
- "surum": 11,
- "paket": "surumler/dsolar-11.zip",
- "sha256": "79454e72403741c316c50b1d074b3892c350d761c531c0d063883a3b8d477580",
- "imza": "GapANHz1UFo4j5xNc2behG7rlWT6TPfXgg6qZzeW3CCg4QdswLxnevgVOy9jlytw+vLIi4XJtE+nThZniAanL5Hk00ZXPCSL2Bt532BbNsLuPCLeHRR0xYXaDd/kqnXOKO0KM7sJkU4xv2CHHT40gATI4Cg3YWAd54IdvsmWZMpRqd4ygX+czOSx/EVTi1kmwYcLbGarR3YBCb3Aj8s9nB4W9SkFdPbF45Xt/oJH0e4HLHUkg1CkfwromV//o9tn8V/QxFp61fPgEsMKpF4nkIX7ukHuxp1xEC50EVu678t+4XDj7gglF/aTphOkSp00+jluyw6rOtUjkY+NgDc5lD/nR5ieEUo/uUQxIMg+QSY48Bvv/ThOeafhW97gG9wOMsA8fj+NCOZ0wdlH0MFbcUgHFAo8h0hqPZCpmdy0JpSFLG/vWeQJjbLZlwskotg/Q79nx/zXpaggWjtL+sJ2L7FCzZ9Pl3/nf9TpnUFA8R9pdTZ24V9KwRamQDEpJVQf",
- "not": "Hareket düzenleme (tarih, tutar, hesap, durum), 'kontrol edildi' işareti ve ilerleme; gerçekleşen ödemede hesap sorulur"
+ "surum": 12,
+ "paket": "surumler/dsolar-12.zip",
+ "sha256": "caa7c92019377ff76bacbcbddd9e5da84faa2819f2ac83acfe1aa55d6a2763af",
+ "imza": "DR8SBS0JSD3ErJl2fdkS3sasGYmPODfRaMIPqhxv6ZpnaJVk45IYhTM/qa/sMf2ZCMnBhsnCzNU3klZkDBJ46bqat5jMvb3KZwAqxgkwqBds1TpdL0h7R/oZ58Jax+dI47AuOQZnODjOf/7hxMLaIuJh4rLOEWHbI2pUOsvLV2z2M9QUBTsQAYSVe3s3apvvX1i+TEUG5O5lwQlDwUrDUCl2pbSDQVQjt1Y6rwxkrdbF8e2cs86+wx2Q+vTJCT14obUe+TKYk3mKopSyyQb6hRt2+Wwyw6OQlFy3c3gVuGFEhF+6q91U6gjGXrYtq2mfeEs03ukgi2QmjadOd6guu5Q77sXc/aSdxQ2PdWnja1XD1C693WMAqo2Ht89bwHuT/APmJaYsot/FFNZQveqLnRtyCNcpGIwS9PnrqHKuET0szrpdIFhKF0xf4rUYrV9GVGJ6moaF8Sff1YVfVdqaR8j3F4jvvwMtRHCvr71tAoTwMOr/QXExOCqypQqsk2X4",
+ "not": "Ortak cari: Excel'den yükleme ve elle giriş/çıkış (şirket, kur, filtre); kredi, kart, limit, teminat, sabit gider, varlık düzenleme; Çekler sekmesi"
 }

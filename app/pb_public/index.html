@@ -389,11 +389,11 @@ function bakiyeler(H, M) {
 function sFinans(alt) {
   if (!finansci()) { location.hash = "#bugun"; return; }
   alt = alt || "ozet";
-  var T = [["ozet", "Özet"], ["hareket", "Hareketler"], ["hesap", "Hesaplar"], ["kredi", "Kredi ve limitler"], ["sabit", "Sabit giderler"], ["soru", "Sorular"]];
+  var T = [["ozet", "Özet"], ["hareket", "Hareketler"], ["hesap", "Hesaplar"], ["kredi", "Kredi ve limitler"], ["cek", "Çekler"], ["sabit", "Sabit giderler"], ["soru", "Sorular"]];
   if (yon()) T.push(["ortak", "Ortak cari"], ["varlik", "Varlıklar"]);
   var bas = '<div class="chips">' + T.map(function (t) { return '<button onclick="location.hash=\'#finans/' + t[0] + '\'" class="' + (t[0] === alt ? "on" : "") + '">' + t[1] + "</button>"; }).join("") + '</div><div id="fm"><div class="bos">Yükleniyor…</div></div>';
   $("m").innerHTML = bas;
-  ({ ozet: fOzet, hareket: fHareket, hesap: fHesap, kredi: fKredi, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik }[alt] || fOzet)();
+  ({ ozet: fOzet, hareket: fHareket, hesap: fHesap, kredi: fKredi, cek: fCek, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik }[alt] || fOzet)();
 }
 function pbOf(m, ha) { return m.pb || ((ha || {})[m.hesap] || {}).pb || "TRY"; }
 function sabitAyda(s, a) { return (!s.bas || s.bas <= a) && (!s.bit || s.bit >= a); }
@@ -519,21 +519,18 @@ function fHesap() {
   }).catch(hata);
 }
 function fKredi() {
-  Promise.all([liste("krediler", "", "durum,ad"), liste("fin_kartlar", "", "banka"), liste("fin_limitler", "", "banka"), liste("fin_teminatlar", "", "bitis")]).then(function (R) {
-    var K = R[0], KT = R[1], LM = R[2], TM = R[3], top = {};
+  Promise.all([liste("krediler", "", "durum,ad"), liste("fin_kartlar", "", "banka"), liste("fin_limitler", "", "banka"), liste("fin_teminatlar", "", "bitis"), liste("fin_hareketler", "kredi != '' && durum != 'Gerçekleşti'", "tarih")]).then(function (R) {
+    var K = R[0], KT = R[1], LM = R[2], TM = R[3], top = {}, PT = {};
+    R[4].forEach(function (m) { var x = PT[m.kredi] = PT[m.kredi] || { n: 0, top: 0, ilk: null }; x.n++; x.top += +m.tutar || 0; if (!x.ilk) x.ilk = m; });
     K.forEach(function (k) { if (k.durum === "Kapandı") return; top[k.pb] = (top[k.pb] || 0) + (+(k.kalan || k.anaPara) || 0); });
     var yuzde = function (r, l) { return l ? " (%" + sayi(r / l * 100) + ")" : ""; };
     $("fm").innerHTML = '<div class="card"><h3>Kredi borcu (kalan ya da ana para)</h3><div class="kv">' + (Object.keys(top).map(function (p) { return "<div><small>" + PB_AD[p] + "</small><b>" + para(top[p], p) + "</b></div>"; }).join("") || '<div><small>—</small><b>0</b></div>') + "</div></div>" +
-      '<div class="card"><h3>Krediler</h3>' + (K.map(function (k) { return '<div class="row"><div class="t"><b class="w"' + (k.durum === "Kapandı" ? ' style="color:var(--muted)"' : "") + ">" + esc(k.ad) + (k.durum === "Kapandı" ? " (kapandı)" : "") + "</b><small>" + esc([k.anaPara ? "ana para " + para(k.anaPara, k.pb) : "", k.kalan != null && k.kalan !== 0 ? "kalan " + para(k.kalan, k.pb) : "", k.taksit ? "taksit " + para(k.taksit, k.pb) : "", k.baslangic ? "başlangıç " + tarih(k.baslangic) : "", k.sonOdeme ? "vade " + tarih(k.sonOdeme) : ""].filter(Boolean).join(" · ")) +
-        (k.not ? "<br>" + esc(k.not) : "") + "</small></div>" + '<div style="display:grid;gap:6px"><button class="btn sm" data-kk="' + k.id + '" data-k="' + esc(k.kalan || "") + '">Kalan</button>' + (yon() ? '<button class="btn sm" data-kx="' + k.id + '">✕</button>' : "") + "</div></div>"; }).join("") || '<div class="bos">Kredi yok.</div>') + "</div>" +
-      (KT.length ? '<div class="card"><h3>Kredi kartları</h3>' + KT.map(function (k) { return '<div class="row"><div class="t"><b class="w">' + esc(k.banka + " •" + k.son4) + "</b><small>" + esc([k.ad, "limit " + para(k.limit, k.pb), "borç " + para(k.borc, k.pb), k.kesimGunu ? "kesim " + k.kesimGunu : "", k.sonOdeme ? "son ödeme " + tarih(k.sonOdeme) : "", k.not].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>" : "") +
-      (LM.length ? '<div class="card"><h3>Banka limitleri ve risk</h3>' + LM.map(function (l) { return '<div class="row"><div class="t"><b>' + esc(l.banka) + "</b><small>grup " + sayi(l.grupRisk) + " / " + sayi(l.grupLimit) + yuzde(l.grupRisk, l.grupLimit) + " · nakdi " + sayi(l.nakdiRisk) + " / " + sayi(l.nakdiLimit) + " · gayrinakdi " + sayi(l.gayriRisk) + " / " + sayi(l.gayriLimit) + (l.revize ? " · revize " + tarih(l.revize) : "") + "</small></div></div>"; }).join("") + "</div>" : "") +
-      (TM.length ? '<div class="card"><h3>Teminat mektupları</h3>' + TM.map(function (t) { return '<div class="row"><div class="t"><b class="w">' + esc(t.lehtar) + " · " + para(t.tutar, t.pb) + "</b><small>" + esc([t.banka, t.no, t.bitis ? "bitiş " + tarih(t.bitis) : "", t.iadePlan ? "iade planı " + tarih(t.iadePlan) : "", t.komisyonOran ? "komisyon %" + t.komisyonOran : ""].filter(Boolean).join(" · ")) + '</small></div><span class="pill">' + esc(t.durum || "") + "</span></div>"; }).join("") + "</div>" : "") +
-      '<div class="card"><h3>Kredi ekle</h3><div class="f"><div class="f2"><label>Ad<input id="rA"></label><label>Banka<input id="rB"></label></div><div class="f2"><label>Para birimi<select id="rP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + '</select></label><label>Ana para<input id="rN" inputmode="decimal"></label></div>' +
-      '<div class="f2"><label>Kalan ana para<input id="rK" inputmode="decimal"></label><label>Aylık taksit<input id="rT" inputmode="decimal"></label></div><div class="f2"><label>Yıllık faiz (%)<input id="rF" inputmode="decimal"></label><label>Son ödeme<input id="rS" type="date"></label></div>' +
-      '<label>Not<input id="rO"></label><button class="btn pri" id="rE">Ekle</button></div></div>';
-    $("rE").onclick = function () { if (!$("rA").value.trim()) { toast("Ad gerekli"); return; }
-      api("/api/collections/krediler/records", { method: "POST", body: { ad: $("rA").value.trim(), banka: $("rB").value.trim(), pb: $("rP").value, anaPara: num($("rN").value), kalan: num($("rK").value), taksit: num($("rT").value), faiz: num($("rF").value), sonOdeme: $("rS").value ? $("rS").value + " 00:00:00.000Z" : "", durum: "Aktif", not: $("rO").value.trim() } }).then(function () { toast("Eklendi"); fKredi(); }).catch(hata); };
+      '<div class="card"><h3>Krediler</h3>' + (K.map(function (k) { var pt = PT[k.id]; return '<div class="row" data-ed="krediler|' + k.id + '"><div class="t"><b class="w"' + (k.durum === "Kapandı" ? ' style="color:var(--muted)"' : "") + ">" + esc(k.ad) + (k.durum === "Kapandı" ? " (kapandı)" : "") + "</b><small>" + esc([k.anaPara ? "ana para " + para(k.anaPara, k.pb) : "", k.kalan != null && k.kalan !== 0 ? "kalan " + para(k.kalan, k.pb) : "", k.taksit ? "taksit " + para(k.taksit, k.pb) : "", k.baslangic ? "başlangıç " + tarih(k.baslangic) : "", k.sonOdeme ? "vade " + tarih(k.sonOdeme) : ""].filter(Boolean).join(" · ")) +
+        (pt ? "<br>Planlı " + pt.n + " ödeme, toplam " + para(pt.top, pt.ilk.pb || k.pb) + " · sıradaki " + tarih(pt.ilk.tarih) + " " + para(pt.ilk.tutar, pt.ilk.pb || k.pb) : "") + (k.not ? "<br>" + esc(k.not) : "") + "</small></div>" + '<div style="display:grid;gap:6px"><button class="btn sm" data-kk="' + k.id + '" data-k="' + esc(k.kalan || "") + '">Kalan</button>' + (yon() ? '<button class="btn sm" data-kx="' + k.id + '">✕</button>' : "") + "</div></div>"; }).join("") || '<div class="bos">Kredi yok.</div>') + yeniBtn("krediler", "Kredi ekle") + "</div>" +
+      ('<div class="card"><h3>Kredi kartları</h3>' + KT.map(function (k) { return '<div class="row" data-ed="fin_kartlar|' + k.id + '"><div class="t"><b class="w">' + esc(k.banka + " •" + k.son4) + "</b><small>" + esc([k.ad, "limit " + para(k.limit, k.pb), "borç " + para(k.borc, k.pb), k.kesimGunu ? "kesim " + k.kesimGunu : "", k.sonOdeme ? "son ödeme " + tarih(k.sonOdeme) : "", k.not].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + yeniBtn("fin_kartlar", "Kart ekle") + "</div>") +
+      ('<div class="card"><h3>Banka limitleri ve risk</h3>' + LM.map(function (l) { return '<div class="row" data-ed="fin_limitler|' + l.id + '"><div class="t"><b>' + esc(l.banka) + "</b><small>grup " + sayi(l.grupRisk) + " / " + sayi(l.grupLimit) + yuzde(l.grupRisk, l.grupLimit) + " · nakdi " + sayi(l.nakdiRisk) + " / " + sayi(l.nakdiLimit) + " · gayrinakdi " + sayi(l.gayriRisk) + " / " + sayi(l.gayriLimit) + (l.revize ? " · revize " + tarih(l.revize) : "") + "</small></div></div>"; }).join("") + yeniBtn("fin_limitler", "Limit ekle") + "</div>") +
+      ('<div class="card"><h3>Teminat mektupları</h3>' + TM.map(function (t) { return '<div class="row" data-ed="fin_teminatlar|' + t.id + '"><div class="t"><b class="w">' + esc(t.lehtar) + " · " + para(t.tutar, t.pb) + "</b><small>" + esc([t.banka, t.no, t.bitis ? "bitiş " + tarih(t.bitis) : "", t.iadePlan ? "iade planı " + tarih(t.iadePlan) : "", t.komisyonOran ? "komisyon %" + t.komisyonOran : ""].filter(Boolean).join(" · ")) + '</small></div><span class="pill">' + esc(t.durum || "") + "</span></div>"; }).join("") + yeniBtn("fin_teminatlar", "Teminat ekle") + "</div>") ;
+    edBagla(K.concat(KT, LM, TM), fKredi);
     bagT("[data-kk]", function (e) { var v = prompt("Güncel kalan ana para:", String(e.dataset.k).replace(".", ",")); if (v == null) return; var n = num(v); if (n == null || n < 0) { toast("Geçersiz tutar"); return; }
       api("/api/collections/krediler/records/" + e.dataset.kk, { method: "PATCH", body: { kalan: n, durum: n === 0 ? "Kapandı" : "Aktif" } }).then(fKredi).catch(hata); });
     bagT("[data-kx]", function (e) { if (confirm("Kredi kaydı silinsin mi?")) api("/api/collections/krediler/records/" + e.dataset.kx, { method: "DELETE" }).then(fKredi).catch(hata); });
@@ -544,12 +541,9 @@ function fSabit() {
     var ay = bugun().slice(0, 7), bu = S.filter(function (s) { return sabitAyda(s, ay) && s.yon === "Çıkış"; }), top = {};
     bu.forEach(function (s) { top[s.pb || "TRY"] = (top[s.pb || "TRY"] || 0) + (+s.tutar || 0); });
     $("fm").innerHTML = '<div class="card"><h3>Bu ayın sabit giderleri</h3><div class="kv">' + (Object.keys(top).map(function (p) { return "<div><small>" + PB_AD[p] + "</small><b>" + para(top[p], p) + "</b></div>"; }).join("") || "<div><small>—</small><b>0</b></div>") + "</div></div>" +
-      '<div class="card"><h3>Sabit kalemler</h3>' + (S.map(function (s) { var aktif = sabitAyda(s, ay); return '<div class="row"><div class="t"><b class="w"' + (aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(s.ad) + "</b><small>" + esc([s.kategori, "her ay " + (s.gun || 1) + ". gün", (s.bas ? ayAd(s.bas) : "") + (s.bit ? " – " + ayAd(s.bit) : s.bas ? "den itibaren" : ""), s.artis ? "artış: " + s.artis : "", s.not].filter(Boolean).join(" · ")) + "</small></div>" +
-        '<b style="white-space:nowrap;color:' + (s.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (s.yon === "Giriş" ? "+" : "−") + para(s.tutar, s.pb || "TRY") + "</b>" + (yon() ? '<button class="btn sm" data-sx="' + s.id + '">✕</button>' : "") + "</div>"; }).join("") || '<div class="bos">Sabit kalem yok.</div>') + "</div>" +
-      '<div class="card"><h3>Sabit kalem ekle</h3><div class="f"><div class="f2"><label>Ad<input id="sA" placeholder="ör. Maaş ödemesi"></label><label>Kategori<input id="sK"></label></div><div class="f2"><label>Tutar<input id="sU" inputmode="decimal"></label><label>Para birimi<select id="sP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + "</select></label></div>" +
-      '<div class="f2"><label>Başlangıç ayı<input id="sB" type="month" value="' + ay + '"></label><label>Bitiş ayı (boş = süresiz)<input id="sT" type="month"></label></div><div class="f2"><label>Ödeme günü<input id="sG" inputmode="numeric" value="1"></label><label>Yön<select id="sY">' + sec(["Çıkış", "Giriş"]) + '</select></label></div><button class="btn pri" id="sE">Ekle</button></div></div>';
-    $("sE").onclick = function () { if (!$("sA").value.trim() || !(num($("sU").value) > 0)) { toast("Ad ve tutar gerekli"); return; }
-      api("/api/collections/fin_sabitler/records", { method: "POST", body: { ad: $("sA").value.trim(), kategori: $("sK").value.trim(), tutar: num($("sU").value), pb: $("sP").value, bas: $("sB").value, bit: $("sT").value, gun: num($("sG").value) || 1, yon: $("sY").value } }).then(fSabit).catch(hata); };
+      '<div class="card"><h3>Sabit kalemler</h3>' + (S.map(function (s) { var aktif = sabitAyda(s, ay); return '<div class="row" data-ed="fin_sabitler|' + s.id + '"><div class="t"><b class="w"' + (aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(s.ad) + "</b><small>" + esc([s.kategori, "her ay " + (s.gun || 1) + ". gün", (s.bas ? ayAd(s.bas) : "") + (s.bit ? " – " + ayAd(s.bit) : s.bas ? "den itibaren" : ""), s.artis ? "artış: " + s.artis : "", s.not].filter(Boolean).join(" · ")) + "</small></div>" +
+        '<b style="white-space:nowrap;color:' + (s.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (s.yon === "Giriş" ? "+" : "−") + para(s.tutar, s.pb || "TRY") + "</b>" + (yon() ? '<button class="btn sm" data-sx="' + s.id + '">✕</button>' : "") + "</div>"; }).join("") || '<div class="bos">Sabit kalem yok.</div>') + yeniBtn("fin_sabitler", "Sabit kalem ekle") + "</div>";
+    edBagla(S, fSabit);
     bagT("[data-sx]", function (e) { if (confirm("Sabit kalem silinsin mi?")) api("/api/collections/fin_sabitler/records/" + e.dataset.sx, { method: "DELETE" }).then(fSabit).catch(hata); });
   }).catch(hata);
 }
@@ -569,27 +563,41 @@ function soruSatir(t) {
   return '<div class="not"><small>' + esc(["#" + (t.no || ""), t.konu, t.kime ? "→ " + t.kime : "", t.cevapTarihi ? "cevap " + tarih(t.cevapTarihi) : ""].filter(Boolean).join(" · ")) + "</small><b>" + esc(t.soru) + "</b>" +
     (t.cevap ? '<div style="margin-top:4px;color:var(--ok)">' + esc(t.cevap) + "</div>" : "") + '<div style="margin-top:6px"><button class="btn sm" data-qc="' + t.id + '">' + (t.cevap ? "Cevabı düzelt" : "Cevapla") + "</button></div></div>";
 }
+var OF = { o: "", s: "", y: "" };
 function fOrtak() {
   if (!yon()) { location.hash = "#finans"; return; }
-  liste("ortak_cari", "", "-tarih").then(function (C) {
-    var S = { Burhan: { k: 0, a: 0 }, Batur: { k: 0, a: 0 } };
-    C.forEach(function (c) { if (S[c.ortak]) S[c.ortak][c.yon === "Koydu" ? "k" : "a"] += +c.tutarUsd || 0; });
+  Promise.all([liste("ortak_cari", "", "-tarih"), kurKartiGetir()]).then(function (R) {
+    var C = R[0], KU = R[1], S = { Burhan: { k: 0, a: 0 }, Batur: { k: 0, a: 0 } }, SK = {};
+    C.forEach(function (c) { var y = c.yon === "Koydu" ? "k" : "a", v = +c.tutarUsd || 0; if (S[c.ortak]) S[c.ortak][y] += v; var key = c.ortak + "|" + (c.sirket || "D Solar"); SK[key] = SK[key] || { k: 0, a: 0 }; SK[key][y] += v; });
     var nB = S.Burhan.a - S.Burhan.k, nT = S.Batur.a - S.Batur.k, T = nB + nT, oneri = "";
-    if (C.length) {
-      var x = nB / 0.6 - T, y = nT / 0.4 - T;
+    if (C.length) { var x = nB / 0.6 - T, y = nT / 0.4 - T;
       if (Math.abs(nB - 0.6 * T) < 1) oneri = "Ortak cari 60/40 dengede.";
       else if (x > 0) oneri = "60/40 denge için Batur'un " + sayi(x) + " USD daha çekmesi (ya da Burhan'ın " + sayi(nB - 0.6 * T) + " USD koyması) gerekir.";
-      else oneri = "60/40 denge için Burhan'ın " + sayi(y) + " USD daha çekmesi (ya da Batur'un " + sayi(nT - 0.4 * T) + " USD koyması) gerekir.";
-    }
-    $("fm").innerHTML = '<div class="card"><h3>Ortak cari (USD)</h3><div class="kv">' + ["Burhan", "Batur"].map(function (o) { var n = S[o].a - S[o].k; return "<div><small>" + o + " · net çekilen</small><b>" + sayi(n) + "</b><small>koydu " + sayi(S[o].k) + " · aldı " + sayi(S[o].a) + "</small></div>"; }).join("") + "</div>" +
+      else oneri = "60/40 denge için Burhan'ın " + sayi(y) + " USD daha çekmesi (ya da Batur'un " + sayi(nT - 0.4 * T) + " USD koyması) gerekir."; }
+    var yillar = []; C.forEach(function (c) { var y = c.devir ? "Devir" : (c.tarih || "").slice(0, 4); if (y && yillar.indexOf(y) < 0) yillar.push(y); }); yillar.sort();
+    var L = C.filter(function (c) { return (!OF.o || c.ortak === OF.o) && (!OF.s || (c.sirket || "D Solar") === OF.s) && (!OF.y || (c.devir ? "Devir" : (c.tarih || "").slice(0, 4)) === OF.y); });
+    var fa = 0, fk = 0; L.forEach(function (c) { if (c.yon === "Koydu") fk += +c.tutarUsd || 0; else fa += +c.tutarUsd || 0; });
+    var chip = function (k, v, ad) { return '<button data-of="' + k + "|" + v + '" class="' + (OF[k] === v ? "on" : "") + '">' + ad + "</button>"; };
+    $("fm").innerHTML = '<div class="card"><h3>Ortak cari (USD)</h3><div class="kv">' + ["Burhan", "Batur"].map(function (o) { var n = S[o].a - S[o].k; return "<div><small>" + o + " · net çekilen</small><b>" + sayi(n) + "</b><small>aldı " + sayi(S[o].a) + " · koydu " + sayi(S[o].k) + "</small></div>"; }).join("") + "</div>" +
+      Object.keys(SK).sort().map(function (k) { var p = k.split("|"), v = SK[k]; return '<div class="row" style="padding:6px 0"><div class="t"><b style="font-size:14px">' + esc(p[0] + " · " + p[1]) + "</b><small>aldı " + sayi(v.a) + " · koydu " + sayi(v.k) + "</small></div><b>" + sayi(v.a - v.k) + " $</b></div>"; }).join("") +
       (oneri ? '<div class="bilgi">' + esc(oneri) + (T ? " Şu anki pay: Burhan %" + sayi(nB / T * 100, 1) + " / Batur %" + sayi(nT / T * 100, 1) + "." : "") + "</div>" : "") + "</div>" +
-      '<div class="card"><h3>Kayıt ekle</h3><div class="f"><div class="f2"><label>Tarih<input id="oT" type="date" value="' + bugun() + '"></label><label>Ortak<select id="oO">' + sec(["Burhan", "Batur"]) + '</select></label></div>' +
-      '<div class="f2"><label>Yön<select id="oY">' + sec(["Aldı", "Koydu"]) + '</select></label><label>Tutar (USD)<input id="oU" inputmode="decimal"></label></div><label>Açıklama<input id="oA" placeholder="ör. DRK avansı, sermaye"></label><button class="btn pri" id="oK">Ekle</button>' +
-      '<small style="color:var(--muted)">DRK\'ya yapılan avanslar Burhan tarafına yazılır. Yalnız yöneticiler görür.</small></div></div>' +
-      '<div class="card"><h3>Hareketler</h3>' + (C.map(function (c) { return '<div class="row"><div class="t"><b class="w">' + (c.devir ? "Devir" : tarih(c.tarih)) + " · " + esc(c.ortak) + " " + esc(c.yon.toLocaleLowerCase("tr")) + "</b><small>" + esc([c.aciklama, c.sirket && c.sirket !== "D Solar" ? c.sirket : "", c.pb && c.pb !== "USD" ? para(c.tutar, c.pb) + (c.kur ? " @ " + sayi(c.kur, 2) : "") : ""].filter(Boolean).join(" · ")) + '</small></div><b style="white-space:nowrap">' + sayi(c.tutarUsd) + ' USD</b><button class="btn sm" data-ox="' + c.id + '">✕</button></div>'; }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
-    $("oK").onclick = function () { var u = num($("oU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; }
-      api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: $("oT").value + " 12:00:00.000Z", ortak: $("oO").value, yon: $("oY").value, tutarUsd: u, aciklama: $("oA").value.trim() } }).then(fOrtak).catch(hata); };
-    bagT("[data-ox]", function (e) { if (confirm("Kayıt silinsin mi?")) api("/api/collections/ortak_cari/records/" + e.dataset.ox, { method: "DELETE" }).then(fOrtak).catch(hata); });
+      ortakExcelKarti() +
+      '<div class="card"><h3>Elle giriş / çıkış</h3><div class="f"><div class="f2"><label>Tarih<input id="oT" type="date" value="' + bugun() + '"></label><label>Ortak<select id="oO">' + sec(["Burhan", "Batur"]) + "</select></label></div>" +
+      '<div class="f2"><label>Yön<select id="oY">' + sec([["Aldı", "Aldı (şirketten çekti)"], ["Koydu", "Koydu (şirkete verdi)"]]) + '</select></label><label>Şirket<select id="oS">' + sec(["D Solar", "DRK"]) + "</select></label></div>" +
+      '<div class="f2"><label>Tutar<input id="oU" inputmode="decimal"></label><label>Para birimi<select id="oP">' + sec(PBS, "TRY") + '</select></label></div><div class="f2"><label>Kur (USD)<input id="oKur" inputmode="decimal" value="' + String(KU.usd).replace(".", ",") + '"></label><label>USD karşılığı<input id="oUsd" readonly></label></div>' +
+      '<label>Açıklama<input id="oA" placeholder="ör. ortaklara ödeme, sermaye girişi, DRK avansı"></label><button class="btn pri" id="oK">Kaydet</button></div></div>' +
+      '<div class="card"><h3>Hareketler <small style="color:var(--muted)">' + L.length + " kayıt · aldı " + sayi(fa) + " · koydu " + sayi(fk) + " · net " + sayi(fa - fk) + " $</small></h3>" +
+      '<div class="chips" style="padding:0 0 4px">' + chip("o", "", "Herkes") + chip("o", "Burhan", "Burhan") + chip("o", "Batur", "Batur") + "</div>" +
+      '<div class="chips" style="padding:0 0 4px">' + chip("s", "", "Tüm şirketler") + chip("s", "D Solar", "D Solar") + chip("s", "DRK", "DRK") + "</div>" +
+      '<div class="chips" style="padding:0 0 8px">' + chip("y", "", "Tüm yıllar") + yillar.map(function (y) { return chip("y", y, y); }).join("") + "</div>" +
+      (L.map(function (c) { return '<div class="row" data-ed="ortak_cari|' + c.id + '"><div class="t"><b class="w">' + (c.devir ? "Devir" : tarih(c.tarih)) + " · " + esc(c.ortak) + " " + esc(c.yon.toLocaleLowerCase("tr")) + (c.sirket && c.sirket !== "D Solar" ? ' <span class="pill">' + esc(c.sirket) + "</span>" : "") + "</b><small>" + esc([c.aciklama, c.pb && c.pb !== "USD" ? para(c.tutar, c.pb) + (c.kur ? " @ " + sayi(c.kur, 2) : "") : ""].filter(Boolean).join(" · ")) + '</small></div><b style="white-space:nowrap;color:' + (c.yon === "Koydu" ? "var(--ok)" : "var(--bad)") + '">' + (c.yon === "Koydu" ? "+" : "−") + sayi(c.tutarUsd) + " $</b></div>"; }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
+    var hes = function () { var u = num($("oU").value), k = num($("oKur").value), p = $("oP").value; $("oKur").disabled = p === "USD"; $("oUsd").value = u == null ? "" : sayi(p === "USD" ? u : p === "EUR" ? u * KU.eur / KU.usd : k ? u / k : 0, 2); };
+    ["oU", "oKur", "oP"].forEach(function (i) { $(i).oninput = hes; $(i).onchange = hes; }); hes();
+    $("oK").onclick = function () { var u = num($("oU").value), p = $("oP").value, k = num($("oKur").value); if (!(u > 0)) { toast("Tutar gerekli"); return; } if (p === "TRY" && !(k > 0)) { toast("Kur gerekli"); return; }
+      var usd = p === "USD" ? u : p === "EUR" ? u * KU.eur / KU.usd : u / k;
+      api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: $("oT").value + " 12:00:00.000Z", ortak: $("oO").value, yon: $("oY").value, sirket: $("oS").value, tutar: u, pb: p, kur: p === "USD" ? 1 : p === "EUR" ? KU.eur : k, tutarUsd: Math.round(usd * 100) / 100, aciklama: $("oA").value.trim(), kaynak: "Elle" } }).then(function () { toast("Kaydedildi"); fOrtak(); }).catch(hata); };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-of]"), function (b) { b.onclick = function () { var p = b.dataset.of.split("|"); OF[p[0]] = p[1]; fOrtak(); }; });
+    ortakExcelBagla(); edBagla(C, fOrtak);
   }).catch(hata);
 }
 function fVarlik() {
@@ -598,10 +606,11 @@ function fVarlik() {
     var top = {}; V.forEach(function (v) { if (v.durum === "Satıldı") return; var p = v.pb || "USD", d = v.deger != null && v.deger !== 0 ? +v.deger : +v.tahminiUsd || 0; if (!v.pb && v.tahminiUsd) p = "USD"; top[p] = (top[p] || 0) + d; });
     $("fm").innerHTML = '<div class="card"><h3>Eldeki ve satıştaki varlıklar (tahmini)</h3><div class="kv">' + (Object.keys(top).map(function (p) { return "<div><small>" + PB_AD[p] + "</small><b>" + para(top[p], p) + "</b></div>"; }).join("") || "<div><small>—</small><b>0</b></div>") + "</div></div>" +
       '<div class="card"><h3>Varlıklar</h3>' + (V.map(function (v) { var d = v.deger != null && v.deger !== 0 ? para(v.deger, v.pb || "USD") : v.tahminiUsd ? para(v.tahminiUsd, "USD") : "değer yok";
-        return '<div class="row"><div class="t"><b class="w">' + esc(v.ad) + "</b><small>" + esc([v.tur, v.sahip ? "sahibi: " + v.sahip : "", v.konum, v.durum === "Satıldı" ? "satış " + para(v.satisTutar || v.satisUsd, v.satisTutar ? v.pb : "USD") : "tahmini " + d, v.hizliFiyat ? "hızlı satış " + para(v.hizliFiyat, v.pb) : "", v.rehin ? "rehin: " + v.rehin : "", v.not].filter(Boolean).join(" · ")) + "</small></div>" +
+        return '<div class="row" data-ed="varliklar|' + v.id + '"><div class="t"><b class="w">' + esc(v.ad) + "</b><small>" + esc([v.tur, v.sahip ? "sahibi: " + v.sahip : "", v.konum, v.durum === "Satıldı" ? "satış " + para(v.satisTutar || v.satisUsd, v.satisTutar ? v.pb : "USD") : "tahmini " + d, v.hizliFiyat ? "hızlı satış " + para(v.hizliFiyat, v.pb) : "", v.rehin ? "rehin: " + v.rehin : "", v.not].filter(Boolean).join(" · ")) + "</small></div>" +
         '<div style="display:grid;gap:6px;justify-items:end"><select data-vd="' + v.id + '" style="width:auto;min-height:34px">' + sec(["Elde", "Satışta", "Satıldı"], v.durum || "Elde") + '</select><button class="btn sm" data-vx="' + v.id + '">✕</button></div></div>'; }).join("") || '<div class="bos">Varlık yok.</div>') + "</div>" +
       '<div class="card"><h3>Varlık ekle</h3><div class="f"><label>Ad<input id="vA" placeholder="ör. Aliağa Kalabak arsası"></label><div class="f2"><label>Tür<input id="vT" list="vTL"></label><label>Tapu / ruhsat sahibi<input id="vS"></label></div><datalist id="vTL"><option>Arazi / arsa<option>Dükkan / ofis<option>Araç<option>Ekipman<option>Diğer</datalist>' +
       '<div class="f2"><label>Tahmini değer<input id="vU" inputmode="decimal"></label><label>Para birimi<select id="vP">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + '</select></label></div><div class="f2"><label>Durum<select id="vD">' + sec(["Elde", "Satışta"]) + '</select></label><label>Not<input id="vN"></label></div><button class="btn pri" id="vK">Ekle</button></div></div>';
+    edBagla(V, fVarlik);
     $("vK").onclick = function () { if (!$("vA").value.trim()) { toast("Ad gerekli"); return; }
       api("/api/collections/varliklar/records", { method: "POST", body: { ad: $("vA").value.trim(), tur: $("vT").value.trim(), sahip: $("vS").value.trim(), deger: num($("vU").value), pb: $("vP").value, degerTarihi: bugun() + " 12:00:00.000Z", durum: $("vD").value, not: $("vN").value.trim() } }).then(fVarlik).catch(hata); };
     Array.prototype.forEach.call(document.querySelectorAll("[data-vd]"), function (e) { e.onchange = function () { var b = { durum: e.value };
@@ -1010,6 +1019,130 @@ function yenidenKurBagla(yenile) {
       }).catch(hata);
     };
     r.readAsText(f); };
+}
+/* ---------- Genel düzenleme: finans kayıtlarında satıra dokununca düzenle ---------- */
+var PBS = [["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]];
+var ALAN = {
+  krediler: [["ad", "Ad", "t"], ["banka", "Banka", "t"], ["pb", "Para birimi", "pb"], ["anaPara", "Ana para", "n"], ["kalan", "Kalan ana para", "n"], ["taksit", "Aylık taksit", "n"], ["faiz", "Yıllık faiz (%)", "n"], ["baslangic", "Başlangıç", "d"], ["sonOdeme", "Son ödeme / vade", "d"], ["durum", "Durum", "s", ["Aktif", "Kapandı"]], ["not", "Not", "t"]],
+  fin_kartlar: [["banka", "Banka", "t"], ["ad", "Kart sahibi / ad", "t"], ["son4", "Son 4 hane", "t"], ["pb", "Para birimi", "pb"], ["limit", "Limit", "n"], ["borc", "Güncel borç", "n"], ["kesimGunu", "Hesap kesim günü", "n"], ["sonOdeme", "Son ödeme tarihi", "d"], ["odemeTutar", "Ödenecek tutar", "n"], ["durum", "Durum", "s", ["Aktif", "Kapandı"]], ["not", "Not", "t"]],
+  fin_limitler: [["banka", "Banka", "t"], ["grupLimit", "Grup limit", "n"], ["grupRisk", "Grup risk", "n"], ["nakdiLimit", "Nakdi limit", "n"], ["nakdiRisk", "Nakdi risk", "n"], ["gayriLimit", "Gayrinakdi limit", "n"], ["gayriRisk", "Gayrinakdi risk", "n"], ["revize", "Revize tarihi", "d"], ["not", "Not", "t"]],
+  fin_teminatlar: [["lehtar", "Lehtar", "t"], ["banka", "Banka", "t"], ["no", "Mektup no", "t"], ["tutar", "Tutar", "n"], ["pb", "Para birimi", "pb"], ["duzenleme", "Düzenleme", "d"], ["bitis", "Bitiş", "d"], ["iadePlan", "İade planı", "d"], ["komisyonOran", "Komisyon (%)", "n"], ["durum", "Durum", "s", ["Aktif", "İade edildi", "Kapandı"]], ["not", "Not", "t"]],
+  fin_sabitler: [["ad", "Ad", "t"], ["kategori", "Kategori", "t"], ["yon", "Yön", "s", ["Çıkış", "Giriş"]], ["tutar", "Tutar", "n"], ["pb", "Para birimi", "pb"], ["bas", "Başlangıç ayı", "m"], ["bit", "Bitiş ayı (boş = süresiz)", "m"], ["gun", "Ödeme günü", "n"], ["artis", "Artış", "t"], ["oncelik", "Öncelik", "s", ["", "Kritik", "Esnek"]], ["not", "Not", "t"]],
+  ortak_cari: [["tarih", "Tarih", "d"], ["ortak", "Ortak", "s", ["Burhan", "Batur"]], ["yon", "Yön", "s", ["Aldı", "Koydu"]], ["tutar", "Tutar (orijinal)", "n"], ["pb", "Para birimi", "pb"], ["kur", "Kur", "n"], ["tutarUsd", "Tutar (USD)", "n"], ["sirket", "Şirket", "t"], ["aciklama", "Açıklama", "t"]],
+  varliklar: [["ad", "Ad", "t"], ["tur", "Tür", "t"], ["sahip", "Tapu / ruhsat sahibi", "t"], ["konum", "Konum / plaka", "t"], ["deger", "Tahmini değer", "n"], ["pb", "Para birimi", "pb"], ["degerTarihi", "Değer tarihi", "d"], ["durum", "Durum", "s", ["Elde", "Satışta", "Satıldı"]], ["hizliFiyat", "Hızlı satış fiyatı", "n"], ["satisTutar", "Satış tutarı", "n"], ["satisTarihi", "Satış tarihi", "d"], ["rehin", "Rehin", "t"], ["not", "Not", "t"]],
+  cek: [["tarih", "Vade", "d"], ["yon", "Yön (Çıkış = verilen çek)", "s", ["Çıkış", "Giriş"]], ["tutar", "Tutar", "n"], ["pb", "Para birimi", "pb"], ["durum", "Durum", "s", ["Planlandı", "Tahsilde", "Gerçekleşti"]], ["karsiTaraf", "Karşı taraf", "t"], ["belgeNo", "Çek no", "t"], ["cek.banka", "Çek bankası", "t"], ["cek.sube", "Şube", "t"], ["cek.asilBorclu", "Asıl borçlu", "t"], ["aciklama", "Açıklama", "t"]]
+};
+var KOL = { cek: "fin_hareketler" };
+var ED = { kayit: {}, sonra: null };
+function edDeger(r, a) { if (a.indexOf("cek.") === 0) return ((r.cek || {})[a.slice(4)]) || ""; return r[a]; }
+function edAc(yer, tur, r) {
+  var e0 = document.getElementById("edK"); if (e0) e0.remove();
+  var A = ALAN[tur], yeni = !r.id, d = document.createElement("div"); d.id = "edK"; d.className = "f"; d.style.cssText = "background:#f7f9fc;border-radius:12px;padding:12px;margin:6px 0 10px";
+  d.innerHTML = "<b>" + (yeni ? "Yeni kayıt" : "Düzenle") + "</b>" + A.map(function (a, i) { var v = edDeger(r, a[0]), id = "ed_" + i, inp;
+    if (a[2] === "pb") inp = '<select id="' + id + '">' + sec(PBS, v || "TRY") + "</select>";
+    else if (a[2] === "s") inp = '<select id="' + id + '">' + sec(a[3].map(function (x) { return [x, x || "—"]; }), v != null ? v : a[3][0]) + "</select>";
+    else if (a[2] === "d") inp = '<input id="' + id + '" type="date" value="' + esc(v ? String(v).slice(0, 10) : "") + '">';
+    else if (a[2] === "m") inp = '<input id="' + id + '" type="month" value="' + esc(v || "") + '">';
+    else if (a[2] === "n") inp = '<input id="' + id + '" inputmode="decimal" value="' + (v != null && v !== "" ? String(v).replace(".", ",") : "") + '">';
+    else inp = '<input id="' + id + '" value="' + esc(v || "") + '">';
+    return "<label>" + esc(a[1]) + inp + "</label>"; }).join("") +
+    '<div class="f2"><button class="btn" id="edV">Vazgeç</button><button class="btn pri" id="edK2">Kaydet</button></div>' + (!yeni && yon() ? '<button class="btn" id="edS" style="color:var(--bad)">Sil</button>' : "");
+  if (yer.tagName === "BUTTON") yer.parentNode.insertBefore(d, yer.nextSibling); else yer.parentNode.insertBefore(d, yer.nextSibling);
+  d.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  var kol = KOL[tur] || tur;
+  $("edV").onclick = function () { d.remove(); };
+  $("edK2").onclick = function () {
+    var b = {}, cek = Object.assign({}, r.cek || {}), cekVar = false, hata_ = "";
+    A.forEach(function (a, i) { var el = $("ed_" + i), v = el.value;
+      if (a[2] === "n") { var neg = /^\s*[-−]/.test(v), n = num(String(v).replace(/^\s*[-−]/, "")); v = n == null ? null : neg ? -n : n; }
+      else if (a[2] === "d") v = v ? v + " 12:00:00.000Z" : "";
+      else if (typeof v === "string") v = v.trim();
+      if (a[0].indexOf("cek.") === 0) { cek[a[0].slice(4)] = v; cekVar = true; } else b[a[0]] = v; });
+    if (cekVar) b.cek = cek;
+    if (tur === "cek" && yeni) { b.kategori = "Çek"; }
+    if (tur === "ortak_cari" && b.tutarUsd == null && b.tutar != null) b.tutarUsd = b.pb === "USD" ? b.tutar : b.kur ? Math.round(b.tutar / b.kur * 100) / 100 : null;
+    $("edK2").disabled = true;
+    api("/api/collections/" + kol + "/records" + (yeni ? "" : "/" + r.id), { method: yeni ? "POST" : "PATCH", body: b }).then(function () { toast("Kaydedildi"); ED.sonra && ED.sonra(); })
+      .catch(function (e) { $("edK2").disabled = false; hata(e); });
+  };
+  if ($("edS")) $("edS").onclick = function () { if (!confirm("Bu kayıt silinsin mi?")) return; api("/api/collections/" + kol + "/records/" + r.id, { method: "DELETE" }).then(function () { toast("Silindi"); ED.sonra && ED.sonra(); }).catch(hata); };
+}
+function edBagla(kayitlar, sonra) {
+  ED.sonra = sonra; ED.kayit = {}; kayitlar.forEach(function (x) { ED.kayit[x.id] = x; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-ed]"), function (el) { el.style.cursor = "pointer"; el.onclick = function (ev) { if (ev.target.closest("button,select,input,a")) return; var p = el.dataset.ed.split("|"); edAc(el, p[0], ED.kayit[p[1]] || {}); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-yeni]"), function (el) { el.onclick = function () { var t = el.dataset.yeni, r = {}; if (t === "cek") { r.yon = "Çıkış"; r.durum = "Planlandı"; r.tarih = bugun(); } edAc(el, t, r); }; });
+}
+function yeniBtn(t, ad) { return '<button class="btn sm" data-yeni="' + t + '" style="margin:8px 0 0">+ ' + ad + "</button>"; }
+/* çekler: kategori "Çek" ya da çek bilgisi olan hareketler */
+function fCek() {
+  liste("fin_hareketler", "kategori ~ 'Çek' || cek != null", "tarih").then(function (C) {
+    C = C.filter(function (m) { return /çek/i.test(m.kategori || "") || (m.cek && Object.keys(m.cek).length); });
+    var b = bugun(), grup = function (L, bas) { var top = {}; L.forEach(function (m) { if (m.durum !== "Gerçekleşti") top[m.pb || "TRY"] = (top[m.pb || "TRY"] || 0) + (+m.tutar || 0); });
+      return '<div class="card"><h3>' + bas + ' <small style="color:var(--muted)">' + L.length + " · bekleyen " + (Object.keys(top).map(function (p) { return para(top[p], p); }).join(" + ") || "0") + "</small></h3>" +
+        (L.map(function (m) { var c = m.cek || {}, gec = m.durum !== "Gerçekleşti" && m.tarih.slice(0, 10) < b;
+          return '<div class="row" data-ed="cek|' + m.id + '"><div class="t"><b class="w">' + tarih(m.tarih) + " · " + esc(m.karsiTaraf || "—") + (m.durum !== "Gerçekleşti" ? ' <span class="pill"' + (gec ? ' style="background:#fde8e8;color:var(--bad)"' : "") + ">" + (gec ? "vadesi geçti" : esc(m.durum === "Planlandı" ? "bekliyor" : m.durum.toLocaleLowerCase("tr"))) + "</span>" : ' <span class="pill" style="background:#e8f6ee;color:var(--ok)">ödendi</span>') +
+            "</b><small>" + esc([m.belgeNo ? "no " + m.belgeNo : "", c.banka, c.sube, c.asilBorclu ? "asıl borçlu " + c.asilBorclu : "", m.aciklama].filter(Boolean).join(" · ")) + '</small></div><b style="white-space:nowrap">' + para(m.tutar, m.pb || "TRY") + "</b></div>"; }).join("") || '<div class="bos">Çek yok.</div>') + "</div>"; };
+    $("fm").innerHTML = '<div class="not" style="margin:0 0 10px"><small>Çeke dokunarak vade, tutar, banka ve durumu düzeltin. Ödenen ya da tahsil edilen çeki "Gerçekleşti" yapın; hesabını Hareketler\'den bağlayabilirsiniz.</small></div>' +
+      grup(C.filter(function (m) { return m.yon === "Çıkış"; }), "Verilen çekler") + grup(C.filter(function (m) { return m.yon === "Giriş"; }), "Alınan çekler") + yeniBtn("cek", "Çek ekle");
+    edBagla(C, fCek);
+  }).catch(hata);
+}
+/* ---------- Ortak cari: Excel'den (ORTAKLAR DURUM) yeniden kurma ---------- */
+function xlsxYukle() { if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise(function (ok, no) { var s = document.createElement("script"); s.src = "/xlsx.full.min.js"; s.onload = function () { ok(window.XLSX); }; s.onerror = function () { no(new Error("Excel okuyucu yüklenemedi")); }; document.head.appendChild(s); }); }
+function ortakExcelCevir(wb) {
+  var sayfalar = wb.SheetNames.slice().sort(), kay = [], kontrol = [], devirAlindi = {};
+  var ad = function (x) { x = String(x || "").trim(); return /batur/i.test(x) ? "Batur" : /burhan/i.test(x) ? "Burhan" : ""; };
+  var pbC = function (x) { x = String(x || "").trim().toUpperCase(); return x === "$" || x === "USD" ? "USD" : x === "€" || x === "EUR" || x === "EURO" ? "EUR" : "TRY"; };
+  var tarihC = function (v) { if (v instanceof Date) { var d = new Date(v.getTime() - v.getTimezoneOffset() * 60000); return d.toISOString().slice(0, 10); } if (typeof v === "number" && v > 30000) { var d2 = new Date(Math.round((v - 25569) * 864e5)); return d2.toISOString().slice(0, 10); } var m = String(v || "").match(/(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})/); return m ? m[3] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[1]).slice(-2) : ""; };
+  var sayiC = function (v) { if (typeof v === "number") return v; var n = parseFloat(String(v || "").replace(/\s/g, "").replace(/\./g, "").replace(",", ".")); return isNaN(n) ? null : n; };
+  sayfalar.forEach(function (sn, si) {
+    var R = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, raw: true, defval: null });
+    [[0, "D Solar"], [8, "DRK"]].forEach(function (bl) { var o = bl[0], sirket = bl[1], ortak = "", acik = false, top = 0;
+      R.forEach(function (r, i) { var c = function (k) { return r[o + k]; }, b = String(c(1) || "").trim().toLocaleLowerCase("tr");
+        if (b === "tarih") { ortak = ad(c(0)); acik = !!ortak; top = 0; return; }
+        if (!acik) return;
+        if (b.indexOf("devreden") >= 0) { var dv = sayiC(c(5)) || 0, key = sirket + "|" + ortak; top += dv;
+          if (!devirAlindi[key]) { devirAlindi[key] = true; if (dv) kay.push({ kaynakId: "excel/" + sn + "/" + sirket + "/" + ortak + "/devir", tarih: "", ortak: ortak, yon: dv < 0 ? "Koydu" : "Aldı", tutarUsd: Math.abs(Math.round(dv * 100) / 100), tutar: Math.abs(dv), pb: "USD", kur: 1, sirket: sirket, devir: true, aciklama: "Eskiden devreden (" + sn + " başı)" }); }
+          return; }
+        if (b.indexOf("toplam") === 0) { kontrol.push({ sayfa: sn, sirket: sirket, ortak: ortak, excel: sayiC(c(5)) || 0, hesap: top }); acik = false; return; }
+        var t = tarihC(c(1)), tu = sayiC(c(2)); if (!t || tu == null || tu === 0) return;
+        var pb = pbC(c(3)), kur = sayiC(c(4)), usd = sayiC(c(5)); if (usd == null) usd = pb === "USD" ? tu : kur ? tu / kur : 0; top += usd;
+        kay.push({ kaynakId: "excel/" + sn + "/" + sirket + "/" + ortak + "/" + (i + 1), tarih: t + " 12:00:00.000Z", ortak: ortak, yon: tu < 0 ? "Koydu" : "Aldı", tutarUsd: Math.abs(Math.round(usd * 100) / 100), tutar: Math.abs(tu), pb: pb, kur: kur, sirket: sirket, devir: false, aciklama: String(c(6) || "").trim() });
+      }); });
+  });
+  return { kay: kay, kontrol: kontrol, sayfalar: sayfalar };
+}
+function ortakExcelKarti() {
+  return '<div class="card"><h3>Excel\'den yükle (ORTAKLAR DURUM)</h3><div class="f"><div class="bilgi" style="margin:0">Ortaklar durum Excel\'ini seçin (her yıl bir sayfa; solda D Solar, sağda DRK blokları; Batur ve Burhan bölümleri). İlk sayfanın "eskiden devreden" tutarı açılış olarak alınır, sonraki yılların devirleri kontrol için kullanılır. ' +
+    'Önce özet ve Excel\'deki "Toplam" satırlarıyla karşılaştırma gösterilir; onaylarsanız mevcut ortak cari kayıtları silinip Excel\'e göre yeniden kurulur.</div><input id="oxD" type="file" accept=".xlsx,.xls"><div id="oxO"></div></div></div>';
+}
+function ortakExcelBagla() {
+  var d = $("oxD"); if (!d) return;
+  d.onchange = function () { var f = d.files[0]; if (!f) return; $("oxO").innerHTML = '<div class="bos">Okunuyor…</div>';
+    xlsxYukle().then(function () { return f.arrayBuffer(); }).then(function (buf) {
+      var wb = XLSX.read(buf, { type: "array", cellDates: true }), X = ortakExcelCevir(wb);
+      if (!X.kay.length) throw new Error("Dosyada ortak cari satırı bulunamadı. Sütun başlıkları 'Tarih, Tutar, …, Kur, $ Karşılığı, Açıklama' olmalı.");
+      return liste("ortak_cari", "", "tarih").then(function (E) {
+        var ozet = {}; X.kay.forEach(function (k) { var key = k.ortak + " · " + k.sirket; ozet[key] = ozet[key] || { a: 0, k: 0, n: 0 }; ozet[key][k.yon === "Aldı" ? "a" : "k"] += k.tutarUsd; ozet[key].n++; });
+        var son = X.sayfalar[X.sayfalar.length - 1], kt = X.kontrol.filter(function (x) { return x.sayfa === son; });
+        var esit = kt.every(function (x) { return Math.abs(x.excel - x.hesap) < 2; });
+        $("oxO").innerHTML = '<div class="card" style="margin:0"><h3>Önizleme · ' + X.kay.length + " kayıt (" + X.sayfalar.join(", ") + ")</h3>" +
+          Object.keys(ozet).map(function (k) { var o = ozet[k]; return '<div class="row" style="padding:7px 0"><div class="t"><b>' + esc(k) + "</b><small>" + o.n + " kayıt · aldı " + sayi(o.a) + " · koydu " + sayi(o.k) + '</small></div><b>' + sayi(o.a - o.k) + " $</b></div>"; }).join("") +
+          '<div class="' + (esit ? "bilgi" : "uyari") + '">' + son + " Toplam satırları: " + kt.map(function (x) { return x.ortak + " " + x.sirket + " Excel " + sayi(x.excel) + " / hesaplanan " + sayi(x.hesap) + (Math.abs(x.excel - x.hesap) < 2 ? " ✓" : " ✗"); }).join("; ") + "</div>" +
+          '<div class="not"><b>Silinecek: ' + E.length + " mevcut ortak cari kaydı</b><small>Yerine Excel'deki " + X.kay.length + " kayıt yazılır. Sunucunun gece yedeği var.</small></div>" +
+          '<div class="f" style="padding-top:8px"><button class="btn or" id="oxK">Sil ve Excel\'e göre kur</button><div id="oxS"></div></div></div>';
+        $("oxK").onclick = function () { if (!confirm(E.length + " kayıt silinip Excel'deki " + X.kay.length + " kayıt yazılacak. Devam edilsin mi?")) return; $("oxK").disabled = true;
+          var S = $("oxS"), sirali = function (L, fn) { return L.reduce(function (p, x) { return p.then(function () { return fn(x); }); }, Promise.resolve()); }, n = 0;
+          S.innerHTML = '<div class="bos">Eski kayıtlar siliniyor…</div>';
+          sirali(E, function (x) { return apiSabirli("/api/collections/ortak_cari/records/" + x.id, { method: "DELETE" }); })
+            .then(function () { return sirali(X.kay, function (x) { n++; if (n % 10 === 0) S.innerHTML = '<div class="bos">Yazılıyor ' + n + "/" + X.kay.length + "…</div>"; return apiSabirli("/api/collections/ortak_cari/records", { method: "POST", body: Object.assign({ kaynak: "Excel " + f.name }, x) }); }); })
+            .then(function () { toast("Ortak cari Excel'e göre kuruldu"); fOrtak(); })
+            .catch(function (e) { $("oxK").disabled = false; S.innerHTML = '<div class="uyari" style="margin:0">Yarıda kaldı: ' + esc(e.message) + ". Aynı dosyayla yeniden başlatabilirsiniz; baştan temiz kurulur.</div>"; });
+        };
+      });
+    }).catch(function (e) { $("oxO").innerHTML = '<div class="uyari" style="margin:0">' + esc(e.message) + "</div>"; });
+  };
 }
 
 ciz();
