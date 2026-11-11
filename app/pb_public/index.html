@@ -2368,7 +2368,7 @@ function gesKiyasGrafik(g, a, P, oran) {
   return s + '</svg><small style="color:var(--muted)">Lacivert: OSOS · açık mavi: iSolarCloud × sayaç oranı · kırmızı: düşük gün · sarı bant: PVGIS günlük ortalama ± sapma (' + sayi(pvG) + " kWh/gün)</small>";
 }
 function reaktifKarti(G, RA) {
-  var aylar = G.filter(function (g) { return g.osCekis > 0 || g.reaktifTl != null; }).sort(function (a, b) { return a.donem < b.donem ? 1 : -1; }), coz = (RA && RA.cozum) || "";
+  var aylar = G.filter(function (g) { return g.osCekis > 0 || g.reaktifTl > 0 || g.donem >= "2026-09"; }).sort(function (a, b) { return a.donem < b.donem ? 1 : -1; }), coz = (RA && RA.cozum) || "";
   var son = aylar[0], asim = function (g) { return g.osCekis > 0 && ((g.osRi || 0) / g.osCekis > 0.2 || (g.osRc || 0) / g.osCekis > 0.15); };
   var sonBedel = aylar.filter(function (g) { return g.reaktifTl > 0; })[0];
   return '<div class="card"><h3>' + ikon("menu", "#dc2626", "kucuk") + 'Reaktif enerji <small style="color:var(--muted);font-weight:500;margin-left:auto">sınır: endüktif %20 · kapasitif %15 (çekilen aktif enerjiye oranla)</small></h3>' +
@@ -2376,13 +2376,14 @@ function reaktifKarti(G, RA) {
       : sonBedel ? '<div class="uyari" style="margin:10px 14px"><b>Reaktif bedel var:</b> ' + ayAd(sonBedel.donem) + " faturasında " + sayi(sonBedel.reaktifTl) + ' TL. Çözüm: kompanzasyon ya da inverterlerde gece reaktif güç desteği ("Q at night"). Çözüm tarihini aşağıya girin; o zamana kadar her ay son bilinen bedel nakit akışına tahmini düşer.</div>' : "") +
     '<div style="overflow-x:auto"><table class="nt gK"><thead><tr><th style="text-align:left">Ay</th><th>Çekiş (aktif)</th><th>Endüktif</th><th>Kapasitif</th><th>Fatura reaktif bedeli</th><th>Durum</th></tr></thead><tbody>' +
     (aylar.map(function (g) { var ri = g.osCekis > 0 && g.osRi != null ? g.osRi / g.osCekis : null, rc = g.osCekis > 0 && g.osRc != null ? g.osRc / g.osCekis : null;
-      return '<tr><td style="text-align:left"><b>' + ayAd(g.donem) + "</b></td><td>" + (g.osCekis ? sayi(g.osCekis) + " kWh" : "—") + '</td><td style="' + (ri > 0.2 ? "color:var(--bad);font-weight:700" : "") + '">' + (ri != null && g.osRi ? "%" + sayi(ri * 100) : "—") + '</td><td style="' + (rc > 0.15 ? "color:var(--bad);font-weight:700" : "") + '">' + (rc != null && g.osRc ? "%" + sayi(rc * 100) : "—") + "</td><td>" + (g.reaktifTl != null ? "<b>" + sayi(g.reaktifTl) + " TL</b>" : '<small style="color:var(--muted)">fatura gelmedi</small>') + "</td><td>" + (asim(g) || g.reaktifTl > 0 ? '<span class="pill" style="background:#fde8e8;color:var(--bad)">sınır aşıldı</span>' : g.osCekis ? '<span class="pill" style="background:#e8f6ee;color:var(--ok)">sınırda</span>' : "") + "</td></tr>"; }).join("") || '<tr><td colspan="6" class="bs" style="text-align:center">OSOS dosyası ya da fatura bilgisi yok.</td></tr>') + "</tbody></table></div>" +
+      return '<tr><td style="text-align:left"><b>' + ayAd(g.donem) + "</b></td><td>" + (g.osCekis ? sayi(g.osCekis) + " kWh" : "—") + '</td><td style="' + (ri > 0.2 ? "color:var(--bad);font-weight:700" : "") + '">' + (ri != null && g.osRi ? "%" + sayi(ri * 100) : "—") + '</td><td style="' + (rc > 0.15 ? "color:var(--bad);font-weight:700" : "") + '">' + (rc != null && g.osRc ? "%" + sayi(rc * 100) : "—") + "</td><td>" + (g.reaktifTl > 0 ? "<b>" + sayi(g.reaktifTl) + " TL</b>" : '<small style="color:var(--muted)">yok / girilmedi</small>') + "</td><td>" + (asim(g) || g.reaktifTl > 0 ? '<span class="pill" style="background:#fde8e8;color:var(--bad)">sınır aşıldı</span>' : g.osCekis ? '<span class="pill" style="background:#e8f6ee;color:var(--ok)">sınırda</span>' : "") + "</td></tr>"; }).join("") || '<tr><td colspan="6" class="bs" style="text-align:center">OSOS dosyası ya da fatura bilgisi yok.</td></tr>') + "</tbody></table></div>" +
     '<div class="f" style="border-top:1px solid var(--line)"><div class="f2"><label>Reaktif bedel çözüldü (kompanzasyon) — ay<input id="rCoz" type="month" value="' + esc(coz) + '"></label><label>&nbsp;<button class="btn" id="rCozK">Kaydet</button></label></div><small style="color:var(--muted)">Fatura gelince "Ay bilgisi gir / düzelt" › Reaktif bedel alanına yazın. Endüktif/kapasitif oranlar OSOS dosyasından gelir.</small></div></div>';
 }
 /* nakit akışı: faturası girilmemiş aylar için reaktif bedel tahmini (son bilinen tutar, çözüm ayına kadar); fatura ertesi ay ödenir */
 function reaktifTahmin(a, G, RA) {
   var fAy = ayEkle(a + "-01", -1), coz = (RA && RA.cozum) || "9999-12"; if (fAy >= coz) return null;
-  var g = G.filter(function (x) { return x.donem === fAy; })[0]; if (g && g.reaktifTl != null) return g.reaktifTl > 0 ? { ay: fAy, tutar: +g.reaktifTl, fatura: true } : null;
+  var g = G.filter(function (x) { return x.donem === fAy; })[0]; if (g && g.reaktifTl > 0) return { ay: fAy, tutar: +g.reaktifTl, fatura: true };
+  // 0 = fatura girilmedi (sistem boş alanı 0 saklar): son bilinen bedelle tahmin
   var son = G.filter(function (x) { return x.reaktifTl > 0 && x.donem < fAy; }).sort(function (p, r) { return p.donem < r.donem ? 1 : -1; })[0]; return son ? { ay: fAy, tutar: +son.reaktifTl, fatura: false } : null;
 }
 

@@ -1,7 +1,7 @@
 {
- "surum": 32,
- "paket": "surumler/dsolar-32.zip",
- "sha256": "f5807fbd13cf8a1d6ab407901f63047c09cbf783c844c53ae841244b2e08dfb9",
- "imza": "f8w6FKsrOVgdsaW1kKOYXyQFoSwhK4ZUK7o4AzXfj8/+0p2LijFhnHuxTHcMD8eTKHUZXd/3BcwgTzBCKpiwh3exCNHJwRQlRnOZkGGQT9SJRP9Atw3+7wEbOfaIBLLrhWdTidrzqVcxfIlTvVTBEABkX69LLdSAJkpSyZZUKkSocJTln3HnI3gX7peRyJBNxMhrSz5z429gsidkbT3q+SKmidqc5ixMNjsC/Fgg1mMDG8mmwNTBICBq9hQYUXsccx5muboxcS+innR3Us2PzlHtn76zhc5mkbasTtRhX5QkQLBxOgwo8/J7RWz94Pbhzy3EorqJbDYlcY1d3r2UxqIfkU3s+ZLtvmE6JEm6y1ALHOn8LghXiEmmOkBw1GjmAtHzxuNCQil9xnUN7Z1+5VrZoQz5fq68B7YRmii6iBNLBYrWJC/mBgpDpPuiOxr3+YIN7LIevXGudWF/rsQyGnalWzosawm/uxOiT5TU5cJ//W1kKY13ARVWgKhXXUf3",
- "not": "Teklifli ya da projeli müşteriyi (deneme/yanlış kayıt) teklifleri ve projesiyle birlikte silme"
+ "surum": 33,
+ "paket": "surumler/dsolar-33.zip",
+ "sha256": "7fa6f91b8f66c56a4189f08b3aee96b59be26663bf594e852314aaa7b60099f4",
+ "imza": "g4cGu4S0o6v07DzSyllEDKZCtXixjOgwZ42PTV/ph6+OVjw9Me8+JBzMKtLlZtUk4dqbvx7/dftEY1F9Wcc4GXAE1kHVpZ4br3It0MP2aQC03W9tSA2BPCllNyVAvqmPNLvMEfcrhGsPOf+TfKV1ExhHCam00VrMiCcanr9icttQATzSN8IOoXuUwIEqewpgiTCUH5VfrlW7LtASDaooIPIz+2t3xsGfwQsYxbtGGJpn+N+JfT9P1cA/JilwLTkR4vUnGAnzRZ4jbofWl9YWMxOXrQbac+SJSKrjQYYF4/ioyQTxWgCGImbbSeFUPGTfic+UGBUzyUaeUBNjOLf8ktXiTe05JuFupSkcqGj/gOh2+j4YT/7yP2NnoEmXtzLnedRzvdvdIL2ykoyXQp8JaemSn6nKA0f4aPeezYvWSC5eJKT23HdP1w6TUqG2wYUw63wE4GtunGapZX0vdofo2ZInnjN3Lk4BYr4E05QNOKp0UEMlXALHdUbiTUN90UDz",
+ "not": "Reaktif: girilmemiş fatura (0) tahminle doldurulur"
 }
