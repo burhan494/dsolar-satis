@@ -1,7 +1,7 @@
 {
- "surum": 27,
- "paket": "surumler/dsolar-27.zip",
- "sha256": "9dbdfec152d4b270893d416adf81dd416d8862a955887b2bc8c06b6b4f86db01",
- "imza": "kqjzJLnh41a3IoAC27vg+3m3tIw1XSipJnYT/7eKXw/BxxbAkq+rIXUMX9+DKK8N/OP1o87GspJZyAbG2zPG44FHM7VqZ9nd9tRXqPfRSWxhiiOXaxgAOtbQuQ+At36ywxquR/sUNP6ZN827Bdd/Dd1iTlVxKRxLozucw+p8KzSKZ79PQmnA7q1g3iMLRyvN6lE9Eg/fAV3b2iRp9T/OOBBPRV8E9PApySz5FIaWvL/ANpBIa2PgVMGhr19k7DdT6yjlJ7BExOmLXHxVlk/w4spO+1tjrGPCFlGJz8mYf2nNZnSy/W+hk3rNLXU7/HoHy6xukXlAl5hGuqOPZ0hrAhSGI9AmjdUchxl3mPFMgXuHftmvNraGufK26k/0HB1k2Zxl208tCoMsVjfX32iTzSZzJvNoLTj5/2GCOSxghDTMkJRxB1TACQ9c2UckM6CZAqAaEJSevZmOIUVMGquJDFhy5KA6oWbS5/8ahm8qu20xnmoXFHNpQ/fV0UJCsvmU",
- "not": "Ödeme onayı: ödeme listeleri (haftalık/aylık/anlık/Excel), yönetici onayı (tam/kısmi/ertele/reddet), onaysız ödeme engeli, kısmi ödeme, banka talimatı Excel"
+ "surum": 28,
+ "paket": "surumler/dsolar-28.zip",
+ "sha256": "1bf0de2c6febb7a914617f299d989436bbc4e91e9dccead49d1d6edf040ad8ff",
+ "imza": "E9OshV4pBq0qomBH/mtnnP5tr7UtVXTUUGOltLvhuy2+vz+tbsj8D4qNeQkxSH9u2SgckE8vgJVxXGepl+pnrk3uLYmlV692EO1zly661pKozmvmn0K41etCEfhaFJ/2W2l5pV+vbbAxs9i6U4NurzGKIRqp+zdspu9Ne/oaz1zU0ybY/ikMXHz6b/U0oOvL6d8Gj65oR61c3kfY01nbun3gazoC73OAzLmcCkWfiYbYJwC5TcLsM+79TXVA02VE7OA7duVvpPbfsW6eIG6zkM/F9YwZ6774g4ItLQsKNwOjAd+FNyyEb0sZRzm8GE7beOhGS959JKRv2vlDyR1d1gytuOEDpTzNRHZAIAT/MVR29UvKJi/IaB9Ys6m1zL3UbbIuxRV/TO3Rs2d7aK954gTy2VRE6i+IUdk3QTtDm7QubsGmh8vzKnIcdcgLqJ9jHX/6eIISK2Y/qqwnduh9IZk5WngCN5yE8XqTsggEt8+YAWBmRihcpcNx+QEfMfcm",
+ "not": "Bugün, Müşteriler, Teklifler, Projeler ekranları yenilendi; GES kira tahmini: süren ay kısmi veriyle değil, geçen günler gerçek + kalan günler profil ile hesaplanır"
 }
