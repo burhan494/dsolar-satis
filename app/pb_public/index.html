@@ -430,36 +430,70 @@ function fOzet() {
 }
 function hareketSatir(m, ha, dugme) {
   var h = ha[m.hesap] || {}, alt = [m.aciklama, m.karsiTaraf && (m.aciklama || "").indexOf(m.karsiTaraf) < 0 ? m.karsiTaraf : "", h.ad, m.belgeNo ? "belge " + m.belgeNo : ""].filter(Boolean).join(" · ");
-  return '<div class="row"><div class="t"><b class="w">' + tarih(m.tarih) + " · " + esc(m.kategori || "") + (m.oncelik === "Kritik" ? ' <span class="pill" style="background:#fde8e8;color:var(--bad)">kritik</span>' : "") + (m.durum !== "Gerçekleşti" ? ' <span class="pill">' + esc(m.durum === "Planlandı" ? "plan" : m.durum.toLocaleLowerCase("tr")) + "</span>" : "") +
+  return '<div class="row"' + (dugme ? ' data-he="' + m.id + '" style="cursor:pointer"' : "") + '><div class="t"><b class="w">' + (m.kontrol ? '<span title="kontrol edildi" style="color:var(--ok)">✓ </span>' : "") + tarih(m.tarih) + " · " + esc(m.kategori || "") + (m.oncelik === "Kritik" ? ' <span class="pill" style="background:#fde8e8;color:var(--bad)">kritik</span>' : "") + (m.durum !== "Gerçekleşti" ? ' <span class="pill">' + esc(m.durum === "Planlandı" ? "plan" : m.durum.toLocaleLowerCase("tr")) + "</span>" : "") +
     "</b><small>" + esc(alt) + "</small></div>" + '<div style="display:grid;justify-items:end;gap:6px"><b style="white-space:nowrap;color:' + (m.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (m.yon === "Giriş" ? "+" : "−") + para(m.tutar, pbOf(m, ha)) + "</b>" +
     (dugme ? '<div style="display:flex;gap:6px">' + (m.durum !== "Gerçekleşti" ? '<button class="btn sm" data-g="' + m.id + '">Gerçekleşti</button>' : "") + (yon() ? '<button class="btn sm" data-x="' + m.id + '" title="Sil">✕</button>' : "") + "</div>" : "") + "</div></div>";
 }
-var FH = { ay: "", plan: false };
+var FH = { ay: "", plan: false, kontrolsuz: false, ekle: false };
+function hareketFormu(m, akt, kat, P) {
+  m = m || {};
+  return '<div class="f2"><label>Tarih<input id="eT" type="date" value="' + esc((m.tarih || bugun()).slice(0, 10)) + '"></label><label>Durum<select id="eD">' + sec(["Planlandı", "Tahsilde", "Gerçekleşti"], m.durum || "Planlandı") + "</select></label></div>" +
+    '<div class="f2"><label>Tutar<input id="eU" inputmode="decimal" value="' + (m.tutar != null ? String(m.tutar).replace(".", ",") : "") + '"></label><label>Para birimi<select id="ePb">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]], m.pb || "TRY") + "</select></label></div>" +
+    '<div class="f2"><label>Yön<select id="eY">' + sec(["Çıkış", "Giriş"], m.yon || "Çıkış") + '</select></label><label>Öncelik<select id="eO">' + sec([["", "—"], ["Kritik", "Kritik"], ["Esnek", "Esnek"]], m.oncelik || "") + "</select></label></div>" +
+    '<div class="f2"><label>Kategori<input id="eK" list="katL" value="' + esc(m.kategori || "") + '"></label><label>Karşı taraf<input id="eC" value="' + esc(m.karsiTaraf || "") + '"></label></div>' +
+    '<label>Hesap <small style="color:var(--muted)">(gerçekleşen hareket seçilen hesabın bakiyesine işlenir)</small><select id="eH"><option value="">— hesaba bağlama</option>' + sec(akt.map(function (h) { return [h.id, h.ad]; }), m.hesap || "") + "</select></label>" +
+    '<label>Açıklama<input id="eA" value="' + esc(m.aciklama || "") + '"></label><label>Not<input id="eN" value="' + esc(m.not || "") + '"></label>' +
+    (yon() && P ? '<label>Proje (sözleşmeli müşteri)<select id="eP"><option value="">—</option>' + sec(P.map(function (a) { return [a.id, a.ad + (a.ilce ? " · " + a.ilce : "")]; }), m.aday || "") + "</select></label>" : "");
+}
+function hareketFormDegeri() {
+  var u = num($("eU").value); if (u == null || u < 0) { toast("Tutar gerekli"); return null; } if (!$("eT").value) { toast("Tarih gerekli"); return null; }
+  var v = { tarih: $("eT").value + " 12:00:00.000Z", durum: $("eD").value, tutar: u, pb: $("ePb").value, yon: $("eY").value, oncelik: $("eO").value, kategori: $("eK").value.trim(), karsiTaraf: $("eC").value.trim(), hesap: $("eH").value, aciklama: $("eA").value.trim(), not: $("eN").value.trim() };
+  if ($("eP")) v.aday = $("eP").value;
+  if (v.durum === "Gerçekleşti" && v.hesap) { var hh = (window._HA || {})[v.hesap]; if (hh && hh.pb !== v.pb) { toast("Hesabın para birimi " + PB_AD[hh.pb] + "; hareketinki " + PB_AD[v.pb]); return null; } }
+  return v;
+}
 function fHareket() {
   var f = []; if (FH.ay) f.push("tarih >= " + q(FH.ay + "-01 00:00:00") + " && tarih < " + q(ayEkle(FH.ay + "-01", 1) + "-01 00:00:00")); if (FH.plan) f.push("durum != 'Gerçekleşti'");
   Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", f.join(" && "), FH.plan ? "tarih" : "-tarih,-created"), yon() ? liste("adaylar", "asama = 'Sözleşme'", "ad") : Promise.resolve([])]).then(function (R) {
     var H = R[0], M = R[1], P = R[2], ha = {}; H.forEach(function (h) { ha[h.id] = h; });
     var akt = H.filter(function (h) { return h.aktif; });
     var kat = KATEGORI.slice(); M.forEach(function (m) { if (m.kategori && kat.indexOf(m.kategori) < 0) kat.push(m.kategori); });
-    var L = FH.ay || FH.plan ? M : M.slice(0, 150);
-    $("fm").innerHTML = '<div class="card"><h3>Hareket ekle</h3><div class="f"><div class="f2"><label>Tarih<input id="hT" type="date" value="' + bugun() + '"></label><label>Durum<select id="hD">' + sec(["Gerçekleşti", "Planlandı", "Tahsilde"]) + "</select></label></div>" +
-      '<div class="f2"><label>Kategori<input id="hK" list="katL" placeholder="ör. Tedarikçi ödemesi"></label><label>Yön<select id="hY">' + sec(["Çıkış", "Giriş"]) + '</select></label></div><datalist id="katL">' + kat.map(function (k) { return "<option>" + esc(k) + "</option>"; }).join("") + "</datalist>" +
-      '<div class="f2"><label>Tutar<input id="hU" inputmode="decimal"></label><label>Para birimi<select id="hPb">' + sec([["TRY", "TL"], ["USD", "USD"], ["EUR", "EUR"]]) + "</select></label></div>" +
-      '<div class="f2"><label>Karşı taraf<input id="hC" placeholder="ör. Halkbank, CW Enerji"></label><label>Hesap (isteğe bağlı)<select id="hH"><option value="">— hesaba bağlama</option>' + sec(akt.map(function (h) { return [h.id, h.ad]; })) + "</select></label></div>" +
-      '<label>Açıklama<input id="hA"></label>' + (yon() ? '<label>Proje (sözleşmeli müşteri)<select id="hP"><option value="">—</option>' + sec(P.map(function (a) { return [a.id, a.ad + (a.ilce ? " · " + a.ilce : "")]; })) + "</select></label>" : "") +
-      '<button class="btn pri" id="hK2">Kaydet</button><small style="color:var(--muted)">Hesap seçerseniz gerçekleşen hareket o hesabın bakiyesine işlenir.</small></div></div>' +
-      '<div class="ust"><input id="hAy" type="month" value="' + FH.ay + '"><button class="btn' + (FH.plan ? " pri" : "") + '" id="hPl">Bekleyenler</button><button class="btn" id="hTum">Tümü</button></div>' +
-      '<div class="card"><h3>' + (FH.ay ? ayAd(FH.ay) : FH.plan ? "Bekleyen (plan / tahsilde)" : "Son kayıtlar") + ' <small style="color:var(--muted)">' + L.length + "</small></h3>" + (L.map(function (m) { return hareketSatir(m, ha, true); }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
-    $("hK").onchange = function () { $("hY").value = GELIR.indexOf(this.value) >= 0 || /tahsil|kullanım|gelir/i.test(this.value) ? "Giriş" : "Çıkış"; };
-    $("hH").onchange = function () { var h = ha[this.value]; if (h) $("hPb").value = h.pb; };
+    window._HA = ha;
+    var L0 = FH.ay || FH.plan ? M : M.slice(0, 150), kN = L0.filter(function (m) { return m.kontrol; }).length, L = FH.kontrolsuz ? L0.filter(function (m) { return !m.kontrol; }) : L0;
+    $("fm").innerHTML = '<datalist id="katL">' + kat.map(function (k) { return "<option>" + esc(k) + "</option>"; }).join("") + "</datalist>" +
+      (FH.ekle ? '<div class="card"><h3>Hareket ekle</h3><div class="f">' + hareketFormu({ durum: "Gerçekleşti" }, akt, kat, P) + '<div class="f2"><button class="btn" id="hV">Vazgeç</button><button class="btn pri" id="hK2">Kaydet</button></div></div></div>' : "") +
+      '<div class="ust"><input id="hAy" type="month" value="' + FH.ay + '"><button class="btn' + (FH.plan ? " pri" : "") + '" id="hPl">Bekleyenler</button><button class="btn" id="hTum">Tümü</button>' + (FH.ekle ? "" : '<button class="btn or" id="hYeni">+ Ekle</button>') + "</div>" +
+      '<div class="card"><h3>' + (FH.ay ? ayAd(FH.ay) : FH.plan ? "Bekleyen (plan / tahsilde)" : "Son kayıtlar") + ' <small style="color:var(--muted)">' + L0.length + " kalem · " + kN + " kontrol edildi</small></h3>" +
+      '<div class="chips" style="padding:0 0 6px"><button id="hKs" class="' + (FH.kontrolsuz ? "on" : "") + '">Yalnız kontrol edilmemişler (' + (L0.length - kN) + ")</button></div>" +
+      '<div class="not" style="margin-top:0"><small>Satıra dokunun: tarih, tutar, hesap ve durumu düzeltip "Kontrol edildi" diye kaydedin.</small></div>' +
+      (L.map(function (m) { return hareketSatir(m, ha, true); }).join("") || '<div class="bos">Kayıt yok.</div>') + "</div>";
+    var bagE = function () { if ($("eK")) $("eK").onchange = function () { $("eY").value = GELIR.indexOf(this.value) >= 0 || /tahsil|kullanım|gelir/i.test(this.value) ? "Giriş" : "Çıkış"; };
+      if ($("eH")) $("eH").onchange = function () { var h = ha[this.value]; if (h) $("ePb").value = h.pb; }; };
+    bagE();
+    if ($("hYeni")) $("hYeni").onclick = function () { FH.ekle = true; fHareket(); };
+    if ($("hV")) $("hV").onclick = function () { FH.ekle = false; fHareket(); };
+    $("hKs").onclick = function () { FH.kontrolsuz = !FH.kontrolsuz; fHareket(); };
+    var ac = function (row, m, gerceklesti) { var e0 = document.getElementById("hEd"); if (e0) e0.remove(); if (FH.ekle) { FH.ekle = false; }
+      var d = document.createElement("div"); d.id = "hEd"; d.className = "f"; d.style.cssText = "background:#f7f9fc;border-radius:12px;padding:12px;margin:6px 0 10px";
+      d.innerHTML = '<b>Hareketi düzenle</b>' + hareketFormu(Object.assign({}, m, gerceklesti ? { durum: "Gerçekleşti", tarih: bugun() } : {}), akt, kat, P) +
+        (gerceklesti && !m.hesap ? '<div class="uyari" style="margin:0">Bakiyenin güncellenmesi için ödemenin yapıldığı hesabı seçin.</div>' : "") +
+        '<div class="f2"><button class="btn" id="eV">Vazgeç</button><button class="btn" id="eK2">Kaydet</button></div><button class="btn pri" id="eKK">Kaydet · kontrol edildi ✓</button>' +
+        (m.kaynak ? '<small style="color:var(--muted)">Kaynak: ' + esc(m.kaynak) + (m.kontrolEden ? " · kontrol: " + esc(m.kontrolEden) + " " + tarih(m.kontrolTarihi) : "") + "</small>" : "");
+      row.parentNode.insertBefore(d, row.nextSibling); bagE(); d.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      $("eV").onclick = function () { d.remove(); };
+      var kay = function (k) { var v = hareketFormDegeri(); if (!v) return; if (k) { v.kontrol = true; v.kontrolEden = BEN.name || BEN.email; v.kontrolTarihi = bugun() + " 12:00:00.000Z"; }
+        api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: v }).then(function () { toast(k ? "Kontrol edildi" : "Kaydedildi"); fHareket(); }).catch(hata); };
+      $("eK2").onclick = function () { kay(false); }; $("eKK").onclick = function () { kay(true); };
+    };
+    Array.prototype.forEach.call(document.querySelectorAll("[data-he]"), function (r) { r.onclick = function (ev) { if (ev.target.closest("button")) return; ac(r, M.filter(function (x) { return x.id === r.dataset.he; })[0], false); }; });
     $("hAy").onchange = function () { FH.ay = this.value; fHareket(); };
     $("hPl").onclick = function () { FH.plan = !FH.plan; fHareket(); };
     $("hTum").onclick = function () { FH.ay = ""; FH.plan = false; fHareket(); };
-    $("hK2").onclick = function () { var u = num($("hU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; } if (!$("hT").value) { toast("Tarih gerekli"); return; }
-      var v = { tarih: $("hT").value + " 12:00:00.000Z", hesap: $("hH").value, pb: $("hPb").value, kategori: $("hK").value.trim(), yon: $("hY").value, tutar: u, durum: $("hD").value, aciklama: $("hA").value.trim(), karsiTaraf: $("hC").value.trim(), giren: BEN.id };
-      if ($("hP") && $("hP").value) v.aday = $("hP").value;
-      $("hK2").disabled = true; api("/api/collections/fin_hareketler/records", { method: "POST", body: v }).then(function () { toast("Kaydedildi"); fHareket(); }).catch(function (e) { $("hK2").disabled = false; hata(e); }); };
-    bagT("[data-g]", function (e) { api("/api/collections/fin_hareketler/records/" + e.dataset.g, { method: "PATCH", body: { durum: "Gerçekleşti" } }).then(fHareket).catch(hata); });
+    if ($("hK2")) $("hK2").onclick = function () { var v = hareketFormDegeri(); if (!v) return; if (!(v.tutar > 0)) { toast("Tutar gerekli"); return; } v.giren = BEN.id; v.kontrol = true; v.kontrolEden = BEN.name || BEN.email; v.kontrolTarihi = bugun() + " 12:00:00.000Z";
+      $("hK2").disabled = true; api("/api/collections/fin_hareketler/records", { method: "POST", body: v }).then(function () { toast("Kaydedildi"); FH.ekle = false; fHareket(); }).catch(function (e) { $("hK2").disabled = false; hata(e); }); };
+    bagT("[data-g]", function (e) { var m = M.filter(function (x) { return x.id === e.dataset.g; })[0], row = e.closest("[data-he]");
+      if (m && m.hesap) { api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { durum: "Gerçekleşti" } }).then(fHareket).catch(hata); return; }
+      ac(row, m, true); });
     bagT("[data-x]", function (e) { if (confirm("Bu hareket silinsin mi?")) api("/api/collections/fin_hareketler/records/" + e.dataset.x, { method: "DELETE" }).then(fHareket).catch(hata); });
   }).catch(hata);
 }

@@ -1,7 +1,7 @@
 {
- "surum": 10,
- "paket": "surumler/dsolar-10.zip",
- "sha256": "7cfdb8efe7a87535eadc613915cdca06be9fd5be4feef0aee404c08f5174ea3d",
- "imza": "FOYQjiGoG9MliVcE9mYSRpqzPrDOiZLxIJNhJNMByFiiETMmXGUmji61C8Fsq1bbsb12dklhYbOVt8OcHrmvzh+CZ6kDVSgfndLAV/gpOKRm8NQu7tK9+kjoAklzTZzusgaTccAjqUitDtDax52lMbCQTkaY8dvTsMCSD62Rpvj3wOGrx6fuvgUIZmYlInZvDqaPIWuVQKTtqZSemYxlvgo4GkS2OCCnVy9JWlGfGtjE0AIbfIVwCioua5is2d81G4eZWIlvRMeGP8A8Qca2vualsWWjWf8kOeGDPtWolhWLAvQjHxmZYZAeivijRatzixLfz6ym2UaEjfqX0VL+e4IIkqzuSUKg0g8RGP7/PxoNaTn6vtFzeTprw3wqeh0SEriZbniEWJOnt5d8MMMlqcWgwRASu1fBjAzzxSk71YRkQdNrfxztnHdCO83Z3cqXCow4zHaJcLuzhYehjJ9+4pj2cztCyC2cM6zxlHPwZuUYoUrJe4pOwBP6i+g+9VAf",
- "not": "Hesapları kasa tablosundan yeniden kur (yönetici); şirket bazlı hesaplar ve USD karşılığı kullanılabilir toplam"
+ "surum": 11,
+ "paket": "surumler/dsolar-11.zip",
+ "sha256": "79454e72403741c316c50b1d074b3892c350d761c531c0d063883a3b8d477580",
+ "imza": "GapANHz1UFo4j5xNc2behG7rlWT6TPfXgg6qZzeW3CCg4QdswLxnevgVOy9jlytw+vLIi4XJtE+nThZniAanL5Hk00ZXPCSL2Bt532BbNsLuPCLeHRR0xYXaDd/kqnXOKO0KM7sJkU4xv2CHHT40gATI4Cg3YWAd54IdvsmWZMpRqd4ygX+czOSx/EVTi1kmwYcLbGarR3YBCb3Aj8s9nB4W9SkFdPbF45Xt/oJH0e4HLHUkg1CkfwromV//o9tn8V/QxFp61fPgEsMKpF4nkIX7ukHuxp1xEC50EVu678t+4XDj7gglF/aTphOkSp00+jluyw6rOtUjkY+NgDc5lD/nR5ieEUo/uUQxIMg+QSY48Bvv/ThOeafhW97gG9wOMsA8fj+NCOZ0wdlH0MFbcUgHFAo8h0hqPZCpmdy0JpSFLG/vWeQJjbLZlwskotg/Q79nx/zXpaggWjtL+sJ2L7FCzZ9Pl3/nf9TpnUFA8R9pdTZ24V9KwRamQDEpJVQf",
+ "not": "Hareket düzenleme (tarih, tutar, hesap, durum), 'kontrol edildi' işareti ve ilerleme; gerçekleşen ödemede hesap sorulur"
 }
