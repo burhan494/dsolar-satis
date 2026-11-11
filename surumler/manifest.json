@@ -1,7 +1,7 @@
 {
- "surum": 28,
- "paket": "surumler/dsolar-28.zip",
- "sha256": "1bf0de2c6febb7a914617f299d989436bbc4e91e9dccead49d1d6edf040ad8ff",
- "imza": "E9OshV4pBq0qomBH/mtnnP5tr7UtVXTUUGOltLvhuy2+vz+tbsj8D4qNeQkxSH9u2SgckE8vgJVxXGepl+pnrk3uLYmlV692EO1zly661pKozmvmn0K41etCEfhaFJ/2W2l5pV+vbbAxs9i6U4NurzGKIRqp+zdspu9Ne/oaz1zU0ybY/ikMXHz6b/U0oOvL6d8Gj65oR61c3kfY01nbun3gazoC73OAzLmcCkWfiYbYJwC5TcLsM+79TXVA02VE7OA7duVvpPbfsW6eIG6zkM/F9YwZ6774g4ItLQsKNwOjAd+FNyyEb0sZRzm8GE7beOhGS959JKRv2vlDyR1d1gytuOEDpTzNRHZAIAT/MVR29UvKJi/IaB9Ys6m1zL3UbbIuxRV/TO3Rs2d7aK954gTy2VRE6i+IUdk3QTtDm7QubsGmh8vzKnIcdcgLqJ9jHX/6eIISK2Y/qqwnduh9IZk5WngCN5yE8XqTsggEt8+YAWBmRihcpcNx+QEfMfcm",
- "not": "Bugün, Müşteriler, Teklifler, Projeler ekranları yenilendi; GES kira tahmini: süren ay kısmi veriyle değil, geçen günler gerçek + kalan günler profil ile hesaplanır"
+ "surum": 29,
+ "paket": "surumler/dsolar-29.zip",
+ "sha256": "ee6b734f190ef08dbc8d18302b24ed50ef21722600e6ac133c1448c97914aded",
+ "imza": "UghuX8mdTjekM4z5P5U6Cyx3MmxhpJ7cnEpckcDtxq6rXD//Pkc9byJU9MEzFqrnKR+CUgV1gcGG7c0LYnwZgPjdm4Kg+aSLMfZtDvVKIkaOgaClZ22KztjrSITP/qsEus64a2n2ZVOhvT+w+ufzPMTmj1hf+3KU7oU0ftPFjKVzmEX3eJ7rcY+wpu75Ise413Sxu4Xlw0pepFy4MAhSGr/GOLZ8xi8GNA3TLiUUVeCqvt+X1MNbzRvajDFvWaTc4AqscODUPd0fT5ZszHIkWPt29ZvXqWrrBQ7VAtAjaJ1s4dqy2awdYhGTdUD/n1bMMNsbrSVJOazL/b9Mk1sWXbXlRTXeICfz5UVNZwn8qpgD+HaIxgq8PahD5p2aKIgNnE0X0J+e33iIsj185PkmTOYDqKfbUk9ekG8RiRaqnGMtFTRYOw97sBXobyP+NZ20KDq8oF9wF9gwEDY04LlSbgwmvoGwKJ8Nv24PYMmt4ddugtC2+SGqCb8nL1tF0HLU",
+ "not": "Düzeltmeler: yeni müşteride aynı telefon kontrolü ve 0'lı telefon, proje tahsilatında müşteri adı, bakiye girildikten sonra aynı gün işaretlenen ödeme/tahsilatlar kasaya yansır"
 }
