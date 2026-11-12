@@ -1,7 +1,7 @@
 {
- "surum": 35,
- "paket": "surumler/dsolar-35.zip",
- "sha256": "6e55bf833d9bd84a1c645d24883926a0406f855e92467f110d9442b9e4a85fff",
- "imza": "cK0SlQ1K/eLHdAyu9Bu91cxhFwGDtbU3e455GjfuPmDIKMSWyc4vMM0w3gDemGoPVeBoptq3s916Rqy7YZAcT0Z7T4e5MUnDJvO2/sv7JxDHzxICJYQJjqV8GkF6AIpqAyv5X8gj00HLD7JCLLUpnUKpl1/5FL0hBOas4EfiGZQmfonSatZJSxH0+PXiMKI/mGuAXQq8OTC8opkG5ayEDK2ss7OVEZS9PYje7+5n4cdMPdzFuI7hE2gp+H4+J+1AL/dETbP1QiltAOSyKUSvarcJQqpXWS6HoeX6JRLlax/ec2RxLf6B3aU430qf/RZCMXaVJ5SiDeaIHf5tiypUDJ5GHFbDj9J1D0w09xVuqle0kZUQlqBOZJGkj9PNSaUIwVHbs2dTn4hWroISMysp8s7c5ltBaBY76cppuxXWOutM7L/r+mmyr+w4hZ6rTC/M8RVcW5mFWHRkzCcKyGH/baf76OVtSH54TEv7DxDbfM+gMRs9kjRAa9TJg38o6Dci",
- "not": "GES iş emirleri: bakımcılar, WhatsApp/e-posta/PDF gönderim, durum takibi, fotoğraf, otomatik doğrulama"
+ "surum": 36,
+ "paket": "surumler/dsolar-36.zip",
+ "sha256": "13bd9b95e01795bf4d547e91a79a378f3ffb1c379c1398d746021a7b9347a842",
+ "imza": "hlOvuMRXKRDAaPHJhkIhA/vX4r5mb3aUPnIUALJ+NSTuSPpk53uh0a5NxLGKrI26gjBFTMSQwxDcQfO7/XDWW9cKDXzwyuqS1BRap9SUJ2AmVmCWNrmZpUFxWqs6SIwpJQldqA6vijk6rbSgyEFaTMB5sGJsgRAzqCc4oXyFf+ZxtQ6EMI2sdUC7wtjgvEHTi/veA41X3Xk0MaIlBCyQwJQSbtZnkVHqn1/hizpvf0hbCkVd9gudcBh4jBNMCzPbpkZWteIlhs2cVRseh4d/XLlHMF75etjGc3Md3mmKVzpqqEaGUFelqhrxPElnjfO151rJxYt4MnuC/eSdg8/+oYMkFDFDG4uVSYkTTFHBMa1LHzUDQcvztwCq7ZC84fpJ2TnxVOzDFAMRVA3PahsVmLOHArJJavA5DFLT1pF5GeyrsN7IkxgelFlZXSV/1v1GntkYQpDsMFkif0xO3HFoMytopnad8pJD3srXfqZ1+8Ljgqpo1W9DwIL0mVrM6ttC",
+ "not": "Kişi başı bölüm yetkileri (Yok/Görür/Düzenler), yeni Ekip ekranı, kredi kartıyla ödeme ve kart ekstresi"
 }
