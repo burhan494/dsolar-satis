@@ -3,7 +3,7 @@
 cronAdd("isc_senk", "17 * * * *", () => { try { require(`${__hooks}/isc_lib.js`).senk($app, false); } catch (e) { console.log("isc senk hatası", e); } });
 routerAdd("POST", "/api/dsolar/isc-senk", (e) => {
   const a = e.auth;
-  if (!a || a.getString("rol") !== "yonetici" || !a.getBool("aktif")) return e.json(403, { mesaj: "Yalnız yönetici" });
+  if (!a || !a.getBool("aktif") || (a.getString("rol") !== "yonetici" && a.getString("y_ges") !== "d")) return e.json(403, { mesaj: "GES düzenleme yetkisi gerekli" });
   return e.json(200, require(`${__hooks}/isc_lib.js`).senk($app, true));
 }, $apis.requireAuth("users"));
 // Bağlantı bilgilerini kaydet (gizli alanlar API'den yazılamadığı için sunucu tarafında yazılır)
