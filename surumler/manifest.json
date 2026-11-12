@@ -1,7 +1,7 @@
 {
- "surum": 39,
- "paket": "surumler/dsolar-39.zip",
- "sha256": "c527ed8035bba66bec02d4b02fc3b96cd0f16de71ca2888297f0176e6d36ec09",
- "imza": "G//a0MIObGHuyvA5D+SmaCfhOs6W3ETi+ONfCCGM7ofqZ5jrChRlu3st/RB6+LrNZgiSiegOWrGJ/xNLuyG00d1Dk8Mdjmtt0O4vTlRQZwmKMdFjf4zPILikQRu3OIIX1QaTBEf+MLiC/0JR7ibzbUq2DS/Y2yQ/6Zc+sZzb3LKRZzBQm/dh1u7Ev7lmE+NwDyvpUmIgFhfmM89UOc9cfaVIzealmQ54HbFTQELwybIvmCUn+wmeAFfU6NzvLo2dpi8zvPWcxUtbMp96octuH/CVlCEA7X0k/S44JiIRhxPuDdU9yb8Sd9sBi6zRUYChrTyXC+dCW0/jdn+6WJ1ZA1sSoojBIle3j/BkUNYDIqXYhZgM0FZrVVN09Q9utvmRthcH7/zbDKG71xtFZvBXc+p7CL8f1Q1lDhCEISBUno3rlKpsFF4q5NszQaZuOFMdAmvS1V1FLtkfMk1l9t45posgJwqyTpe44NO3tmdY0RZOl8j8ApR7m+Po1nUIyhTW",
- "not": "Vadesi yaklaşan onaysız ödemeler otomatik onay listesine; kredi/kart silinince planlı taksitleri de silinir"
+ "surum": 40,
+ "paket": "surumler/dsolar-40.zip",
+ "sha256": "e6d8fc5ebbe5913f62a2610aae7dd786c13d5f45fc81bfc7dbb2a8fe17c14ea3",
+ "imza": "jyt7BnTDL/+63yPv83Wmz5u1kOPsFXReCjnd5DgD9156M0tnXvG3FgvmImchdrsG3H9zsMqLL922OxoXgxec5Cr35WGdmR8nNxMiayoM5dASIOx9p8pLNb+vHVDxUuO5X6UXgnP8bc5serzkiaLEOnlkazpuDXS2RWs720WVTY69UEe78ASnAoQX+xYPJc9fm+AFz5JYwRi1hbR0KnHg7c0I27cW+hmjoSFCzi2mJe5snxxUd2I9qW8dMaxaJOdDWpecJ63neJ2uVV2mwli7A/pFiPnq2jFL8ChwjfNgyQ/GMHR+sfj/OJMiJPD8hKkp34J5E1qnOK88BuayTUOXUcBXIIIJ8jz2RiL70Q/ewrmmouBgLVHJ/o4d2fUPtUmNsGM8MeMmR72gEtiIFcsOqOivan0FyF7bc5iWacC71DBGTG1O7NRYYVUaCqlw3pc2fF9FLsfrvxUugM7cJmWW11m0UgwX7Tyuywu8Fwm0McuPWHA6D/w6vdEbFIALVqTP",
+ "not": "Günlük yönetim raporları, ödenmiş kayıtta Düzelt (karta/hesaba), kart ekstre dönemleri, eski inverter kayıtları gizlendi"
 }
