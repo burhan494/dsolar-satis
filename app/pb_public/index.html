@@ -2160,7 +2160,11 @@ function listeDurumYaz(L, M) { var d = listeDurum(L, M); if (d === L.durum) retu
   if (!yon() && d !== "Kapandı" && d !== "Onayda") return Promise.resolve();
   return api("/api/collections/odeme_listeleri/records/" + L.id, { method: "PATCH", body: b }).catch(function () {}); }
 
+// vadesine 3 gün kalan onaysız ödemeleri sunucu onay listesine düşürür (sunucu günde iki kez de kendisi yapar); 10 dakikada bir yeter
+var ONT = 0;
+function onayTara() { if (Date.now() - ONT < 6e5 || !(yon() || yd("fin") || yd("odeme"))) return Promise.resolve(); ONT = Date.now(); return api("/api/dsolar/onay-tara", { method: "POST" }).catch(function () {}); }
 function fOdeme() {
+  if (Date.now() - ONT >= 6e5 && (yon() || yd("fin") || yd("odeme"))) return onayTara().then(fOdeme);
   Promise.all([liste("odeme_listeleri", "", "-created", "hazirlayan,onaylayan"), liste("fin_hareketler", "", "tarih"), liste("fin_sabitler", "", "ad"), kurKartiGetir(), liste("fin_hesaplar", "", "sirket,ad"),
     yt("fin") ? liste("fin_ayarlar", "anahtar = 'nakit_ayar'").catch(function () { return []; }) : Promise.resolve([])]).then(function (R) {
     var LS = R[0], M = R[1], S = R[2], KU = R[3], H = R[4], b = bugun(), usd = function (v, p) { return usdKarsilik(+v || 0, p || "TRY", KU); };
@@ -2367,7 +2371,7 @@ function sBugun() {
       (yon() && onb.length ? '<div class="card" style="margin:0;border:2px solid #f59e0b"><h3 style="color:var(--warn)">' + ikon("belge", "#d97706", "kucuk") + "Onayınızı bekleyen " + onb.length + " teklif</h3>" + onb.slice(0, 5).map(function (t) { var a = (t.expand || {}).aday || {}; return '<a class="row" href="#aday/' + t.aday + '"><div class="t"><b class="w">' + esc(a.ad || "—") + "</b><small>" + esc((t.no || "") + " · " + sayi(t.kwp, 1) + " kWp") + '</small></div><b style="white-space:nowrap">' + sayi(t.fiyatUSD) + " $</b></a>"; }).join("") + '<a class="row" href="#teklifler" style="justify-content:center;color:var(--blue2);font-weight:700">Tekliflere git</a></div>' : "") +
       '<div class="card" style="margin:0"><h3>' + ikon("grafik", "#4f46e5", "kucuk") + "Satış hunisi</h3>" + huni.map(function (h) { return '<a class="row hR" href="#adaylar" onclick="LF.asama=\'' + h.s + '\'"><span style="width:84px;flex:none;font-size:13px;font-weight:600">' + h.s + '</span><div class="krBar" style="flex:1;margin:0 10px;height:10px"><i style="width:' + (h.n / mx * 100).toFixed(1) + "%;background:" + ASAMA_RENK[h.s] + '"></i></div><b style="width:38px;text-align:right">' + h.n + "</b></a>"; }).join("") + "</div></div></div>";
     $("m").innerHTML = html;
-    if (yon()) odemeBugunKarti().then(function (h) { var k = $("odBk"); if (k) k.innerHTML = h; });
+    if (yon()) onayTara().then(odemeBugunKarti).then(function (h) { var k = $("odBk"); if (k) k.innerHTML = h; });
     if (satisci()) Promise.all([liste("yonlendirmeler", "durum = 'Yeni'", "-created", "ortak"), liste("adaylar", "tel != ''", "-updated")]).then(function (R2) { var k = $("yonK"); if (!k || !R2[0].length) return;
       k.innerHTML = yonlendirmeKarti(R2[0], R2[1], false).replace('<div class="card">', '<div class="card" style="margin:0">'); yonlendirmeBagla(R2[0], sBugun); }).catch(function () {});
   }).catch(hata);
