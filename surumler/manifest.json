@@ -1,7 +1,7 @@
 {
- "surum": 41,
- "paket": "surumler/dsolar-41.zip",
- "sha256": "d84b105373851c6a84f89f2903b392d5de1c4d160d310d4b9abf3b51f51cd9f3",
- "imza": "mASbXFKxwG4HAtqAj0asyZ1kAmn/jBio8K6y9JGuJZBRd3GXdDiT1rkxOmhi3XdImJ+AqLlmNgkR5nkYm7ck+mG2KTlbi7FPUDthRVimeXI007yepjcrWbKQMeEUSuwC+F9Dx4orB/GU4ScUBxqG5CYwHGn41hRKMHrOm6GTpmQ++y4W6SP2x6mSu7hLgn9ZMzt/qJKqngxw9nJuFHiv0uqY6rKOWlAtzDTkJor+Gccchlzh3musTL7pQez2+SmZws3qO98chbyVbK5ITwJYZBx2PG/+cecltDW5HexMq1tiYsN0V/4re1nrd0DooSTpVeHZJKkyQPwtZO/AJdjvzKZ5L4kucPOqhxUhhq0i4JPcepK2jxtlmRReorzIf9sDs/wSU7lh7DjMjrG+IWMcmV1tKQYUln5+R1+vmQAvG37K7+S3luKmlsQ0CPu1vqDltVr7Ue3eylmueR94WzqNKXsrkfAnZ6CwUpMCZMYbgaNzgmVzEqk7Mu+TPj5fGPea",
- "not": "Finans sekmeleri alt satıra geçer; Raporlar ikinci sırada"
+ "surum": 42,
+ "paket": "surumler/dsolar-42.zip",
+ "sha256": "61088ace7c6a14c116b636fa1089e8ba0a8c769786d1c6fdb8f351a10de9b7c9",
+ "imza": "HKSsT7lS5DIJrQ45gmeUry7VyB37iAnJpW9G4GfL7GMhyO3u9I8eXOBZJsnrFB6PShDrPKsqh1v2y52Csxzax8v+bRtfxKuWkdzLUKbDVVCNKx3CaRCK4LxSukk1THy5yj0vLRDl5U4UgTidKq4g6wSwDlklYYGgGDjedmYAHMHDAkMWBWzfhoOHOLdy4hrUwsYhuBEgruapcqUKp0AF8A8R9/EocPmYrUv0iLbNUkbWlIMof3l16LVk4oiezrvaqJi59Ojb3t4382W1NVnSnkPTNsa/dBrzLVy5lgxBUYkWOtRWD5G5dnTdeuw5W9bp9YoYSxbwu9xP0wK1tJun+yzgpv3JnTlaPQ1uMbawJ8D9ITuuAmf1eheb/idak2M+7xkX6YQo/0mJKwLXXdU5Oro9aaDNj3CIr2QQZB4/xZZTJUbM6+BlTJ323W9tPQY6fg5iuDUKKKM33zYiJM8l/gGi49LP7hHqCr4XvQkuDHHOpQHWk+EzbJQjb6kLCpNF",
+ "not": "GDZ yük profili yükleme (ara veri, ayrı saklanır), sayaç kesintisi tespiti ve olay defteri"
 }

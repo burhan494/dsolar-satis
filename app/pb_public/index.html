@@ -781,7 +781,7 @@ function gesBeklenenKwh(ay, P) { var mo = +ay.slice(5, 7), y = +ay.slice(0, 4); 
 function iscTop(g) { var t = 0, n = 0; Object.keys((g && g.iscGun) || {}).forEach(function (k) { var v = +g.iscGun[k]; if (v > 0) { t += v; n++; } }); return { t: t, n: n }; }
 function gesOranHesap(G) { var a = 0, b = 0; G.forEach(function (g) { var i = iscTop(g); if (g.uretimKwh > 0 && i.n >= 25) { a += +g.uretimKwh; b += i.t; } }); return b > 0 ? a / b : 1; }
 function gesUretim(g, ay, P, oran) {
-  g = g || {}; var b = bugun(), ay0 = b.slice(0, 7), gs = gunSay(ay), bekG = gesBeklenenKwh(ay, P) / gs, O = g.osGun || {}, I = g.iscGun || {}, nO = Object.keys(O).length, it = iscTop(g);
+  g = g || {}; var b = bugun(), ay0 = b.slice(0, 7), gs = gunSay(ay), bekG = gesBeklenenKwh(ay, P) / gs, O = g.osGun || {}, Yp = g.ypGun || {}, I = g.iscGun || {}, nO = Object.keys(O).length, it = iscTop(g), a4 = 0;
   if (ay > ay0) return { kwh: gesBeklenenKwh(ay, P), kaynak: "profil tahmini" };
   var iscTam = it.n ? it.t * oran + Math.max(0, gs - it.n) * bekG : 0;
   // geçmiş ay: tam ay OSOS varsa o (resmî sayaç); OSOS gün kırılımı yoksa ve iSolarCloud'un çok altındaysa eksik sayılır
@@ -789,14 +789,15 @@ function gesUretim(g, ay, P, oran) {
   if (ay < ay0 && g.uretimKwh > 0 && !nO && !it.n) return { kwh: +g.uretimKwh, kaynak: "OSOS (eksik olabilir)" };
   // gün gün: OSOS > iSolarCloud × oran > profil; süren ayda yalnız dünkü güne kadar gerçek veri sayılır
   var son = ay < ay0 ? gs : +b.slice(8, 10) - 1, t = 0, bil = 0, a1 = 0, a2 = 0, a3 = 0;
-  if (ay === ay0 && !nO && !it.n && g.uretimKwh > 0) { bil = +g.uretimKwh; return { kwh: bil + Math.max(0, gs - son) * bekG, kaynak: "OSOS (elle, " + son + " gün) + profil", kismi: true, bilinen: bil, gun: son }; }
+  if (ay === ay0 && !nO && !it.n && !Object.keys(Yp).length && g.uretimKwh > 0) { bil = +g.uretimKwh; return { kwh: bil + Math.max(0, gs - son) * bekG, kaynak: "OSOS (elle, " + son + " gün) + profil", kismi: true, bilinen: bil, gun: son }; }
   for (var d = 1; d <= gs; d++) { var dd = String(d).padStart(2, "0");
     if (d <= son && O[d] != null) { t += +O[d]; bil += +O[d]; a1++; }
+    else if (d <= son && Yp[d] != null) { t += +Yp[d]; bil += +Yp[d]; a4++; }
     else if (d <= son && I[dd] != null && I[dd] !== "") { t += +I[dd] * oran; bil += +I[dd] * oran; a2++; }
     else { t += bekG; a3++; } }
-  if (!a1 && !a2) return { kwh: gesBeklenenKwh(ay, P), kaynak: "profil tahmini" + (ay === ay0 ? " (ay sürüyor)" : ""), kismi: ay === ay0 };
-  var p = []; if (a1) p.push("OSOS " + a1 + " gün"); if (a2) p.push("iSolarCloud" + (oran !== 1 ? " × " + sayi(oran, 3) : "") + " " + a2 + " gün"); if (a3) p.push("profil " + a3 + " gün");
-  return { kwh: t, kaynak: p.join(" + "), kismi: ay === ay0, bilinen: bil, gun: a1 + a2 };
+  if (!a1 && !a2 && !a4) return { kwh: gesBeklenenKwh(ay, P), kaynak: "profil tahmini" + (ay === ay0 ? " (ay sürüyor)" : ""), kismi: ay === ay0 };
+  var p = []; if (a1) p.push("OSOS " + a1 + " gün"); if (a4) p.push("yük profili " + a4 + " gün"); if (a2) p.push("iSolarCloud" + (oran !== 1 ? " × " + sayi(oran, 3) : "") + " " + a2 + " gün"); if (a3) p.push("profil " + a3 + " gün");
+  return { kwh: t, kaynak: p.join(" + "), kismi: ay === ay0, bilinen: bil, gun: a1 + a2 + a4 };
 }
 function gesOranSec(G) { return gesOranGun(G) || gesOranHesap(G); }
 function kiraMatrah(ay, kwh, P) {
@@ -854,8 +855,8 @@ function sGes() {
         return '<tr style="border-top:1px solid #edf1f6"><td style="padding:8px;white-space:nowrap"><a href="#" data-ga="' + a + '" style="color:var(--text);font-weight:700;text-decoration:none">' + ayAd(a) + "</a><br><small style=\"color:var(--muted)\">" + esc(U.kaynak) + "</small></td><td style=\"text-align:right\">" + sayi(U.kwh) + '</td><td style="text-align:right;color:var(--muted)">' + sayi(hd) + '</td><td style="text-align:right;' + (fk != null && fk < -5 ? "color:var(--bad)" : fk > 0 ? "color:var(--ok)" : "") + '">' + (fk != null && !U.kismi ? (fk >= 0 ? "+" : "") + sayi(fk, 1) + "%" : "–") + "</td>" +
           '<td style="text-align:right">' + (m ? sayi(m) : "–") + "<br><small style=\"color:var(--muted)\">" + (fat ? "fatura" : "tahmini") + '</small></td><td style="text-align:right;font-weight:700">' + (th ? sayi(th) : "–") + '</td><td style="padding-left:10px;white-space:nowrap">' + drm + "</td></tr>"; }).join("") + "</tbody></table></div>" +
       '<div class="not"><small>Fatura kesilince ay adına dokunup "Kira matrahı (fatura, KDV hariç)" alanına girin; tahmin yerine o kullanılır. "Tahsil edildi" tutarı seçtiğiniz banka hesabına işler, nakit akışındaki tahmin kalkar.</small></div><div id="gKt"></div></div>';
-    html += '<div data-gs="uretim">' + gesKiyasKarti(G, P, oran) + '<div class="card"><h3>' + ikon("belge", "#0d9488", "kucuk") + 'OSOS dosyası yükle</h3><div class="f"><small style="color:var(--muted)">EDAŞ OSOS sayaç formunu (osf_….xlsx) seçin: dönem, sayaç, gün ve saat bazında üretim, çekiş, reaktif endeksleri okunur. Önizleme gösterilir, onaylayınca o aya yazılır; aynı ayın daha uzun dosyası öncekinin yerine geçer.</small><input type="file" id="osD" accept=".xlsx,.xls"><div id="osO"></div>' +
-      (G.filter(function (g) { return g.osDosya; }).length ? '<small style="color:var(--muted)">Yüklü: ' + G.filter(function (g) { return g.osDosya; }).sort(function (x, y) { return x.donem < y.donem ? 1 : -1; }).map(function (g) { return ayAd(g.donem) + " (" + Object.keys(g.osGun || {}).length + " gün)"; }).join(" · ") + "</small>" : "") + "</div></div></div>" + '<div data-gs="reaktif">' + reaktifKarti(G, RA) + "</div>";
+    html += '<div data-gs="uretim">' + gesKiyasKarti(G, P, oran) + '<div class="card"><h3>' + ikon("belge", "#0d9488", "kucuk") + 'OSOS / yük profili yükle</h3><div class="f"><small style="color:var(--muted)">İki dosya türü de buraya: <b>resmî OSOS formu</b> (osf_….xlsx, ay sonu, kira bununla hesaplanır) ya da GDZ portalından <b>yük profili raporu</b> (15 dakikalık okumalar, ay içi takip). Sistem türünü kendisi tanır, önizleme gösterir; ikisi ayrı saklanır, birbirinin üstüne yazılmaz.</small><input type="file" id="osD" accept=".xlsx,.xls"><div id="osO"></div>' +
+      (G.filter(function (g) { return g.osDosya; }).length ? '<small style="color:var(--muted)">Yüklü: ' + G.filter(function (g) { return g.osDosya; }).sort(function (x, y) { return x.donem < y.donem ? 1 : -1; }).map(function (g) { return ayAd(g.donem) + " (" + Object.keys(g.osGun || {}).length + " gün)"; }).join(" · ") + "</small>" : "") + "</div></div>" + ypKarti(G) + "</div>" + '<div data-gs="reaktif">' + reaktifKarti(G, RA) + "</div>";
     html += '<details data-gs="kira" class="card" id="gAyK"><summary><h3>Ay bilgisi gir / düzelt (OSOS, fatura, gider)</h3></summary><div class="f"><div class="f2"><label>Dönem<input id="gD" type="month" value="' + ayEkle(b, -1) + '"></label><label>Üretim, OSOS (kWh)<input id="gU" inputmode="decimal"></label></div>' +
       '<div class="f2"><label>Kira matrahı (fatura, KDV hariç TL)<input id="gK" inputmode="decimal"></label><label>Reaktif bedel (TL)<input id="gR" inputmode="decimal"></label></div><div class="f2"><label>Diğer gider (TL)<input id="gO" inputmode="decimal"></label><label>Not<input id="gN"></label></div><button class="btn pri" id="gK2">Kaydet</button></div></details>' +
       '<details data-gs="ayar" class="card" open><summary><h3>iSolarCloud bağlantısı</h3></summary><div class="f"><div class="bilgi" style="margin:0">Bilgiler sunucuda saklanır, bir daha ekranda gösterilmez. Değiştirmek istemediğiniz alanı boş bırakın. Beacon\'da: GES › Detaylar › OSOS ve bağlantı.</div>' +
@@ -877,6 +878,8 @@ function sGes() {
     if (invSorY.filter(function (r) { return r.durum !== "kt"; }).length) dk.push(["uy", invSorY.filter(function (r) { return r.durum !== "kt"; }).length + " inverter akranlarının altında çalışıyor, iş emri açılmadı.", "inverter"]);
     IE.filter(ieAcikMi).forEach(function (o) { var dd = o.ieDurum || "Açık", bkA = (BK.filter(function (k) { return k.id === o.bakimci; })[0] || {}).ad;
       dk.push([ieGecik(o) || dd === "Düzelmedi" ? "kt" : "uy", o.ieNo + " · " + o.baslik + ": " + (dd === "Açık" ? "bakımcıya henüz gönderilmedi" : dd === "Düzelmedi" ? "çözüldü denmişti ama düzelmedi" : dd === "Çözüldü" ? "çözüldü, doğrulama bekleniyor" : dd.toLowerCase() + (bkA ? " (" + bkA + ")" : "")) + (ieGecik(o) ? ", son tarih " + tarih(o.sonTarih) + " geçti" : "") + ".", "#isemri/" + o.id]); });
+    G.forEach(function (g) { (g.ypBosluk || []).forEach(function (bo) { var t0 = bo.bas.slice(0, 4) + "-" + bo.bas.slice(4, 6) + "-" + bo.bas.slice(6, 8); if (bo.olay || t0 < gunSonra(-40)) return;
+      dk.push(["kt", (bo.tur === "veri" ? "Sayaçtan veri yok (olası kesinti): " : "Gündüz üretim durdu: ") + ypYaz(bo.bas) + " – " + ypYaz(bo.bit) + " (" + ypSure(bo.dk) + "). Olay defterine yazın.", "uretim"]); }); });
     var dus0 = gesDusukGun(buG); if (dus0.length) dk.push(["uy", ayAd(ay0) + ": " + dus0.join(", ") + ". günlerde üretim çok düşük.", "uretim"]);
     if (onc >= P.teslim && !(oncG.osGun && Object.keys(oncG.osGun).length >= gunSay(onc) - 1)) dk.push(["uy", ayAd(onc) + " OSOS dosyası tam değil ya da yüklenmedi.", "uretim"]);
     if (reaAsim && !(RA.cozum && reaS.donem >= RA.cozum)) dk.push(["uy", "Reaktif oran sınırın üstünde (" + ayAd(reaS.donem) + ")" + (RA.cozum ? "; çözüm " + ayAd(RA.cozum) + " bekleniyor." : "."), "reaktif"]);
@@ -910,6 +913,7 @@ function sGes() {
     olayKarti($("olK"), acikAr);
     var gka = function () { GK.ay = $("gKa").value; $("gKg").innerHTML = gesKiyasGrafik(gAy[GK.ay], GK.ay, P, oran); }; $("gKa").onchange = gka; gka();
     $("osD").onchange = function () { var f = this.files[0]; if (f) ososYukle(f, G, sGes); };
+    bagT("[data-ypo]", function (e) { var p = e.dataset.ypo.split("|"); e.disabled = true; ypOlayYaz(G.filter(function (g) { return g.id === p[0]; })[0], +p[1], sGes); });
     $("rCozK").onclick = function () { var d = Object.assign({}, RA, { cozum: $("rCoz").value || "" });
       (FA.ges_ayar ? api("/api/collections/fin_ayarlar/records/" + FA.ges_ayar.id, { method: "PATCH", body: { deger: d } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "ges_ayar", deger: d } })).then(function () { toast("Kaydedildi"); sGes(); }).catch(hata); };
     var senk = function () { $("gSenk").disabled = true; $("gSenk").textContent = "Çekiliyor…"; return api("/api/dsolar/isc-senk", { method: "POST" }).then(function (r) { toast(r.mesaj || "Tamam"); sGes(); }).catch(function (e) { $("gSenk").disabled = false; $("gSenk").textContent = "Şimdi çek"; toast(/404|not found/i.test(e.message) ? "Sunucunun iSolarCloud modülü henüz kurulmadı (BT adımı)" : e.message); }); };
@@ -2528,10 +2532,11 @@ function ososCoz(sheets) {
 }
 function ososYukle(f, G, sonra) {
   xlsxYukle().then(function () { return f.arrayBuffer(); }).then(function (buf) { var X = window.XLSX, wb = X.read(buf, { type: "array" });
-    var O = ososCoz(wb.SheetNames.map(function (n) { return X.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: null }); }));
-    if (!O) throw new Error("Bu dosyada OSOS sayaç formu bulunamadı");
+    var SH = wb.SheetNames.map(function (n) { return X.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: null }); }), O = ososCoz(SH);
+    if (!O) { var Y = ypCoz(SH); if (Y) return ypYukle(Y, f, G, sonra); throw new Error("Bu dosyada OSOS sayaç formu ya da yük profili bulunamadı"); }
+    $("osO").dataset.tur = "osos";
     var g = G.filter(function (x) { return x.donem === O.ay; })[0], n = Object.keys(O.gun).length, gs = gunSay(O.ay), onc = g && g.osGun ? Object.keys(g.osGun).length : 0, fark = Math.abs(O.saatlikToplam - O.uretim);
-    $("osO").innerHTML = '<div class="bilgi" style="margin:8px 0">' + ayAd(O.ay) + " · sayaç " + esc(O.sayac || "—") + "<br>Üretim (veriş): <b>" + sayi(O.uretim) + " kWh</b> · çekiş " + sayi(O.cekis) + " kWh · reaktif endüktif " + sayi(O.ri) + " / kapasitif " + sayi(O.rc) + " kVArh<br>" + n + "/" + gs + " günlük veri" + (n < gs - 1 ? " (yarım ay; kalan günler iSolarCloud ya da profille tamamlanır)" : "") +
+    $("osO").innerHTML = '<div class="bilgi" style="margin:8px 0"><b>Resmî OSOS formu</b> · ' + ayAd(O.ay) + " · sayaç " + esc(O.sayac || "—") + "<br>Üretim (veriş): <b>" + sayi(O.uretim) + " kWh</b> · çekiş " + sayi(O.cekis) + " kWh · reaktif endüktif " + sayi(O.ri) + " / kapasitif " + sayi(O.rc) + " kVArh<br>" + n + "/" + gs + " günlük veri" + (n < gs - 1 ? " (yarım ay; kalan günler iSolarCloud ya da profille tamamlanır)" : "") +
       (fark > 1 ? '<br><span style="color:var(--bad)">Saatlik toplam ' + sayi(O.saatlikToplam) + " kWh, endeks farkıyla tutmuyor.</span>" : "") + (onc ? "<br>Önceki kayıt " + onc + " günlüktü; bu dosya onun yerine geçer." + (onc > n ? ' <b style="color:var(--bad)">Yeni dosya daha kısa!</b>' : "") : "") + '</div><button class="btn pri" id="osK">' + ayAd(O.ay) + " OSOS verisini kaydet</button>";
     $("osK").onclick = function () { this.disabled = true; var b = { donem: O.ay, uretimKwh: O.uretim, osGun: O.gun, osSaat: O.saat, osCekis: O.cekis, osRi: O.ri, osRc: O.rc, osCap: O.cap, osSayac: O.sayac, osDosya: f.name, osTarih: bugun() + " 12:00:00.000Z" };
       api("/api/collections/ges_aylik/records" + (g ? "/" + g.id : ""), { method: g ? "PATCH" : "POST", body: b }).then(function () { toast(ayAd(O.ay) + " OSOS kaydedildi"); sonra(); }).catch(hata); };
@@ -2541,7 +2546,7 @@ function ososYukle(f, G, sonra) {
 function gesOranGun(G) { var r = []; G.forEach(function (g) { var o = g.osGun || {}, I = g.iscGun || {}; Object.keys(o).forEach(function (d) { var v = +I[String(d).padStart(2, "0")]; if (v > 1000 && +o[d] > 1000) r.push(+o[d] / v); }); });
   if (r.length < 5) return null; r.sort(function (a, b) { return a - b; }); return Math.min(1.02, Math.max(0.95, r[Math.floor(r.length / 2)])); }
 function gesIcKayip(g) { var o = (g && g.osGun) || {}, I = (g && g.iscGun) || {}, r = []; Object.keys(o).forEach(function (d) { var v = +I[String(d).padStart(2, "0")]; if (v > 1000 && +o[d] > 1000) r.push(1 - +o[d] / v); }); if (r.length < 3) return null; r.sort(function (a, b) { return a - b; }); return r[Math.floor(r.length / 2)]; }
-function gesDusukGun(g) { var src = g && g.osGun && Object.keys(g.osGun).length >= 7 ? g.osGun : (g && g.iscGun) || {}, ks = Object.keys(src); if (ks.length < 7) return []; var v = ks.map(function (k) { return +src[k] || 0; }).sort(function (a, b) { return a - b; }), med = v[Math.floor(v.length / 2)];
+function gesDusukGun(g) { var src = g && g.osGun && Object.keys(g.osGun).length >= 7 ? g.osGun : g && g.ypGun && Object.keys(g.ypGun).length >= 7 ? g.ypGun : (g && g.iscGun) || {}, ks = Object.keys(src); if (ks.length < 7) return []; var v = ks.map(function (k) { return +src[k] || 0; }).sort(function (a, b) { return a - b; }), med = v[Math.floor(v.length / 2)];
   return ks.filter(function (k) { return med > 0 && (+src[k] || 0) < 0.4 * med; }).map(function (k) { return +k; }).sort(function (a, b) { return a - b; }); }
 function gesKiyasKarti(G, P, oran) {
   var b = bugun(), ay0 = b.slice(0, 7), gAy = {}; G.forEach(function (g) { gAy[g.donem] = g; }); var aylar = []; for (var a = ay0; a >= P.teslim; a = ayEkle(a + "-01", -1)) aylar.push(a);
@@ -2890,6 +2895,76 @@ function fRapor() {
       }).catch(function (x) { el.style.width = w0; hata(x); }).then(function () { e.disabled = false; }); });
   }).catch(hata);
 }
+
+/* ---------- GDZ yük profili (ara veri) ---------- */
+// "Portal-Seçimli Yük Profili Raporu": 15 dakikalık sayaç endeksleri (çarpansız). Anahtar: YYYYMMDDHHmm → [veriş, çekiş, RI çekiş, RC çekiş]
+function ypTs(v) { if (typeof v === "number") { var d = new Date(Math.round((v - 25569) * 864e5)); return d.toISOString().slice(0, 16).replace(/[-T:]/g, ""); }
+  var m = /(\d{1,2})[./](\d{1,2})[./](\d{4})\s+(\d{1,2}):(\d{2})/.exec(String(v || "")); return m ? m[3] + m[2].padStart(2, "0") + m[1].padStart(2, "0") + m[4].padStart(2, "0") + m[5] : ""; }
+function ypCoz(sheets) {
+  for (var s = 0; s < sheets.length; s++) { var R_ = sheets[s] || [], hi = -1, H = null;
+    for (var i = 0; i < Math.min(R_.length, 10); i++) { var r = (R_[i] || []).map(function (x) { return String(x == null ? "" : x).trim(); }); if (r.indexOf("Profil Tarihi") >= 0 && r.some(function (x) { return /Toplam Veri[sş]/i.test(x); })) { hi = i; H = r; break; } }
+    if (hi < 0) continue;
+    var col = function (re) { return H.findIndex(function (x) { return re.test(x); }); }, cT = H.indexOf("Profil Tarihi"), cV = col(/Toplam Veri[sş]/i), cC = col(/Toplam [CÇ]eki[sş]/i), cRI = col(/^RI [CÇ]eki[sş]/i), cRC = col(/^RC [CÇ]eki[sş]/i), cA = col(/^Abone/i);
+    var oku = {}, sayac = "";
+    R_.slice(hi + 1).forEach(function (r) { r = r || []; var k = ypTs(r[cT]), v = parseFloat(r[cV]); if (!k || isNaN(v)) return; if (!sayac && cA >= 0 && r[cA] != null) sayac = String(r[cA]).replace(/\.0$/, "");
+      oku[k] = [v, parseFloat(r[cC]) || 0, cRI >= 0 ? parseFloat(r[cRI]) || 0 : 0, cRC >= 0 ? parseFloat(r[cRC]) || 0 : 0]; });
+    var K = Object.keys(oku).sort(); if (!K.length) return null;
+    return { oku: oku, sayac: sayac, bas: K[0], bit: K[K.length - 1], n: K.length };
+  }
+  return null;
+}
+function ypZ(k) { return Date.UTC(+k.slice(0, 4), +k.slice(4, 6) - 1, +k.slice(6, 8), +k.slice(8, 10), +k.slice(10, 12)); }
+function ypYaz(k) { return k.slice(6, 8) + "." + k.slice(4, 6) + " " + k.slice(8, 10) + ":" + k.slice(10, 12); }
+function ypSure(dk) { var g = Math.floor(dk / 1440), s = Math.floor(dk % 1440 / 60), d = Math.round(dk % 60); return [g ? g + " gün" : "", s ? s + " saat" : "", !g && d ? d + " dk" : ""].filter(Boolean).join(" ") || "0 dk"; }
+// bir ayın okumalarından günlük/saatlik kWh, toplamlar, boşluklar ve gündüz üretim durmaları
+function ypHesap(oku, c, ay) {
+  var K = Object.keys(oku).filter(function (k) { return k.slice(0, 6) === ay.replace("-", ""); }).sort(), gun = {}, saat = {}, top = 0, cek = 0, ri = 0, rc = 0, bos = [], dur = null, durL = [];
+  for (var i = 1; i < K.length; i++) { var a = K[i - 1], b = K[i], A = oku[a], B = oku[b], dk = (ypZ(b) - ypZ(a)) / 6e4, dv = Math.max(0, (B[0] - A[0]) * c), d = +a.slice(6, 8), h = +a.slice(8, 10);
+    gun[d] = (gun[d] || 0) + dv; saat[d] = saat[d] || []; saat[d][h] = (saat[d][h] || 0) + dv; top += dv; cek += Math.max(0, (B[1] - A[1]) * c); ri += Math.max(0, (B[2] - A[2]) * c); rc += Math.max(0, (B[3] - A[3]) * c);
+    if (dk > 30) bos.push({ bas: a, bit: b, dk: dk, kwh: Math.round(dv), tur: "veri" });
+    var gunduz = h >= 9 && h < 15;
+    if (dk <= 30 && gunduz && dv < 1) { if (!dur) dur = { bas: a, bit: b }; else dur.bit = b; } else if (dur) { var dd = (ypZ(dur.bit) - ypZ(dur.bas)) / 6e4; if (dd >= 60) durL.push({ bas: dur.bas, bit: dur.bit, dk: dd, kwh: 0, tur: "durma" }); dur = null; } }
+  if (dur && (ypZ(dur.bit) - ypZ(dur.bas)) / 6e4 >= 60) durL.push({ bas: dur.bas, bit: dur.bit, dk: (ypZ(dur.bit) - ypZ(dur.bas)) / 6e4, kwh: 0, tur: "durma" });
+  // tamamlanmış günler: o günün son okuması 23:30 ve sonrası ya da sonraki günden okuma var
+  var son = K[K.length - 1] || "", tam = {}; Object.keys(gun).forEach(function (d) { var dd = ay.replace("-", "") + String(d).padStart(2, "0"); if (son.slice(0, 8) > dd || (son.slice(0, 8) === dd && son.slice(8) >= "2330")) tam[d] = Math.round(gun[d] * 10) / 10; });
+  Object.keys(saat).forEach(function (d) { for (var x = 0; x < 24; x++) saat[d][x] = Math.round((saat[d][x] || 0) * 10) / 10; });
+  return { gun: tam, saat: saat, top: Math.round(top), cek: Math.round(cek), ri: Math.round(ri), rc: Math.round(rc), bos: bos.concat(durL).sort(function (x, y) { return x.bas < y.bas ? -1 : 1; }), son: son, n: K.length };
+}
+// aynı günlerde OSOS formu ile karşılaştır: oran (yük profili ÷ OSOS) ortancası
+function ypOsosKiyas(g) { var O = (g && g.osGun) || {}, Y = (g && g.ypGun) || {}, r = []; Object.keys(Y).forEach(function (d) { if (+O[d] > 1000 && +Y[d] > 1000) r.push(+Y[d] / +O[d]); }); if (!r.length) return null; r.sort(function (a, b) { return a - b; }); return { oran: r[Math.floor(r.length / 2)], n: r.length }; }
+function ypYukle(Y, f, G, sonra) {
+  liste("fin_ayarlar", "anahtar = 'ges_ayar'").catch(function () { return []; }).then(function (FA) {
+    var kay = FA[0], RA = (kay && kay.deger) || {}, c0 = +RA.ypCarpan || 13800, aylar = {};
+    Object.keys(Y.oku).forEach(function (k) { aylar[k.slice(0, 4) + "-" + k.slice(4, 6)] = 1; });
+    var oz = function (c) { return Object.keys(aylar).sort().map(function (ay) { var g = G.filter(function (x) { return x.donem === ay; })[0] || {}, M = Object.assign({}, g.ypOku || {}); Object.keys(Y.oku).forEach(function (k) { if (k.slice(0, 6) === ay.replace("-", "")) M[k] = Y.oku[k]; });
+      var h = ypHesap(M, c, ay), kq = ypOsosKiyas({ osGun: g.osGun, ypGun: h.gun }); return { ay: ay, g: g, M: M, h: h, kq: kq }; }); };
+    var ciz2 = function () { var c = num($("ypC").value) || c0, L = oz(c);
+      $("ypOz").innerHTML = L.map(function (x) { var nT = Object.keys(x.h.gun).length; return "<div style=\"margin-top:6px\"><b>" + ayAd(x.ay) + "</b>: " + nT + " tam gün · üretim <b>" + sayi(x.h.top) + " kWh</b> · çekiş " + sayi(x.h.cek) + " kWh · RI " + sayi(x.h.ri) + " · RC " + sayi(x.h.rc) + " kVArh" +
+        (x.kq ? "<br>Aynı " + x.kq.n + " günde OSOS formuyla oran: <b" + (Math.abs(x.kq.oran - 1) > 0.01 ? ' style="color:var(--bad)"' : ' style="color:var(--ok)"') + ">%" + sayi(x.kq.oran * 100, 1) + "</b>" + (Math.abs(x.kq.oran - 1) > 0.01 ? " · çarpan değişmiş olabilir (önerilen " + sayi(c / x.kq.oran) + ")" : " · çarpan doğru") : "") +
+        (x.h.bos.length ? '<br><span style="color:var(--bad)">' + x.h.bos.map(function (b) { return (b.tur === "veri" ? "Sayaçtan veri yok: " : "Gündüz üretim durdu: ") + ypYaz(b.bas) + " – " + ypYaz(b.bit) + " (" + ypSure(b.dk) + ")"; }).join("<br>") + "</span>" : "") + "</div>"; }).join(""); return L; };
+    $("osO").innerHTML = '<div class="bilgi" style="margin:8px 0"><b>Yük profili (ara veri)</b> · sayaç ' + esc(Y.sayac || "—") + " · " + ypYaz(Y.bas) + " – " + ypYaz(Y.bit) + " · " + Y.n + ' okuma<div class="f2" style="margin-top:8px"><label>Sayaç çarpanı<input id="ypC" inputmode="decimal" value="' + c0 + '"></label><span></span></div><div id="ypOz"></div>' +
+      '<small style="display:block;margin-top:6px;color:var(--muted)">Resmî OSOS formunun yerine geçmez: ay içi takip ve kesinti tespiti içindir. Aynı zamanın okuması bu dosyadan alınır.</small><button class="btn pri" id="ypK" style="margin-top:8px">Yük profilini kaydet</button></div>';
+    ciz2(); $("ypC").oninput = ciz2;
+    $("ypK").onclick = function () { var c = num($("ypC").value) || c0, L = ciz2(), btn = this; btn.disabled = true;
+      sirali(L, function (x) { var eski = {}; ((x.g.ypBosluk) || []).forEach(function (b) { if (b.olay) eski[b.bas + b.tur] = b.olay; }); x.h.bos.forEach(function (b) { if (eski[b.bas + b.tur]) b.olay = eski[b.bas + b.tur]; });
+        var body = { donem: x.ay, ypOku: x.M, ypGun: x.h.gun, ypSaat: x.h.saat, ypBosluk: x.h.bos, ypUretim: x.h.top, ypCekis: x.h.cek, ypRi: x.h.ri, ypRc: x.h.rc, ypSon: x.h.son, ypDosya: f.name, ypTarih: bugun() + " 12:00:00.000Z" };
+        return api("/api/collections/ges_aylik/records" + (x.g.id ? "/" + x.g.id : ""), { method: x.g.id ? "PATCH" : "POST", body: body }); })
+        .then(function () { if (c === +RA.ypCarpan) return; var d = Object.assign({}, RA, { ypCarpan: c }); return kay ? api("/api/collections/fin_ayarlar/records/" + kay.id, { method: "PATCH", body: { deger: d } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "ges_ayar", deger: d } }); })
+        .then(function () { toast("Yük profili kaydedildi"); sonra(); }).catch(function (e) { btn.disabled = false; hata(e); }); };
+  });
+}
+function ypKarti(G) {
+  var L = G.filter(function (g) { return g.ypSon; }).sort(function (x, y) { return x.donem < y.donem ? 1 : -1; }).slice(0, 3); if (!L.length) return "";
+  return '<div class="card"><h3>' + ikon("grafik", "#7c3aed", "kucuk") + 'Yük profili (ara veri) <small style="color:var(--muted);font-weight:500">GDZ portalından 15 dakikalık sayaç okumaları</small></h3>' + L.map(function (g) { var kq = ypOsosKiyas(g), B = g.ypBosluk || [];
+    return '<div style="padding:4px 14px 10px"><b>' + ayAd(g.donem) + "</b> · son okuma " + ypYaz(g.ypSon) + " · " + Object.keys(g.ypGun || {}).length + " tam gün · üretim " + sayi(g.ypUretim) + " kWh · çekiş " + sayi(g.ypCekis) + " · RI " + sayi(g.ypRi) + " · RC " + sayi(g.ypRc) +
+      (kq ? '<br><small style="color:' + (Math.abs(kq.oran - 1) > 0.01 ? "var(--bad)" : "var(--muted)") + '">OSOS formuyla aynı ' + kq.n + " günde fark %" + sayi((kq.oran - 1) * 100, 1) + "</small>" : "") +
+      B.map(function (b, i) { return '<div class="row sk" style="padding:6px 0"><div class="t"><b class="w" style="color:var(--bad)">' + (b.tur === "veri" ? "Sayaçtan veri yok" : "Gündüz üretim durdu") + "</b><small>" + ypYaz(b.bas) + " – " + ypYaz(b.bit) + " · " + ypSure(b.dk) + (b.tur === "veri" ? " · bu sürede endeks artışı " + sayi(b.kwh) + " kWh" : "") + "</small></div>" +
+        (b.olay ? '<span class="pill" style="background:#e8f6ee;color:var(--ok)">deftere yazıldı</span>' : '<button class="btn sm" data-ypo="' + g.id + "|" + i + '">Olay defterine yaz</button>') + "</div>"; }).join("") + "</div>"; }).join("") + "</div>";
+}
+function ypOlayYaz(g, i, sonra) { var B = (g.ypBosluk || []).slice(), b = B[i]; if (!b) return;
+  var t = b.bas.slice(0, 4) + "-" + b.bas.slice(4, 6) + "-" + b.bas.slice(6, 8), bit = b.bit.slice(0, 4) + "-" + b.bit.slice(4, 6) + "-" + b.bit.slice(6, 8);
+  api("/api/collections/ges_olaylar/records", { method: "POST", body: { tarih: t + " 12:00:00.000Z", tur: b.tur === "veri" ? "Şebeke kesintisi" : "Arıza", baslik: (b.tur === "veri" ? "Sayaçtan veri yok / olası kesinti: " : "Gündüz üretim durdu: ") + ypYaz(b.bas) + " – " + ypYaz(b.bit), aciklama: "GDZ yük profilinden otomatik tespit (" + ypSure(b.dk) + "). Sebep araştırılacak: şebeke kesintisi, koruma açması ya da sayaç haberleşmesi.", durum: "Açık", kapanis: bit + " 12:00:00.000Z" } })
+    .then(function (o) { B[i] = Object.assign({}, b, { olay: o.id }); return api("/api/collections/ges_aylik/records/" + g.id, { method: "PATCH", body: { ypBosluk: B } }); }).then(function () { toast("Olay defterine yazıldı"); sonra(); }).catch(hata); }
 
 ciz(); benYenile(); setInterval(benYenile, 600000);
 </script>
