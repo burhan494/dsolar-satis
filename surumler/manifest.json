@@ -1,7 +1,7 @@
 {
- "surum": 42,
- "paket": "surumler/dsolar-42.zip",
- "sha256": "61088ace7c6a14c116b636fa1089e8ba0a8c769786d1c6fdb8f351a10de9b7c9",
- "imza": "HKSsT7lS5DIJrQ45gmeUry7VyB37iAnJpW9G4GfL7GMhyO3u9I8eXOBZJsnrFB6PShDrPKsqh1v2y52Csxzax8v+bRtfxKuWkdzLUKbDVVCNKx3CaRCK4LxSukk1THy5yj0vLRDl5U4UgTidKq4g6wSwDlklYYGgGDjedmYAHMHDAkMWBWzfhoOHOLdy4hrUwsYhuBEgruapcqUKp0AF8A8R9/EocPmYrUv0iLbNUkbWlIMof3l16LVk4oiezrvaqJi59Ojb3t4382W1NVnSnkPTNsa/dBrzLVy5lgxBUYkWOtRWD5G5dnTdeuw5W9bp9YoYSxbwu9xP0wK1tJun+yzgpv3JnTlaPQ1uMbawJ8D9ITuuAmf1eheb/idak2M+7xkX6YQo/0mJKwLXXdU5Oro9aaDNj3CIr2QQZB4/xZZTJUbM6+BlTJ323W9tPQY6fg5iuDUKKKM33zYiJM8l/gGi49LP7hHqCr4XvQkuDHHOpQHWk+EzbJQjb6kLCpNF",
- "not": "GDZ yük profili yükleme (ara veri, ayrı saklanır), sayaç kesintisi tespiti ve olay defteri"
+ "surum": 43,
+ "paket": "surumler/dsolar-43.zip",
+ "sha256": "9107f8166327300a816f2378eb38f23f7e97cbdb2318577b8173eb3e1d51357d",
+ "imza": "Kjx46A9RzPq6Y5lTPvXHHcY6AmW7VJISJfk0hwfCODF2MZu/rgntsPMcjATX8ObxarBAqMICdWQR49mEbHA9EhYUSytQs81cZiwLLFQnrn52Cr+IsKirCAf9adJZXK0Ew4ufwDCQZVAG4PkeH8oSqxKvDAmZiedkbkNSe9A6le7WkpEjViUw4HhUrSu2Tr20MO1g8O7gYt1zRS0t88FcpA7bt+47y1Q6OzNMVCNPOmzLQzgYlWdR/OUBGW9eZ+mFp+IshtO2LvtQsvADuu0wqwJBIM7gBr31qCv0Z+gYJ+l2VHvQczWnTufAaMNO1QEeAHXay9G4oG90J3UPBqohPGAqrLpxSL2vexhvLrD/7vhhAcNzd8fCijLZ82PKX081cxmefzhzVn5k1Puoz9pS1M8g9GStBYKz7/iF5m59hpJmVIf5rVk79bU6FotCw0gL7KBgTTsYsKkpBr8SLy06AgTOXQ1htH+dA3UraUI3Mpva3DAkApfbDhzdJrj5oGSd",
+ "not": "Proje türleri ve yeni adımlar, ödeme planı finansa, kâr, sözleşme şablonu, teklif düzeltmeleri (parite, görünmeyen gider, garanti, konstrüksiyon), çift kayıt engeli"
 }

@@ -18,7 +18,7 @@ function kurCek(app, zorla) {
   k.set("deger", { usd: usd, eur: eur, tarih: tarih, kaynak: "TCMB döviz satış", cekim: new Date().toISOString(), elle: "", gecmis: gecmis });
   app.save(k);
   try { const h = app.findFirstRecordByData("ayarlar", "anahtar", "hesap"); let hd = {}; try { hd = JSON.parse(h.getString("deger") || "{}"); } catch (e) {}
-    hd.kur = Math.round(usd * 100) / 100; hd.kurTarih = tarih; hd.kurKaynak = "TCMB"; h.set("deger", hd); app.save(h); } catch (e) {}
+    hd.kur = Math.round(usd * 100) / 100; hd.eurUsd = Math.round(eur / usd * 10000) / 10000; hd.kurTarih = tarih; hd.kurKaynak = "TCMB"; h.set("deger", hd); app.save(h); } catch (e) {}
   return { durum: "tamam", mesaj: "TCMB " + tarih + ": USD " + usd + " · EUR " + eur, usd: usd, eur: eur, tarih: tarih };
 }
 module.exports = { kurCek: kurCek, bugunTR: bugunTR };
