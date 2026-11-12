@@ -1,7 +1,7 @@
 {
- "surum": 36,
- "paket": "surumler/dsolar-36.zip",
- "sha256": "13bd9b95e01795bf4d547e91a79a378f3ffb1c379c1398d746021a7b9347a842",
- "imza": "hlOvuMRXKRDAaPHJhkIhA/vX4r5mb3aUPnIUALJ+NSTuSPpk53uh0a5NxLGKrI26gjBFTMSQwxDcQfO7/XDWW9cKDXzwyuqS1BRap9SUJ2AmVmCWNrmZpUFxWqs6SIwpJQldqA6vijk6rbSgyEFaTMB5sGJsgRAzqCc4oXyFf+ZxtQ6EMI2sdUC7wtjgvEHTi/veA41X3Xk0MaIlBCyQwJQSbtZnkVHqn1/hizpvf0hbCkVd9gudcBh4jBNMCzPbpkZWteIlhs2cVRseh4d/XLlHMF75etjGc3Md3mmKVzpqqEaGUFelqhrxPElnjfO151rJxYt4MnuC/eSdg8/+oYMkFDFDG4uVSYkTTFHBMa1LHzUDQcvztwCq7ZC84fpJ2TnxVOzDFAMRVA3PahsVmLOHArJJavA5DFLT1pF5GeyrsN7IkxgelFlZXSV/1v1GntkYQpDsMFkif0xO3HFoMytopnad8pJD3srXfqZ1+8Ljgqpo1W9DwIL0mVrM6ttC",
- "not": "Kişi başı bölüm yetkileri (Yok/Görür/Düzenler), yeni Ekip ekranı, kredi kartıyla ödeme ve kart ekstresi"
+ "surum": 37,
+ "paket": "surumler/dsolar-37.zip",
+ "sha256": "a11e6a3dcc3662a657de0d053ca246e015c1757ba700bd86ffe7f47ca584ffca",
+ "imza": "TSCo9HR5U1ZMoPDVHdZEAC9v2Ps5fQwpP8uQlH1M9YVqbEIgxmmC9tOttvtPDEMgv4egj6kQncpAnmTxOyPR3qU9wwdGvo/uXh+Y1tO4HZ+LcEYsww/LfGLQiunkJzWZgyhWuD8uGWOBrMs4RNljzUSjpMP4fRNA4WmLJTO+mE/BggLwFURgqX8EGD34wTCZp3qwUCxw54+d4hAmXB8QgErtc3mfFpVOFybI3fWrf4iG5l5zggy4vGaDUbiX0q2mTvsSek2f0eXVuG8Yi4B1AtD5feZEjaxUDpQQHoynXwzStsUAGscB5l7bk7SDC8zYTY+vqjr54mONr/3qejBLy+Z9AxvAbTzyyyYpbmjdBY+Zeu3bCfvM8bmao5K+MuZ6oPl86OnryE5VVeFdcxp9koXEfLP06Zl2PMZze2W17FypYCG6/KNBf0wrM/wO5j1QSHIG1n2E+kwP1wutVtDK2cZLkGX0cmQYfg5uqPUIaoCmRbo9WLUHIA0Tk/lu8r50",
+ "not": "Bölüm yetkileri, yeni Ekip ekranı, kredi kartıyla ödeme (36'daki şema hatası düzeltildi)"
 }

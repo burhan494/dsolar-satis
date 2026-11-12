@@ -22,7 +22,9 @@ migrate((app) => {
   const D = (...ms) => "(" + [Y].concat(ms.map((m) => "@request.auth.y_" + m + " = 'd'")).join(" || ") + ")";
   const K = (p) => "(@request.auth.kendi = false || " + p + "sorumlu = @request.auth.id || " + p + "kesifci = @request.auth.id)";
   const OR = (alan) => "(@request.auth.rol = 'ortak' && " + alan + " = @request.auth.id)";
-  const kur = (ad, L, C, U, Dl) => { const c = app.findCollectionByNameOrId(ad); c.listRule = L; c.viewRule = L; if (C !== undefined) c.createRule = C; if (U !== undefined) c.updateRule = U; if (Dl !== undefined) c.deleteRule = Dl; app.save(c); };
+  // bazı eski tablolar (kasa, banka, ortakcari) boşsa 8. adımda silinmiş olabilir: olmayanı atla
+  const var_ = (ad) => { try { app.findCollectionByNameOrId(ad); return true; } catch (e) { return false; } };
+  const kur = (ad, L, C, U, Dl) => { if (!var_(ad)) return; const c = app.findCollectionByNameOrId(ad); c.listRule = L; c.viewRule = L; if (C !== undefined) c.createRule = C; if (U !== undefined) c.updateRule = U; if (Dl !== undefined) c.deleteRule = Dl; app.save(c); };
 
   kur("adaylar", A + " && " + G("musteri") + " && " + K(""), A + " && " + D("musteri"),
     A + " && " + D("musteri") + " && " + K("") + " && (@request.auth.kendi = false || @request.body.sorumlu:isset = false)", A + " && " + D("musteri") + " && " + K(""));
