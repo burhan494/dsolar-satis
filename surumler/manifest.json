@@ -1,7 +1,7 @@
 {
- "surum": 43,
- "paket": "surumler/dsolar-43.zip",
- "sha256": "9107f8166327300a816f2378eb38f23f7e97cbdb2318577b8173eb3e1d51357d",
- "imza": "Kjx46A9RzPq6Y5lTPvXHHcY6AmW7VJISJfk0hwfCODF2MZu/rgntsPMcjATX8ObxarBAqMICdWQR49mEbHA9EhYUSytQs81cZiwLLFQnrn52Cr+IsKirCAf9adJZXK0Ew4ufwDCQZVAG4PkeH8oSqxKvDAmZiedkbkNSe9A6le7WkpEjViUw4HhUrSu2Tr20MO1g8O7gYt1zRS0t88FcpA7bt+47y1Q6OzNMVCNPOmzLQzgYlWdR/OUBGW9eZ+mFp+IshtO2LvtQsvADuu0wqwJBIM7gBr31qCv0Z+gYJ+l2VHvQczWnTufAaMNO1QEeAHXay9G4oG90J3UPBqohPGAqrLpxSL2vexhvLrD/7vhhAcNzd8fCijLZ82PKX081cxmefzhzVn5k1Puoz9pS1M8g9GStBYKz7/iF5m59hpJmVIf5rVk79bU6FotCw0gL7KBgTTsYsKkpBr8SLy06AgTOXQ1htH+dA3UraUI3Mpva3DAkApfbDhzdJrj5oGSd",
- "not": "Proje türleri ve yeni adımlar, ödeme planı finansa, kâr, sözleşme şablonu, teklif düzeltmeleri (parite, görünmeyen gider, garanti, konstrüksiyon), çift kayıt engeli"
+ "surum": 44,
+ "paket": "surumler/dsolar-44.zip",
+ "sha256": "0eb352f312500a7e65bb61d108424be808c6dcf7f25c8d25902d9e6a916b67ba",
+ "imza": "AeRDzXHFauyl6tGzVCgznBROtOZD6Dz3aKd6slUjhyFK4N3ERbqsgmmUV94FRr+kDydHNA5sHbnNhyMrFCP1Dyj+luvRBvXxT6XbIjbXbvtocoHU/+epCOjUs5G98WIu8vnkMdnbugz9MU1PZl5OFQ5XVkdhIN5y26kE3AJUwLkjK276+qxwKMSLiRtSTQvjN4EZYuDu954PHJrlP4aE7Ke8MUgOzJKXvVJmdLWhqknXK0jtWw++oo0BTwQsCLrbT1hIOTL0p3RK/AGPbD4yFahLG+AkjNhZMJIaTpuoRzy3vmpd0PVGzeDvxB5hsP/B+5KhvvVuJFBnWBZSgw3kjoE4mQ/e2YxRNdv10UL9Bjlms+kFeqDGDsHvxFNkimwT9AxkQ2puKqfEPurB7Xj3XWto8iM9TRXHDYlMYawHmNbsx6DQFLKfWruZQaSWsDfX3YwiWB0C30psp7qU7rdW1H6oa5oWwQnA+tUluv/eA88cFlqZeK0my2YrPfihajCc",
+ "not": "Teklif: tüm harçlar tek madde, güvence/teminat hariç, süreç 120+120 iş günü; sözleşme yalnız anahtar teslimde, diğerlerinde ödeme planı"
 }
