@@ -1,7 +1,7 @@
 {
- "surum": 37,
- "paket": "surumler/dsolar-37.zip",
- "sha256": "a11e6a3dcc3662a657de0d053ca246e015c1757ba700bd86ffe7f47ca584ffca",
- "imza": "TSCo9HR5U1ZMoPDVHdZEAC9v2Ps5fQwpP8uQlH1M9YVqbEIgxmmC9tOttvtPDEMgv4egj6kQncpAnmTxOyPR3qU9wwdGvo/uXh+Y1tO4HZ+LcEYsww/LfGLQiunkJzWZgyhWuD8uGWOBrMs4RNljzUSjpMP4fRNA4WmLJTO+mE/BggLwFURgqX8EGD34wTCZp3qwUCxw54+d4hAmXB8QgErtc3mfFpVOFybI3fWrf4iG5l5zggy4vGaDUbiX0q2mTvsSek2f0eXVuG8Yi4B1AtD5feZEjaxUDpQQHoynXwzStsUAGscB5l7bk7SDC8zYTY+vqjr54mONr/3qejBLy+Z9AxvAbTzyyyYpbmjdBY+Zeu3bCfvM8bmao5K+MuZ6oPl86OnryE5VVeFdcxp9koXEfLP06Zl2PMZze2W17FypYCG6/KNBf0wrM/wO5j1QSHIG1n2E+kwP1wutVtDK2cZLkGX0cmQYfg5uqPUIaoCmRbo9WLUHIA0Tk/lu8r50",
- "not": "Bölüm yetkileri, yeni Ekip ekranı, kredi kartıyla ödeme (36'daki şema hatası düzeltildi)"
+ "surum": 38,
+ "paket": "surumler/dsolar-38.zip",
+ "sha256": "968d57b662833af252157e17f8c02620f78de92b533a7bd354a022d9b8a02236",
+ "imza": "U7F8htfrY9kJUH4zp18ULAMPJrqTcf6KPULlXXtS9+J4etWVhmoSh5jIwGLQpas2+r0hUOIdnE+IKIoC9UdLJPMocClmlUoLhTIAxM5GZqVt6S31grZbfJb/vuZxcPr7OLP1SYeQqyTLdo7zMO2pRD5OTFqJR3cQ1OHAhm0n0qDyLF/tnKctIsWRTwZBkSYydkbask1N2uEHlsUVLzu0FecskdRAafcrk5PM2W3R8oJoCy5sm3jVUIW3WB1S582grBGZ3OJuKBm5FTE5CEwuU+0IqcFiurXQZJKZ/1TKi2bpXHVW6WvYRCybIqPjzPasgSK5cJzvqeSPhabsB+E76RjaPiHVn5UnwY+sb91XctI2hFXU8KVLzhsU9Djsl2m9pUcoN5OvvBILJWKRs2EfM6oAXT88XVqIYFQbTaJVRzzFGHGmw3H+NM19jPBqU6yd/1ABHg8/hg9v5XPw7qW40OVW2WBw+tqVaKOlttHhxKXdwBEF32rO6yrYkWtZLMmW",
+ "not": "Farklı para birimindeki hesaptan ödeme/tahsilat (EUR ödeme TL hesaptan, kur gösterimi)"
 }

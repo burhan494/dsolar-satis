@@ -427,7 +427,7 @@ function bakiyeler(H, M) {
   M.forEach(function (m) { if (m.durum !== "Gerçekleşti" || !(m.hesap in B)) return; var h = H.filter(function (x) { return x.id === m.hesap; })[0];
     // bakiye tarihinden önceki hareketler bakiyeye zaten dahil; bakiye girildiği GÜN işaretlenenlerden yalnız bakiye girildikten SONRA işaretlenenler eklenir
     if (h.acilisTarihi) { var at = h.acilisTarihi.slice(0, 10), mt = m.tarih.slice(0, 10); if (mt < at) return; if (mt === at && !((m.updated || m.created || "") > (h.updated || ""))) return; }
-    B[m.hesap] += (m.yon === "Giriş" ? 1 : -1) * (+m.tutar || 0); });
+    B[m.hesap] += (m.yon === "Giriş" ? 1 : -1) * (m.hesapTutar > 0 ? +m.hesapTutar : (+m.tutar || 0)); });
   return B;
 }
 function sFinans(alt) {
@@ -1912,12 +1912,13 @@ function sGesRapor(ay) {
 function gercekFormu(yer, m, H, sonra) {
   var e0 = document.getElementById("odF"); if (e0) e0.remove();
   if (m.yon !== "Giriş" && !yon() && m.onay !== "Onaylandı") { toast(m.onay === "Onay bekliyor" ? "Bu ödeme henüz onaylanmadı (onay bekliyor)" : "Onaysız ödeme yapılamaz: önce Finans › Ödemeler'den listeye ekleyip onaya gönderin"); return; }
-  var b = bugun(), uy = H.filter(function (h) { return (h.pb || "TRY") === (m.pb || "TRY"); }), g = m.yon === "Giriş", d = document.createElement("div");
+  var b = bugun(), mpb = m.pb || "TRY", uy = H.filter(function (h) { return h.aktif !== false || h.id === m.hesap; }).sort(function (x, y) { return ((x.pb || "TRY") === mpb ? 0 : 1) - ((y.pb || "TRY") === mpb ? 0 : 1); }), ayniPb = uy.filter(function (h) { return (h.pb || "TRY") === mpb; }), g = m.yon === "Giriş", d = document.createElement("div");
   d.id = "odF"; d.className = "f"; d.style.cssText = "background:#f7f9fc;border-radius:12px;padding:12px;margin:6px 0 10px;cursor:default";
   d.innerHTML = "<b>" + (g ? "Tahsil edildi" : "Ödendi") + ": " + esc(m.karsiTaraf || m.aciklama || m.kategori || "") + " · " + para(m.tutar, m.pb || "TRY") + '</b><div class="f2"><label>Tarih<input id="odT" type="date" value="' + (m.tarih.slice(0, 10) < b ? m.tarih.slice(0, 10) : b) + '"></label><label>Tutar<input id="odU" inputmode="decimal" value="' + String(m.tutar).replace(".", ",") + '"></label></div>' +
-    "<label>" + (g ? "Hangi hesaba?" : "Nereden ödendi?") + '<select id="odH">' + (g ? "" : '<optgroup label="Banka / kasa">') + sec(uy.map(function (h) { return [h.id, h.ad]; }), m.hesap || (uy[0] && uy[0].id) || "") + (g ? "" : "</optgroup>") + sec([["", "— hesaba bağlamadan kaydet (kasa değişmez)"]], m.hesap || (uy[0] && uy[0].id) ? "x" : "") + "</select></label>" +
+    "<label>" + (g ? "Hangi hesaba?" : "Nereden ödendi?") + '<select id="odH">' + (g ? "" : '<optgroup label="Banka / kasa">') + sec(uy.map(function (h) { return [h.id, h.ad + ((h.pb || "TRY") !== mpb ? " · " + (PB_AD[h.pb || "TRY"] || h.pb) + " hesabı" : "")]; }), m.hesap || (ayniPb[0] && ayniPb[0].id) || "") + (g ? "" : "</optgroup>") + sec([["", "— hesaba bağlamadan kaydet (kasa değişmez)"]], m.hesap || (ayniPb[0] && ayniPb[0].id) ? "x" : "") + "</select></label>" +
     '<small id="odKB" style="display:none;color:var(--muted)"></small>' +
-    (uy.length ? "" : '<div class="uyari" style="margin:0">' + (PB_AD[m.pb || "TRY"] || m.pb) + " cinsinden aktif hesap yok; kasa güncellenmez.</div>") +
+    '<div id="odX" style="display:none;gap:4px"><label><span id="odXL">Hesaptan çıkan tutar</span><input id="odXU" inputmode="decimal" placeholder="hesabın para biriminde"></label><small id="odXK" style="color:var(--muted)"></small></div>' +
+    (uy.length ? "" : '<div class="uyari" style="margin:0">Aktif hesap yok; kasa güncellenmez.</div>') +
     '<div id="odKal" style="display:none;gap:8px"><small id="odKalY" style="font-weight:700"></small><div class="krAr" style="margin:0"><select id="odKS" style="width:auto;min-height:34px">' + sec([["ayni", "Kalan aynı tarihte kalsın"], ["h", "Kalan gelecek haftaya"], ["a", "Kalan gelecek aya"], ["t", "Kalan için tarih seç"]], "h") + '</select><input type="date" id="odKT" style="width:auto;min-height:34px;display:none"></div></div>' +
     '<div class="f2"><button class="btn" id="odV">Vazgeç</button><button class="btn pri" id="odK">Kaydet</button></div>';
   yer.parentNode.insertBefore(d, yer.nextSibling); d.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1931,13 +1932,23 @@ function gercekFormu(yer, m, H, sonra) {
   if (!g) liste("fin_kartlar", "durum != 'Kapandı'", "banka").then(function (L) { KT = L.filter(function (k) { return (k.pb || "TRY") === (m.pb || "TRY"); }); if (!KT.length || !$("odH")) return;
     var og = document.createElement("optgroup"); og.label = "Kredi kartı"; KT.forEach(function (k) { var o = document.createElement("option"); o.value = "kart:" + k.id; o.textContent = k.banka + " •" + (k.son4 || "") + (k.ad ? " · " + k.ad : "") + " (kredi kartı)"; og.appendChild(o); });
     $("odH").insertBefore(og, $("odH").lastElementChild); if (m.kart) { $("odH").value = "kart:" + m.kart; kartB(); } }).catch(function () {});
-  $("odH").onchange = kartB; $("odT").onchange = kartB; $("odKT").value = gunSonra(7, m.tarih.slice(0, 10) < b ? b : m.tarih.slice(0, 10));
+  // farklı para birimindeki hesap: hesaptan çıkan/giren tutar o hesabın para biriminde girilir, kur gösterilir
+  var KU0 = null; kurKartiGetir().then(function (k) { KU0 = k; xG(); }).catch(function () {});
+  var hSec = function () { var v = $("odH").value; return H.filter(function (h) { return h.id === v; })[0]; }, tlK = function (pb) { return pb === "USD" ? (KU0 && KU0.usd) : pb === "EUR" ? (KU0 && KU0.eur) : 1; };
+  var xG = function () { var h = hSec(), x = $("odX"); if (!x) return; var hp = h && (h.pb || "TRY"); if (!h || hp === mpb) { x.style.display = "none"; return; }
+    x.style.display = "grid"; $("odXL").textContent = (g ? "Hesaba giren" : "Hesaptan çıkan") + " tutar (" + (PB_AD[hp] || hp) + ")"; var u = num($("odU").value) || 0, xu = num($("odXU").value) || 0, ref = tlK(mpb) && tlK(hp) ? tlK(mpb) / tlK(hp) : null;
+    $("odXK").innerHTML = xu > 0 && u > 0 ? "Kur: 1 " + mpb + " = <b>" + sayi(xu / u, 4) + " " + hp + "</b>" + (ref ? " · bugünkü kur " + sayi(ref, 4) + (Math.abs(xu / u / ref - 1) > 0.03 ? ' <b style="color:var(--warn)">(%' + sayi(Math.abs(xu / u / ref - 1) * 100, 1) + " fark)</b>" : "") : "") : ref ? "Bugünkü kurla yaklaşık " + para(u * ref, hp) + ". Bankadan çıkan gerçek tutarı yazın." : "Bankadan çıkan gerçek tutarı yazın."; };
+  $("odH").onchange = function () { kartB(); xG(); }; $("odT").onchange = kartB; $("odXU").oninput = xG; $("odU").addEventListener("input", xG); xG(); $("odKT").value = gunSonra(7, m.tarih.slice(0, 10) < b ? b : m.tarih.slice(0, 10));
   $("odK").onclick = function () { var u = num($("odU").value); if (!(u > 0)) { toast("Tutar gerekli"); return; }
     var kal = Math.round(((+m.tutar || 0) - u) * 100) / 100, d0 = m.tarih.slice(0, 10) < b ? b : m.tarih.slice(0, 10), ks = $("odKS").value, kt = ks === "ayni" ? m.tarih.slice(0, 10) : ks === "h" ? gunSonra(7, d0) : ks === "a" ? ayEkle(d0, 1) + d0.slice(7) : $("odKT").value;
     if (kal > 0.005 && !kt) { toast("Kalan için tarih seçin"); return; } this.disabled = true;
     var kk = kartSec();
     if (kk && kk.limit > 0 && (+kk.borc || 0) + u > kk.limit && !confirm("Bu ödeme kart limitini aşıyor (" + para((+kk.borc || 0) + u, kk.pb || "TRY") + " / " + para(kk.limit, kk.pb || "TRY") + "). Yine de kaydedilsin mi?")) { this.disabled = false; return; }
-    var gb = { durum: "Gerçekleşti", tarih: $("odT").value + " 12:00:00.000Z", tutar: u, hesap: kk ? "" : $("odH").value, kontrol: true, kontrolEden: BEN.name || BEN.email, kontrolTarihi: b + " 12:00:00.000Z" };
+    var hx = hSec(), capraz = !kk && hx && (hx.pb || "TRY") !== mpb, xu = capraz ? num($("odXU").value) : null;
+    if (capraz && !(xu > 0)) { toast((g ? "Hesaba giren" : "Hesaptan çıkan") + " tutarı " + (hx.pb || "TRY") + " olarak yazın"); this.disabled = false; return; }
+    if (capraz) { var ref2 = tlK(mpb) && tlK(hx.pb || "TRY") ? tlK(mpb) / tlK(hx.pb || "TRY") : null; if (ref2 && Math.abs(xu / u / ref2 - 1) > 0.03 && !confirm("Girilen kur (" + sayi(xu / u, 4) + ") bugünkü kurdan (" + sayi(ref2, 4) + ") %" + sayi(Math.abs(xu / u / ref2 - 1) * 100, 1) + " farklı. Doğru mu?")) { this.disabled = false; return; } }
+    var gb = { durum: "Gerçekleşti", tarih: $("odT").value + " 12:00:00.000Z", tutar: u, hesap: kk ? "" : $("odH").value, hesapTutar: capraz ? xu : 0, kontrol: true, kontrolEden: BEN.name || BEN.email, kontrolTarihi: b + " 12:00:00.000Z" };
+    if (capraz) gb.not = [m.not, hx.ad + " hesabından " + para(xu, hx.pb || "TRY") + " (kur " + sayi(xu / u, 4) + ")"].filter(Boolean).join(" · ");
     if (kk) { gb.kart = kk.id; gb.not = [m.not, kk.banka + " •" + (kk.son4 || "") + " kredi kartıyla ödendi"].filter(Boolean).join(" · "); }
     if (!g && yon() && m.onay !== "Onaylandı") { gb.onay = "Onaylandı"; gb.onaylayan = BEN.name || BEN.email; gb.onayTarihi = b + " 12:00:00.000Z"; }
     if (kal > 0.005) gb.not = [gb.not || m.not, "kısmi " + (g ? "tahsilat" : "ödeme") + ": toplam " + para(m.tutar, m.pb || "TRY")].filter(Boolean).join(" · ");
@@ -1952,7 +1963,7 @@ function gercekFormu(yer, m, H, sonra) {
           return api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: $("odT").value + " 12:00:00.000Z", ortak: m.karsiTaraf, yon: /koydu/i.test(m.kategori) ? "Koydu" : "Aldı", tutar: u, pb: pb, kur: pb === "USD" ? 1 : pb === "EUR" ? KU.eur : KU.usd, tutarUsd: Math.round(u / kur * 100) / 100, sirket: "D Solar", aciklama: m.aciklama || "Planlı ortak hareketi", kaynak: "Plan" } })
             .then(function () { return api("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { not: [m.not, "ortak cariye işlendi"].filter(Boolean).join(" · ") } }); })
             .then(function () { return "; ortak cariye işlendi"; }, function () { return "; ortak cariye İŞLENEMEDİ (yetki): Ortaklar'dan elle girin"; }); }); })
-      .then(function (ek) { toast("Kaydedildi" + (kk ? "; kart borcuna ve " + tarih(kartEkstre(kk, $("odT").value)) + " ekstresine eklendi" : $("odH").value ? "; kasa güncellendi" : "") + (kal > 0.005 ? "; kalan " + para(kal, m.pb || "TRY") + " " + tarih(kt) : "") + (ek || "")); sonra(); }).catch(hata); };
+      .then(function (ek) { toast("Kaydedildi" + (kk ? "; kart borcuna ve " + tarih(kartEkstre(kk, $("odT").value)) + " ekstresine eklendi" : capraz ? "; " + hx.ad + " " + para(xu, hx.pb || "TRY") + " " + (g ? "arttı" : "azaldı") : $("odH").value ? "; kasa güncellendi" : "") + (kal > 0.005 ? "; kalan " + para(kal, m.pb || "TRY") + " " + tarih(kt) : "") + (ek || "")); sonra(); }).catch(hata); };
 }
 /* ---------- kredi kartı ekstresi ---------- */
 // harcama tarihine göre ekstrenin son ödeme günü: kesimden önceki harcama bu ayın, sonraki harcama gelecek ayın ekstresine girer
