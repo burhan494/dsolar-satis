@@ -1334,7 +1334,14 @@ function edAc(yer, tur, r) {
     api("/api/collections/" + kol + "/records" + (yeni ? "" : "/" + r.id), { method: yeni ? "POST" : "PATCH", body: b }).then(function () { toast("Kaydedildi"); ED.sonra && ED.sonra(); })
       .catch(function (e) { $("edK2").disabled = false; hata(e); });
   };
-  if ($("edS")) $("edS").onclick = function () { if (!confirm("Bu kayıt silinsin mi?")) return; api("/api/collections/" + kol + "/records/" + r.id, { method: "DELETE" }).then(function () { toast("Silindi"); ED.sonra && ED.sonra(); }).catch(hata); };
+  // kredi/kart silinirken ona bağlı planlı (ödenmemiş) hareketler de silinir; ödenmişler kasa geçmişi için kalır
+  if ($("edS")) $("edS").onclick = function () { var bagF = { krediler: "kredi", fin_kartlar: "kart" }[kol], ad = kol === "krediler" ? "taksit" : "ekstre ödemesi", ad1 = kol === "krediler" ? "taksiti" : "ekstre ödemesi", ad2 = kol === "krediler" ? "taksitleri" : "ekstre ödemeleri";
+    (bagF ? liste("fin_hareketler", bagF + " = " + q(r.id) + " && durum != 'Gerçekleşti'", "tarih") : Promise.resolve([])).then(function (P) {
+      var top = P.reduce(function (t, m) { return t + (+m.tutar || 0); }, 0);
+      if (!confirm(P.length ? "Bu kaydın " + P.length + " planlı " + ad1 + " var (toplam " + para(top, P[0].pb || "TRY") + ", " + tarih(P[0].tarih) + " – " + tarih(P[P.length - 1].tarih) + ").\nKayıt ve planlı " + ad2 + " silinsin mi? Ödenmiş olanlar kasa geçmişi için kalır." : "Bu kayıt silinsin mi?")) return;
+      return sirali(P, function (m) { return apiSabirli("/api/collections/fin_hareketler/records/" + m.id, { method: "DELETE" }); })
+        .then(function () { return api("/api/collections/" + kol + "/records/" + r.id, { method: "DELETE" }); })
+        .then(function () { toast("Silindi" + (P.length ? "; " + P.length + " planlı " + ad + " da silindi" : "")); ED.sonra && ED.sonra(); }); }).catch(hata); };
 }
 function edBagla(kayitlar, sonra) {
   ED.sonra = sonra; ED.kayit = {}; kayitlar.forEach(function (x) { ED.kayit[x.id] = x; });

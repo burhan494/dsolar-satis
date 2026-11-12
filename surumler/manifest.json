@@ -1,7 +1,7 @@
 {
- "surum": 38,
- "paket": "surumler/dsolar-38.zip",
- "sha256": "968d57b662833af252157e17f8c02620f78de92b533a7bd354a022d9b8a02236",
- "imza": "U7F8htfrY9kJUH4zp18ULAMPJrqTcf6KPULlXXtS9+J4etWVhmoSh5jIwGLQpas2+r0hUOIdnE+IKIoC9UdLJPMocClmlUoLhTIAxM5GZqVt6S31grZbfJb/vuZxcPr7OLP1SYeQqyTLdo7zMO2pRD5OTFqJR3cQ1OHAhm0n0qDyLF/tnKctIsWRTwZBkSYydkbask1N2uEHlsUVLzu0FecskdRAafcrk5PM2W3R8oJoCy5sm3jVUIW3WB1S582grBGZ3OJuKBm5FTE5CEwuU+0IqcFiurXQZJKZ/1TKi2bpXHVW6WvYRCybIqPjzPasgSK5cJzvqeSPhabsB+E76RjaPiHVn5UnwY+sb91XctI2hFXU8KVLzhsU9Djsl2m9pUcoN5OvvBILJWKRs2EfM6oAXT88XVqIYFQbTaJVRzzFGHGmw3H+NM19jPBqU6yd/1ABHg8/hg9v5XPw7qW40OVW2WBw+tqVaKOlttHhxKXdwBEF32rO6yrYkWtZLMmW",
- "not": "Farklı para birimindeki hesaptan ödeme/tahsilat (EUR ödeme TL hesaptan, kur gösterimi)"
+ "surum": 39,
+ "paket": "surumler/dsolar-39.zip",
+ "sha256": "c527ed8035bba66bec02d4b02fc3b96cd0f16de71ca2888297f0176e6d36ec09",
+ "imza": "G//a0MIObGHuyvA5D+SmaCfhOs6W3ETi+ONfCCGM7ofqZ5jrChRlu3st/RB6+LrNZgiSiegOWrGJ/xNLuyG00d1Dk8Mdjmtt0O4vTlRQZwmKMdFjf4zPILikQRu3OIIX1QaTBEf+MLiC/0JR7ibzbUq2DS/Y2yQ/6Zc+sZzb3LKRZzBQm/dh1u7Ev7lmE+NwDyvpUmIgFhfmM89UOc9cfaVIzealmQ54HbFTQELwybIvmCUn+wmeAFfU6NzvLo2dpi8zvPWcxUtbMp96octuH/CVlCEA7X0k/S44JiIRhxPuDdU9yb8Sd9sBi6zRUYChrTyXC+dCW0/jdn+6WJ1ZA1sSoojBIle3j/BkUNYDIqXYhZgM0FZrVVN09Q9utvmRthcH7/zbDKG71xtFZvBXc+p7CL8f1Q1lDhCEISBUno3rlKpsFF4q5NszQaZuOFMdAmvS1V1FLtkfMk1l9t45posgJwqyTpe44NO3tmdY0RZOl8j8ApR7m+Po1nUIyhTW",
+ "not": "Vadesi yaklaşan onaysız ödemeler otomatik onay listesine; kredi/kart silinince planlı taksitleri de silinir"
 }
