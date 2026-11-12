@@ -56,7 +56,7 @@ input,select,textarea{width:100%;min-height:44px;border:1px solid #d5deea;border
 .rp .neg{color:#dc2626}.rp .pos{color:#16a34a}.rp .mut{color:#94a3b8}.rpUy{margin:14px 22px 0;background:#fff7ed;border-left:4px solid #ed7d31;border-radius:8px;padding:10px 12px;font-size:13.5px;color:#9a3412}.rpOk{margin:14px 22px 0;background:#ecfdf3;border-left:4px solid #16a34a;border-radius:8px;padding:10px 12px;font-size:13.5px;color:#166534}.rpBos{margin:0 22px;color:#94a3b8;font-size:13.5px}
 .rpA{display:flex;justify-content:space-between;gap:10px;padding:13px 22px;margin-top:16px;background:#f8fafc;font-size:12px;color:#64748b}.rpP{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:1px 8px;white-space:nowrap}.rpP.p1{background:#dcfce7;color:#15803d}.rpP.p2{background:#fff4e5;color:#b45309}.rpP.p3{background:#fde8e8;color:#dc2626}
 .rpBar{height:14px;border-radius:7px;background:#e2e8f0;overflow:hidden;display:flex;margin:4px 22px 0}.rpBar i{display:block;height:100%}
-@media(max-width:620px){.rpK{grid-template-columns:1fr 1fr}.rpK>div:first-child{grid-column:1/-1}.rp table{font-size:12.5px;width:calc(100% - 24px);margin:0 12px}.rp h4,.rpUy,.rpOk{margin-left:12px;margin-right:12px}.rpU{padding:14px}.rpU .s{font-size:11px}}.chips.finT{flex-wrap:wrap;overflow:visible}</style>
+@media(max-width:620px){.rpK{grid-template-columns:1fr 1fr}.rpK>div:first-child{grid-column:1/-1}.rp table{font-size:12.5px;width:calc(100% - 24px);margin:0 12px}.rp h4,.rpUy,.rpOk{margin-left:12px;margin-right:12px}.rpU{padding:14px}.rpU .s{font-size:11px}}.chips.finT{flex-wrap:wrap;overflow:visible}@media (max-width:759px){body.klavye nav{display:none!important}}</style>
 </head>
 <body>
 <div id="app"></div>
@@ -3052,6 +3052,13 @@ function sablonKarti(kutu) {
   }).catch(function () { kutu.innerHTML = ""; });
 }
 
+// iPhone: klavye açıkken alt menüyü gizle, kapanınca sabit menüyü yeniden yerleştir (Safari'de ortada asılı kalma hatası)
+(function () { var yaziMi = function (e) { return e && (e.tagName === "TEXTAREA" || e.tagName === "SELECT" || (e.tagName === "INPUT" && !/^(checkbox|radio|button|submit|file|range|color)$/i.test(e.type))); }, zz = null;
+  var duzelt = function () { clearTimeout(zz); zz = setTimeout(function () { if (yaziMi(document.activeElement)) return; document.body.classList.remove("klavye"); var n = document.querySelector("nav"); if (n) { n.style.display = "none"; void n.offsetHeight; n.style.display = ""; } window.scrollTo(window.scrollX, window.scrollY); }, 120); };
+  document.addEventListener("focusin", function (e) { if (yaziMi(e.target) && window.innerWidth < 760) document.body.classList.add("klavye"); });
+  document.addEventListener("focusout", duzelt);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", function () { if (!yaziMi(document.activeElement)) duzelt(); });
+  window.addEventListener("orientationchange", duzelt); })();
 ciz(); benYenile(); setInterval(benYenile, 600000);
 </script>
 </body>
