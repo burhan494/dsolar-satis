@@ -1,7 +1,7 @@
 {
- "surum": 48,
- "paket": "surumler/dsolar-48.zip",
- "sha256": "d6cf94737609de92168b69016a5a5b0bb57f78987d6a038f5dc8efa17c1e1a92",
- "imza": "BQokaapduU9Q/K9amtIh3T/v+OEJu3TuitYI6vtgphiIZhnHbtEkf6NUJStjOAwy4zAFeX3GmPoEyTfST7ZKbOVVMhiA/OjfuSsrIFw4hx+txSmBcGdRIwdTGL5fVbovfrCMMVMXEq/YlOyfedfnm1FJP+8P1qQh3eG5WzJ05t6V0q+uJ7UIbwDjtoJNblFcpK2cBuC2HaSWYlqYysc9z3yj7iK1BOIkXTPK8+CAFhv6ssq+Nt6Q8KhWGJjTl4MlialaumdVOTLRoHh0kuakQVg6jKxF7N/bkgAwo83gnRfjkie9Ur4+3jgU8AAEEIDqi62eHEnDn71r49SQ+losKDy3Texp+pSSgGSJRSSTBJ1/8jcav6u9QUOByF4nqitsG3EmLW33SwOr+H53cSLSQTNb1QT5hLLrMJzRCDWM2nUXrsx6gy9Ch9AyPiwujY3Nlw+mB3AGiDT0cD+jJHv3YKnSGa2p37He3cq64xeyUKPQgoOzFqJLv4yrrdbQDRP5",
- "not": "Proje: malzeme gideri finansa KDV dahil; proje takvimi sözleşme ayına göre (çağrı mektubu ay sonuna kadar, statik sonraki ayın 15-30'u...)"
+ "surum": 49,
+ "paket": "surumler/dsolar-49.zip",
+ "sha256": "9ba1a11c01bc8d868997a2575707e2163b8a3c5c50cbbd8c85f65be585cefeb3",
+ "imza": "QQbWCKlHdFHMej1oVNmT4j9MGV3kVp0oDWVvhefwe0+hn9kdl0Sg/Q6ICVj/yc0qVmsqzq5RYAoJ8lmU3wizby/xfbr2lUO/exBmAMXHhuL3U4axI96vJtzNTmQPD9MZRoKmwcmvj/IwPjPvOYMdVItT287FZH7DQoJTAoC/izkGoxrbAh8wN+gCt4WzzIpTs98ZPcCkIwmsSQZnSntT4eWRleJhQkaQOGwXW2H8nZoGUlYKoEc/OTenEi7gEd2WCTNcYcYGJKxaHFtI687bO82Cist/oo+XO0M4FOSGjG8K5ocQj9P25oscaEqTs6vU0Lim9rz37mwg1gyZmwQZsIe+HNNXYarX3ZqPQgf1QhWEG9Mxpkxugm2ZyTBnouXi7R0+6oYyEYQOZTo5wUmLmh+MWMDQ1F+NhHErlodrL+YOuBEXv41KT9lE7cCG75WPe+HScPPBIcmMUq6NP8KE5IysBwpXW1bgDc2h4jV8zPOp6z6q5FfQQSo7rqEDL5mS",
+ "not": "Ekip içi mesajlaşma: Mesajlar sayfası (birebir, grup, kayda bağlı sohbet), anlık mesaj, görüldü, foto/PDF eki, @anma; teklif ve ödeme listesi onaya düşünce yöneticiye onay mesajı ve mesajdan Onayla; müşteri sayfasında Ekibe yaz, ödeme listesinde Yaz"
 }

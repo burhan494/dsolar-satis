@@ -173,6 +173,49 @@ nav.y a.fab{overflow:visible;background:none!important}
 .gsAd{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px}.gsAd button{flex:1;min-width:110px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 11px;text-align:left;cursor:pointer;font:inherit}.gsAd button small{display:block;color:var(--muted);font-size:12px}.gsAd button b{display:block;font-size:14px}.gsAd button i{display:block;height:5px;background:#eaecf0;border-radius:3px;margin-top:6px;overflow:hidden}.gsAd button i u{display:block;height:100%}.gsAd .on{border:2px solid var(--orange);background:#fff7ed}
 .gsDrop{display:block;border:2px dashed #d0d5dd;border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;font-weight:500}
 .gsCan .kv div.gsBar{background:rgba(255,255,255,.3);padding:0;border-radius:3px}
+/* v49 mesajlaşma */
+.msjA{display:grid;grid-template-columns:330px 1fr;gap:12px;align-items:start}
+.msjA .card{margin:0}
+.msjSol{max-height:calc(100vh - 120px);overflow:auto}
+.msjSag{display:flex;flex-direction:column;height:calc(100vh - 120px);min-height:420px;overflow:hidden}
+.msjS{gap:10px}.msjS.on{background:#eef6ff}.msjS.yeni b.w{font-weight:800}
+.msjS .t small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.msjIk{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
+.msjSg{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}.msjSg small{color:var(--muted);font-size:11px}
+.msjSg u{text-decoration:none;background:#0ea5e9;color:#fff;border-radius:10px;font-size:11px;font-weight:700;padding:1px 7px}
+.msjBos{margin:auto;text-align:center;border:0}.msjBos .ik{width:42px;height:42px}
+.msjU{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.msjU small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msjGeri{display:none;font-size:26px;text-decoration:none;color:var(--blue2);padding:0 6px}
+.msjAk{flex:1;overflow:auto;padding:12px 14px;background:#f6f8fb;display:flex;flex-direction:column;gap:6px}
+.msjM{display:flex;flex-direction:column;align-items:flex-start;max-width:78%}
+.msjM.ben{align-self:flex-end;align-items:flex-end}
+.msjKim{font-size:11px;color:var(--muted);margin:0 0 2px 10px}
+.msjB{background:#fff;border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:8px 11px;box-shadow:0 1px 2px rgba(15,23,42,.05);word-break:break-word}
+.msjM.ben .msjB{background:#dbeafe;border-color:#bfdbfe;border-radius:14px 14px 4px 14px}
+.msjM.sis .msjB{background:#fff7ed;border-color:#fed7aa}
+.msjMt{font-size:14.5px;line-height:1.4}
+.msjZ{display:block;text-align:right;font-size:10.5px;color:var(--muted);margin-top:3px}.msjZ a{color:var(--muted);text-decoration:none}
+.msjOk{font-style:normal;margin-left:4px;color:#94a3b8}.msjOk.on{color:#0ea5e9}
+.msjAn{color:#0369a1}
+.msjImg{display:block;max-width:240px;max-height:240px;border-radius:10px;margin-top:6px}
+.msjDos{display:block;margin-top:6px;font-size:13px}
+.msjEy{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}.msjEyD{color:var(--muted)}
+.msjGn{text-align:center;margin:6px 0}.msjGn span{background:#e2e8f0;color:#475569;font-size:11px;border-radius:10px;padding:2px 10px}
+.msjY{display:flex;gap:8px;align-items:flex-end;padding:10px 12px;border-top:1px solid var(--line);background:#fff}
+.msjYI{flex:1;min-width:0}.msjYI textarea{width:100%;resize:none;min-height:40px;max-height:140px;font:inherit;border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.msjEkB{font-size:20px;cursor:pointer;padding:6px}
+.msjT{position:fixed;right:16px;top:70px;z-index:9999;display:flex;gap:10px;align-items:center;background:#0f172a;color:#fff;text-decoration:none;border-radius:14px;padding:10px 14px;max-width:340px;box-shadow:0 10px 30px rgba(0,0,0,.25);transform:translateY(-20px);opacity:0;transition:.3s}
+.msjT.acik{transform:none;opacity:1}.msjT small{display:block;opacity:.85;font-size:12px}
+.hZil{position:relative}
+@media (max-width:760px){
+ .msjA{grid-template-columns:1fr}
+ .msjA.sohbetAcik .msjSol{display:none}
+ .msjA:not(.sohbetAcik) .msjSag{display:none}
+ .msjSag{height:calc(100vh - 150px)}
+ .msjGeri{display:block}
+ .msjM{max-width:88%}
+}
 
 </style>
 </head>
@@ -231,8 +274,6 @@ function liste(col, filtre, sirala, genis) {
     return Promise.all(is).then(function (R) { R.forEach(function (x) { L = L.concat(x); }); return L; }); });
 }
 function hata(e) { toast(e.message || String(e)); }
-function cikis() { TOK = null; BEN = null; try { localStorage.removeItem("dsTok"); localStorage.removeItem("dsBen"); } catch (e) {} location.hash = ""; ciz(); }
-
 /* ---------- giriş ---------- */
 function girisEkrani() {
   $("app").innerHTML = '<div class="giris"><div class="card"><h1>D Solar Satış</h1><p style="color:var(--muted);margin:0 0 14px">Ekip girişi</p>' +
@@ -2090,7 +2131,7 @@ function odemeListeEkrani(L, K, M, H, KU, kasa, tampon) {
   var bek = K.filter(function (m) { return m.onay === "Onay bekliyor" && m.durum !== "Gerçekleşti"; }), on = K.filter(function (m) { return m.onay === "Onaylandı" && m.durum !== "Gerçekleşti"; }), od = K.filter(function (m) { return m.durum === "Gerçekleşti"; }), red = K.filter(function (m) { return m.onay === "Reddedildi"; });
   var sonra = kasa - top(bek) - top(on), hz = (L.expand || {}).hazirlayan || {}, oy = (L.expand || {}).onaylayan || {};
   var pbTop = {}; K.forEach(function (m) { if (m.onay !== "Reddedildi") pbTop[m.pb || "TRY"] = (pbTop[m.pb || "TRY"] || 0) + (+m.tutar || 0); });
-  var html = '<a href="#" id="odGeri" style="color:var(--blue2);text-decoration:none;font-size:14px">‹ Ödemeler</a><div class="card" style="margin-top:8px"><h3 style="flex-wrap:wrap">' + esc(L.ad) + ' <span class="pill">' + esc(L.durum) + '</span><small style="color:var(--muted);font-weight:500;margin-left:auto">' + esc([L.tur, "hazırlayan " + (hz.name || hz.email || "—"), tarih(L.created), oy.id ? "onaylayan " + (oy.name || oy.email) + " " + tarih(L.onayTarihi) : "", L.kaynakDosya].filter(Boolean).join(" · ")) + "</small></h3>" +
+  var html = '<a href="#" id="odGeri" style="color:var(--blue2);text-decoration:none;font-size:14px">‹ Ödemeler</a><div class="card" style="margin-top:8px"><h3 style="flex-wrap:wrap">' + esc(L.ad) + ' <span class="pill">' + esc(L.durum) + '</span> <button class="btn sm" data-msjk="odeme" data-msjid="' + L.id + '">💬 Yaz</button><small style="color:var(--muted);font-weight:500;margin-left:auto">' + esc([L.tur, "hazırlayan " + (hz.name || hz.email || "—"), tarih(L.created), oy.id ? "onaylayan " + (oy.name || oy.email) + " " + tarih(L.onayTarihi) : "", L.kaynakDosya].filter(Boolean).join(" · ")) + "</small></h3>" +
     '<div class="kv"><div><small>Liste toplamı</small><b>' + Object.keys(pbTop).map(function (p) { return para(pbTop[p], p); }).join(" + ") + "</b></div><div><small>Onay bekleyen</small><b style=\"color:var(--warn)\">" + sayi(top(bek)) + " $</b></div><div><small>Onaylı, ödenmedi</small><b style=\"color:var(--ok)\">" + sayi(top(on)) + " $</b></div><div><small>Bugünkü kasa → ödemeler sonrası</small><b" + (sonra < tampon ? ' style="color:var(--bad)"' : "") + ">" + sayi(kasa) + " → " + sayi(sonra) + " $</b></div></div>" +
     (sonra < tampon ? '<div class="uyari">Bu liste tümüyle ödenirse kasa ' + (tampon ? "tamponun (" + sayi(tampon) + " $) altına" : "eksiye") + " iner. Kısmi onay ya da erteleme düşünebilirsiniz.</div>" : "") + (L.not ? '<div class="not"><small>Not</small>' + esc(L.not) + "</div>" : "") +
     (yon() && bek.length ? '<div style="padding:4px 14px 10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn pri" id="olHep">Tümünü onayla (' + bek.length + " kalem · " + sayi(top(bek)) + " $)</button></div>" : "") + "</div>";
@@ -2685,6 +2726,166 @@ function sablonKarti(kutu) {
   }).catch(function () { kutu.innerHTML = ""; });
 }
 
+/* ---------- v49 ekip içi mesajlaşma ---------- */
+ICO.mesaj = '<path d="M4 5.5h16v10H9l-4.5 4V5.5z"/><path d="M8 9.5h8M8 12.5h5"/>';
+NAV_IK.mesajlar = ["mesaj", "#0ea5e9"];
+var MSJ = { es: null, cid: "", S: [], aktif: "", okunmamis: {}, kisiler: null, tekrar: 0 };
+function msjSaat(t) { if (!t) return ""; var d = new Date(String(t).replace(" ", "T")), b = bugun(), g = d.toISOString().slice(0, 10), s = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+  return g === b ? s : g === gunSonra(-1, b) ? "dün " + s : tarih(t) + " " + s; }
+function msjAd(u) { return u ? (u.name || u.email || "").split(" ")[0] : ""; }
+function msjSohbetAd(s) { var U = (s.expand || {}).uyeler || [];
+  if (s.tip === "birebir") { var o = U.filter(function (u) { return u.id !== BEN.id; })[0]; return o ? o.name || o.email : "Sohbet"; }
+  return s.ad || (s.tip === "grup" ? "Grup" : "Sohbet"); }
+function msjSohbetIk(s) { return s.tip === "grup" ? ["kisiler", "#0ea5e9"] : s.kayitTip === "odeme" ? ["liste", "#d97706"] : s.kayitTip === "teklif" ? ["belge", "#ea580c"] : s.kayitTip === "proje" ? ["gunes", "#f59e0b"] : s.kayitTip === "aday" ? ["kisiler", "#7c3aed"] : null; }
+function msjKisiler() { if (MSJ.kisiler) return Promise.resolve(MSJ.kisiler);
+  return liste("users", "aktif = true && rol != 'ortak'", "name").then(function (L) { MSJ.kisiler = L; return L; }); }
+function msjOkunmamisSay() {
+  if (!TOK || rol() === "ortak") return Promise.resolve(0);
+  return api("/api/collections/mesajlar/records?perPage=500&fields=id,sohbet&filter=" + filtreQ("okuyanlar !~ " + q(BEN.id) + " && created >= " + q(gunSonra(-60, bugun()) + " 00:00:00"))).then(function (j) {
+    var o = {}; (j.items || []).forEach(function (m) { o[m.sohbet] = (o[m.sohbet] || 0) + 1; }); MSJ.okunmamis = o; var n = (j.items || []).length;
+    ROZ.v.msj = n; ROZ.v.mesajlar = n; rozetCiz(); return n; }).catch(function () { return 0; });
+}
+// anlık bağlantı (PocketBase realtime): yeni mesaj gelince liste, sohbet ve rozet güncellenir
+function msjCanli() {
+  if (!TOK || rol() === "ortak" || MSJ.es || typeof EventSource === "undefined") return;
+  var es = new EventSource("/api/realtime"); MSJ.es = es;
+  es.addEventListener("PB_CONNECT", function (ev) { try { MSJ.cid = JSON.parse(ev.data).clientId; } catch (x) { return; }
+    fetch("/api/realtime", { method: "POST", headers: { "Content-Type": "application/json", Authorization: TOK }, body: JSON.stringify({ clientId: MSJ.cid, subscriptions: ["mesajlar"] }) }).catch(function () {}); MSJ.tekrar = 0; });
+  es.addEventListener("mesajlar", function (ev) { var d; try { d = JSON.parse(ev.data); } catch (x) { return; } msjGeldi(d.action, d.record); });
+  es.onerror = function () { es.close(); MSJ.es = null; if (!TOK) return; MSJ.tekrar = Math.min(6, MSJ.tekrar + 1); setTimeout(msjCanli, 3000 * MSJ.tekrar); };
+}
+function msjKapat() { if (MSJ.es) { MSJ.es.close(); MSJ.es = null; } }
+function msjGeldi(act, m) {
+  if (!m || !BEN) return;
+  if (act === "create") {
+    var bende = m.sohbet === MSJ.aktif && document.hidden === false && /^#mesajlar\//.test(location.hash);
+    if (bende) { msjEkle(m); if (m.gonderen !== BEN.id) msjOkundu([m]); }
+    else if (m.gonderen !== BEN.id) { MSJ.okunmamis[m.sohbet] = (MSJ.okunmamis[m.sohbet] || 0) + 1; ROZ.v.msj = (ROZ.v.msj || 0) + 1; ROZ.v.mesajlar = ROZ.v.msj; rozetCiz();
+      var s = MSJ.S.filter(function (x) { return x.id === m.sohbet; })[0], k = (MSJ.kisiler || []).filter(function (u) { return u.id === m.gonderen; })[0];
+      toastMsj((k ? msjAd(k) + ": " : "") + (m.metin || "📎 Ek").slice(0, 80), m.sohbet, s ? msjSohbetAd(s) : ""); }
+    if (/^#mesajlar/.test(location.hash)) msjListeYenile();
+  } else if (act === "update" && m.sohbet === MSJ.aktif) { var el = document.querySelector('[data-mid="' + m.id + '"]'); if (el) el.outerHTML = msjBalon(m, msjUyeSay()); msjBagla(); msjGoruldu(); }
+}
+function toastMsj(t, sid, baslik) { var d = document.createElement("a"); d.className = "msjT"; d.href = "#mesajlar/" + sid; d.innerHTML = ikon("mesaj", "#fff", "kucuk") + "<span><b>" + esc(baslik || "Yeni mesaj") + "</b><small>" + esc(t) + "</small></span>";
+  document.body.appendChild(d); setTimeout(function () { d.classList.add("acik"); }, 20); setTimeout(function () { d.classList.remove("acik"); setTimeout(function () { d.remove(); }, 400); }, 6000);
+  try { if (navigator.vibrate) navigator.vibrate(60); } catch (x) {} }
+function msjOkundu(L) { L = L.filter(function (m) { return (m.okuyanlar || []).indexOf(BEN.id) < 0; }).slice(0, 60);
+  if (!L.length) return; var sid = L[0].sohbet;
+  sirali(L, function (m) { return api("/api/collections/mesajlar/records/" + m.id, { method: "PATCH", body: { "okuyanlar+": BEN.id } }).catch(function () {}); })
+    .then(function () { delete MSJ.okunmamis[sid]; msjOkunmamisSay(); }); }
+function msjUyeSay() { var s = MSJ.S.filter(function (x) { return x.id === MSJ.aktif; })[0]; return s ? (s.uyeler || []).length : 2; }
+// kayda bağlı sohbeti açar (müşteri, proje, teklif, ödeme listesi sayfalarındaki "💬 Yaz")
+function msjKayitAc(tip, id) { api("/api/dsolar/kayit-sohbet", { method: "POST", body: { tip: tip, id: id } }).then(function (j) { location.hash = "#mesajlar/" + j.id; }).catch(hata); }
+document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-msjk]"); if (!b) return; e.preventDefault(); msjKayitAc(b.dataset.msjk, b.dataset.msjid); });
+
+function msjListeYenile() {
+  return liste("sohbetler", "", "-sonMesajTarih", "uyeler").then(function (S) { MSJ.S = S; var l = $("msjL"); if (l) l.innerHTML = msjListeHTML(); bagMsjListe(); return S; });
+}
+function msjListeHTML() {
+  if (!MSJ.S.length) return '<div class="bos">Henüz sohbet yok.</div>';
+  return MSJ.S.map(function (s) { var ad = msjSohbetAd(s), ik = msjSohbetIk(s), n = MSJ.okunmamis[s.id] || 0, U = (s.expand || {}).uyeler || [], sg = U.filter(function (u) { return u.id === s.sonGonderen; })[0];
+    return '<a class="row msjS' + (s.id === MSJ.aktif ? " on" : "") + (n ? " yeni" : "") + '" href="#mesajlar/' + s.id + '">' + (ik ? '<span class="msjIk" style="background:' + ik[1] + '1a">' + ikon(ik[0], ik[1], "kucuk") + "</span>" : avatar(ad, "#0ea5e9", true)) +
+      '<div class="t"><b class="w">' + esc(ad) + '</b><small>' + (sg ? esc(sg.id === BEN.id ? "Siz" : msjAd(sg)) + ": " : "") + esc((s.sonMesaj || "").slice(0, 70)) + "</small></div>" +
+      '<span class="msjSg"><small>' + msjSaat(s.sonMesajTarih) + "</small>" + (n ? "<u>" + (n > 99 ? "99+" : n) + "</u>" : "") + "</span></a>"; }).join(""); }
+function bagMsjListe() {}
+function sMesajlar(arg) {
+  MSJ.aktif = arg && arg !== "yeni" ? arg : ""; msjCanli(); $("m").classList.add("genis");
+  $("m").innerHTML = '<div class="msjA' + (MSJ.aktif ? " sohbetAcik" : "") + '"><div class="card msjSol"><h3>Mesajlar <span style="margin-left:auto;display:flex;gap:6px"><button class="btn sm" id="msjYG">＋ Grup</button><button class="btn sm pri" id="msjYB">＋ Yeni</button></span></h3><div id="msjL"><div class="bos">Yükleniyor…</div></div></div>' +
+    '<div class="card msjSag" id="msjC">' + (MSJ.aktif ? '<div class="bos">Yükleniyor…</div>' : '<div class="bos msjBos">' + ikon("mesaj", "#94a3b8") + "<br>Bir sohbet seçin ya da yeni bir mesaj başlatın.<br><small>Onaya gönderilen ödeme listeleri ve teklifler burada mesaj olarak düşer.</small></div>") + "</div></div>";
+  $("msjYB").onclick = function () { msjYeni(false); }; $("msjYG").onclick = function () { msjYeni(true); };
+  Promise.all([msjKisiler(), msjOkunmamisSay()]).then(msjListeYenile).then(function () { if (MSJ.aktif) msjSohbet(MSJ.aktif); }).catch(hata);
+  if (arg === "yeni") msjYeni(false);
+}
+function msjYeni(grup) {
+  msjKisiler().then(function (K) { K = K.filter(function (u) { return u.id !== BEN.id; });
+    var k = panelAc('<div class="pnlB"><b>' + (grup ? "Yeni grup" : "Kime yazacaksınız?") + "</b></div>" + (grup ? '<div class="f" style="padding:0 14px"><label>Grup adı<input id="mgAd" placeholder="ör. Saha ekibi"></label></div>' : "") +
+      K.map(function (u) { return (grup ? '<label class="row" style="cursor:pointer"><input type="checkbox" data-mgu="' + u.id + '" style="width:auto">' : '<a class="row" href="#" data-mbu="' + u.id + '">') + avatar(u.name || u.email, "#0ea5e9", true) + '<div class="t"><b>' + esc(u.name || u.email) + "</b><small>" + esc(u.unvan || ROL_AD[u.rol] || "") + "</small></div>" + (grup ? "</label>" : "</a>"); }).join("") +
+      (grup ? '<div class="f" style="padding:10px 14px"><button class="btn pri" id="mgK">Grubu aç</button></div>' : ""), "sag");
+    bagT2("[data-mbu]", function (e) { msjBirebir(e.dataset.mbu); });
+    if (grup) $("mgK").onclick = function () { var ad = $("mgAd").value.trim(), U = Array.prototype.map.call(document.querySelectorAll("[data-mgu]:checked"), function (x) { return x.dataset.mgu; });
+      if (!ad) { toast("Grup adı yazın"); return; } if (!U.length) { toast("En az bir kişi seçin"); return; } this.disabled = true;
+      api("/api/collections/sohbetler/records", { method: "POST", body: { tip: "grup", ad: ad, uyeler: [BEN.id].concat(U) } }).then(function (s) { panelKapat(); location.hash = "#mesajlar/" + s.id; }).catch(hata); };
+  });
+}
+function msjBirebir(uid) {
+  var an = "bb:" + [BEN.id, uid].sort().join(":");
+  liste("sohbetler", "anahtar = " + q(an)).then(function (L) { if (L.length) return L[0];
+    return api("/api/collections/sohbetler/records", { method: "POST", body: { tip: "birebir", uyeler: [BEN.id, uid] } }); })
+    .then(function (s) { panelKapat(); location.hash = "#mesajlar/" + s.id; }).catch(hata);
+}
+function msjKayitLink(s) { if (s.tip !== "kayit") return "";
+  var h = s.kayitTip === "aday" ? "#aday/" + s.kayitId : s.kayitTip === "odeme" ? "#finans/odeme" : s.kayitTip === "proje" ? "#projeler" : "";
+  if (s.kayitTip === "teklif") return '<a class="btn sm" href="#" data-msjteklif="' + s.kayitId + '">Teklife git ›</a>';
+  return h ? '<a class="btn sm" href="' + h + '"' + (s.kayitTip === "odeme" ? ' data-msjodeme="' + s.kayitId + '"' : "") + ">Kayda git ›</a>" : ""; }
+function msjSohbet(sid) {
+  var s = MSJ.S.filter(function (x) { return x.id === sid; })[0], c = $("msjC");
+  if (!s) { c.innerHTML = '<div class="bos">Bu sohbet bulunamadı ya da üyesi değilsiniz.</div>'; return; }
+  var U = (s.expand || {}).uyeler || [];
+  c.innerHTML = '<div class="msjU"><a href="#mesajlar" class="msjGeri" aria-label="Geri">‹</a><div style="min-width:0;flex:1"><b>' + esc(msjSohbetAd(s)) + "</b><small>" + esc(s.tip === "birebir" ? "birebir" : U.length + " kişi: " + U.map(msjAd).join(", ")) + "</small></div>" + msjKayitLink(s) +
+    (s.tip !== "birebir" ? '<button class="btn sm" id="msjUye">＋ Kişi</button>' : "") + '</div><div class="msjAk" id="msjAk"><div class="bos">Yükleniyor…</div></div>' +
+    '<div class="msjY"><label class="msjEkB" title="Fotoğraf / PDF ekle">📎<input type="file" id="msjF" accept="image/*,application/pdf" multiple hidden></label><div class="msjYI"><div id="msjEkL"></div><textarea id="msjT" rows="1" placeholder="Mesaj yazın…" title="@isim ile birini anabilirsiniz"></textarea></div><button class="btn pri" id="msjG">Gönder</button></div>';
+  if ($("msjUye")) $("msjUye").onclick = function () { msjKisiler().then(function (K) { K = K.filter(function (u) { return (s.uyeler || []).indexOf(u.id) < 0; });
+    if (!K.length) { toast("Ekipteki herkes zaten bu sohbette"); return; }
+    panelAc('<div class="pnlB"><b>Sohbete kişi ekle</b></div>' + K.map(function (u) { return '<a class="row" href="#" data-mue="' + u.id + '">' + avatar(u.name || u.email, "#0ea5e9", true) + '<div class="t"><b>' + esc(u.name || u.email) + "</b></div></a>"; }).join(""), "sag");
+    bagT2("[data-mue]", function (e) { api("/api/collections/sohbetler/records/" + s.id, { method: "PATCH", body: { "uyeler+": e.dataset.mue } }).then(function () { panelKapat(); toast("Eklendi"); msjListeYenile().then(function () { msjSohbet(s.id); }); }).catch(hata); }); }); };
+  var t = $("msjT"), F = [];
+  t.oninput = function () { t.style.height = "auto"; t.style.height = Math.min(140, t.scrollHeight) + "px"; };
+  t.onkeydown = function (e) { if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 760) { e.preventDefault(); gonder(); } };
+  $("msjF").onchange = function () { Array.prototype.forEach.call(this.files, function (f) { if (F.length < 5) F.push(f); }); this.value = "";
+    $("msjEkL").innerHTML = F.map(function (f, i) { return '<span class="pill">' + esc(f.name.slice(0, 24)) + ' <a href="#" data-mfx="' + i + '">✕</a></span>'; }).join(" ");
+    bagT2("[data-mfx]", function (e) { F.splice(+e.dataset.mfx, 1); $("msjF").onchange.call({ files: [], value: "" }); }); };
+  var gonder = function () { var m = t.value.trim(); if (!m && !F.length) return; var b = $("msjG"); b.disabled = true;
+    var p; if (F.length) { var fd = new FormData(); fd.append("sohbet", s.id); fd.append("metin", m); F.forEach(function (f) { fd.append("ek", f); });
+      p = fetch("/api/collections/mesajlar/records", { method: "POST", headers: { Authorization: TOK }, body: fd }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.message || "Gönderilemedi"); return j; }); }); }
+    else p = api("/api/collections/mesajlar/records", { method: "POST", body: { sohbet: s.id, metin: m } });
+    p.then(function (j) { t.value = ""; t.style.height = ""; F = []; $("msjEkL").innerHTML = ""; if (!document.querySelector('[data-mid="' + j.id + '"]')) msjEkle(j); }).catch(hata).then(function () { b.disabled = false; t.focus(); }); };
+  $("msjG").onclick = gonder;
+  api("/api/collections/mesajlar/records?perPage=200&sort=-created&filter=" + filtreQ("sohbet = " + q(sid))).then(function (j) { var L = (j.items || []).reverse(), ak = $("msjAk"); if (!ak) return;
+    var n = (s.uyeler || []).length; ak.innerHTML = L.length ? L.map(function (m, i) { return msjGun(L[i - 1], m) + msjBalon(m, n); }).join("") : '<div class="bos" style="border:0">İlk mesajı siz yazın.</div>';
+    ak.scrollTop = ak.scrollHeight; msjBagla(); msjGoruldu(); msjOkundu(L); });
+  var ok = MSJ.okunmamis[sid]; if (ok) { delete MSJ.okunmamis[sid]; var a = document.querySelector('.msjS[href="#mesajlar/' + sid + '"]'); if (a) { a.classList.remove("yeni"); var u = a.querySelector(".msjSg u"); if (u) u.remove(); } }
+  Array.prototype.forEach.call(document.querySelectorAll(".msjS"), function (a) { a.classList.toggle("on", a.getAttribute("href") === "#mesajlar/" + sid); });
+}
+function msjGun(o, m) { var g = String(m.created).slice(0, 10); if (o && String(o.created).slice(0, 10) === g) return ""; var b = bugun(); return '<div class="msjGn"><span>' + (g === b ? "Bugün" : g === gunSonra(-1, b) ? "Dün" : tarih(m.created)) + "</span></div>"; }
+function msjMetin(t) { return esc(t || "").replace(/(^|\s)@([\wçğıöşüÇĞİÖŞÜ]+)/g, '$1<b class="msjAn">@$2</b>').replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, "<br>"); }
+function msjBalon(m, uyeN) {
+  var ben = m.gonderen === BEN.id, k = (MSJ.kisiler || []).filter(function (u) { return u.id === m.gonderen; })[0], ey = m.eylem || null;
+  var ek = (m.ek || []).map(function (f) { var u = "/api/files/mesajlar/" + m.id + "/" + encodeURIComponent(f); return /\.pdf$/i.test(f) ? '<a class="msjDos" href="' + u + '" target="_blank" rel="noopener">📄 ' + esc(f.replace(/_[a-z0-9]{10}(\.\w+)$/i, "$1")) + "</a>" : '<a href="' + u + '" target="_blank" rel="noopener"><img class="msjImg" src="' + u + '?thumb=400x0" alt="ek" loading="lazy"></a>'; }).join("");
+  var gor = ben ? ((m.okuyanlar || []).length >= uyeN ? '<i class="msjOk on" title="Herkes gördü">✓✓</i>' : (m.okuyanlar || []).length > 1 ? '<i class="msjOk" title="' + ((m.okuyanlar || []).length - 1) + ' kişi gördü">✓✓</i>' : '<i class="msjOk">✓</i>') : "";
+  return '<div class="msjM' + (ben ? " ben" : "") + (ey ? " sis" : "") + '" data-mid="' + m.id + '">' + (!ben ? '<span class="msjKim">' + esc(k ? k.name || k.email : "") + "</span>" : "") +
+    '<div class="msjB">' + (m.metin ? '<div class="msjMt">' + msjMetin(m.metin) + "</div>" : "") + ek + (ey ? msjEylem(ey) : "") +
+    '<span class="msjZ">' + (m.duzenlendi ? "düzenlendi · " : "") + msjSaat(m.created) + gor + (ben && !ey && m.metin && Date.now() - new Date(String(m.created).replace(" ", "T")).getTime() < 3600000 ? ' <a href="#" data-mduz="' + m.id + '" title="Düzelt">✎</a>' : "") + "</span></div></div>"; }
+function msjEylem(ey) {
+  if (ey.tip === "odeme_onay") return '<div class="msjEy" data-mey="odeme" data-meyid="' + ey.id + '">' + (yon() ? '<button class="btn sm pri" data-mono="' + ey.id + '">✓ Tümünü onayla</button>' : "") + '<button class="btn sm" data-msjodeme="' + ey.id + '">Listeyi aç</button><small class="msjEyD"></small></div>';
+  if (ey.tip === "teklif_onay") return '<div class="msjEy" data-mey="teklif" data-meyid="' + ey.id + '">' + (yon() ? '<button class="btn sm pri" data-mtko="' + ey.id + '">✓ Onayla</button>' : "") + '<button class="btn sm" data-msjteklif="' + ey.id + '">Teklife git</button><small class="msjEyD"></small></div>';
+  if (ey.tip === "odeme_sonuc") return '<div class="msjEy"><button class="btn sm" data-msjodeme="' + ey.id + '">Listeyi aç</button></div>';
+  if (ey.tip === "teklif_sonuc") return '<div class="msjEy"><button class="btn sm" data-msjteklif="' + ey.id + '">Teklife git</button></div>';
+  return ""; }
+function msjEkle(m) { var ak = $("msjAk"); if (!ak) return; var b = ak.querySelector(".bos"); if (b) b.remove(); var son = ak.querySelectorAll(".msjM"), alt = ak.scrollHeight - ak.scrollTop - ak.clientHeight < 120;
+  var g = String(m.created).slice(0, 10), oncekiG = son.length ? "" : null; ak.insertAdjacentHTML("beforeend", (oncekiG === null ? msjGun(null, m) : "") + msjBalon(m, msjUyeSay())); if (alt || m.gonderen === BEN.id) ak.scrollTop = ak.scrollHeight; msjBagla(); msjGoruldu(); }
+// onay düğmelerinin güncel durumu (liste/teklif hâlâ onayda mı?)
+function msjGoruldu() {
+  Array.prototype.forEach.call(document.querySelectorAll(".msjEy[data-mey]:not([data-kontrol])"), function (d) { d.dataset.kontrol = "1";
+    var col = d.dataset.mey === "odeme" ? "odeme_listeleri" : "teklifler";
+    api("/api/collections/" + col + "/records/" + d.dataset.meyid).then(function (r) { var bek = d.dataset.mey === "odeme" ? r.durum === "Onayda" : r.durum === "Onay bekliyor";
+      if (!bek) { Array.prototype.forEach.call(d.querySelectorAll("[data-mono],[data-mtko]"), function (x) { x.remove(); }); d.querySelector(".msjEyD").textContent = "durum: " + (r.durum === "Gönderildi" ? "onaylandı" : String(r.durum).toLocaleLowerCase("tr")); } })
+      .catch(function () { var x = d.querySelector(".msjEyD"); if (x) x.textContent = ""; }); }); }
+function msjBagla() {
+  bagT2("[data-mduz]", function (e) { var el = document.querySelector('[data-mid="' + e.dataset.mduz + '"] .msjMt'), es = el ? el.innerText : "", y = prompt("Mesajı düzeltin", es);
+    if (y == null || !y.trim() || y === es) return; api("/api/collections/mesajlar/records/" + e.dataset.mduz, { method: "PATCH", body: { metin: y.trim() } }).then(function (m) { var x = document.querySelector('[data-mid="' + m.id + '"]'); if (x) x.outerHTML = msjBalon(m, msjUyeSay()); msjBagla(); }).catch(hata); });
+  bagT2("[data-mono]", function (e) { var id = e.dataset.mono; if (!confirm("Bu ödeme listesindeki onay bekleyen tüm kalemler onaylansın mı?")) return; e.disabled = true;
+    Promise.all([api("/api/collections/odeme_listeleri/records/" + id), liste("fin_hareketler", "odemeListesi = " + q(id))]).then(function (R) { var L = R[0], K = R[1].filter(function (m) { return m.onay === "Onay bekliyor" && m.durum !== "Gerçekleşti"; });
+      if (!K.length) { toast("Onay bekleyen kalem kalmamış"); return; }
+      var b = bugun(); return sirali(K, function (m) { return apiSabirli("/api/collections/fin_hareketler/records/" + m.id, { method: "PATCH", body: { onay: "Onaylandı", onaylayan: BEN.name || BEN.email, onayTarihi: b + " 12:00:00.000Z" } }); })
+        .then(function () { return liste("fin_hareketler", "odemeListesi = " + q(id)); }).then(function (M) { return listeDurumYaz(L, M); })
+        .then(function () { toast(K.length + " kalem onaylandı"); ROZ.t = 0; rozetGuncelle(true); }); }).catch(hata).then(function () { e.disabled = false; }); });
+  bagT2("[data-mtko]", function (e) { if (!confirm("Teklif onaylansın mı? Uygulama müşteriye bir şey göndermez; teklifi ekip kendisi iletir.")) return; e.disabled = true;
+    api("/api/collections/teklifler/records/" + e.dataset.mtko, { method: "PATCH", body: { durum: "Gönderildi" } }).then(function () { toast("Teklif onaylandı"); ROZ.t = 0; rozetGuncelle(true); }).catch(hata).then(function () { e.disabled = false; }); });
+  bagT2("[data-msjodeme]", function (e) { if (typeof OD !== "undefined") OD.liste = e.dataset.msjodeme; location.hash = "#finans/odeme"; if (/^#finans\/odeme$/.test(location.hash)) ciz(); });
+  bagT2("[data-msjteklif]", function (e) { api("/api/collections/teklifler/records/" + e.dataset.msjteklif).then(function (t) { location.hash = "#aday/" + t.aday; }).catch(hata); });
+}
+function cikis() { msjKapat(); TOK = null; BEN = null; MSJ.kisiler = null; MSJ.S = []; try { localStorage.removeItem("dsTok"); localStorage.removeItem("dsBen"); } catch (e) {} location.hash = ""; ciz(); }
+
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
 ICO.ara = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';
 ICO.zil = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>';
@@ -2699,7 +2900,7 @@ function satisAlt() { var L = []; if (yt("musteri")) L.push(["adaylar", rol() ==
   if (yt("teklif")) L.push(["teklifler", "Teklifler"]); if (yt("proje")) L.push(["projeler", "Projeler"]); if (yt("teklif") || yt("fiyat")) L.push(["katalog", "Katalog"]); return L; }
 function anaMenu() {
   if (rol() === "ortak") return [["ortak", "Müşterilerim"]];
-  var M = [["bugun", "Bugün"]], sa = satisAlt(); if (sa.length) M.push(["satis", "Satış", "#" + sa[0][0]]);
+  var M = [["bugun", "Bugün"], ["mesajlar", "Mesajlar"]], sa = satisAlt(); if (sa.length) M.push(["satis", "Satış", "#" + sa[0][0]]);
   if (finansci()) M.push(["finans", "Finans"]); if (yt("ges")) M.push(["ges", "GES"]); if (yt("ekip")) M.push(["ekip", "Ekip"]);
   return M;
 }
@@ -2716,7 +2917,7 @@ function ciz() {
   document.title = "D Solar";
   if (!TOK || !BEN) { girisEkrani(); return; }
   var h = (location.hash || "").replace(/^#/, "").split("/"), sayfa = h[0] || (rol() === "ortak" ? "ortak" : "bugun"), ak = aktifAna(sayfa);
-  var M = anaMenu(), HZ = hizliListe(), alt = M.filter(function (m) { return m[0] !== "ekip"; });
+  var M = anaMenu(), HZ = hizliListe(), alt = M.filter(function (m) { return m[0] !== "ekip" && m[0] !== "mesajlar"; });
   if (alt.length < 4 && M.some(function (m) { return m[0] === "ekip"; })) alt.push(["ekip", "Ekip"]);
   var navA = function (m) { var on = m[0] === ak; return '<a href="' + (m[2] || "#" + m[0]) + '" class="' + (on ? "on" : "") + '" data-nv="' + m[0] + '"><i>' + ikon((NAV_IK[m[0]] || ["menu"])[0], (NAV_IK[m[0]] || [0, "#475569"])[1], on ? "dolu" : "") + '</i><span>' + m[1] + '</span><u class="rz" data-rz="' + m[0] + '"></u></a>'; };
   var altH = alt.map(navA); if (HZ.length) altH.splice(Math.min(2, altH.length), 0, '<a href="#" class="fab" id="hzB" aria-label="Hızlı ekle"><b>＋</b></a>');
@@ -2726,7 +2927,7 @@ function ciz() {
       return '<a href="#' + s[0] + '" class="' + (on ? "on" : "") + '"><i>' + ikon((NAV_IK[s[0]] || ["menu"])[0], (NAV_IK[s[0]] || [0, "#475569"])[1], on ? "dolu" : "") + "</i><span>" + s[1] + '</span><u class="rz" data-rz="' + s[0] + '"></u></a>'; }).join("") + '<div class="yGrp">Şirket</div>'; }).join("") +
     '<a href="#" class="yBen" data-avt="1">' + avatar(BEN.name || BEN.email, "#ed7d31", true) + '<span><b>' + esc((BEN.name || BEN.email).split(" ")[0]) + "</b><small>" + esc(BEN.unvan || ROL_AD[rol()]) + " · şifre, çıkış</small></span></a>";
   var ust = '<header class="y"><b class="hLogo">D Solar</b>' + (rol() === "ortak" ? "<span style=\"flex:1\"></span>" : '<button class="hAra" id="hAra">' + ikon("ara", "#fff", "kucuk") + '<span>Ara: kişi, teklif, ödeme…</span><kbd>Ctrl K</kbd></button>') +
-    (HZ.length ? '<button class="hHz btn or sm" id="hHz">＋ Hızlı ekle</button>' : "") + (rol() === "ortak" ? "" : '<button class="hZil" id="hZil" aria-label="Bildirimler">' + ikon("zil", "#fff", "kucuk") + '<u class="rz" data-rz="zil"></u></button>') +
+    (HZ.length ? '<button class="hHz btn or sm" id="hHz">＋ Hızlı ekle</button>' : "") + (rol() === "ortak" ? "" : '<button class="hZil" id="hMsj" aria-label="Mesajlar">' + ikon("mesaj", "#fff", "kucuk") + '<u class="rz" data-rz="msj"></u></button><button class="hZil" id="hZil" aria-label="Bildirimler">' + ikon("zil", "#fff", "kucuk") + '<u class="rz" data-rz="zil"></u></button>') +
     '<button class="hAvt" data-avt="1" aria-label="Hesabım">' + avatar(BEN.name || BEN.email, "#ed7d31", true) + "</button></header>";
   var sa = SATIS_S.indexOf(sayfa) >= 0 && sayfa !== "tpdf" ? satisAlt() : [];
   $("app").innerHTML = ust + '<nav class="y">' + altH.join("") + '</nav><nav class="yan">' + yanH + "</nav>" +
@@ -2736,11 +2937,12 @@ function ciz() {
   Array.prototype.forEach.call(document.querySelectorAll("[data-avt]"), function (x) { x.onclick = function (e) { e.preventDefault(); avtMenu(); }; });
   if ($("hAra")) $("hAra").onclick = function () { araAc(); };
   if ($("hZil")) $("hZil").onclick = function () { zilAc(); };
+  if ($("hMsj")) $("hMsj").onclick = function () { location.hash = "#mesajlar"; };
   if ($("hzB")) $("hzB").onclick = function (e) { e.preventDefault(); hizliAc(); };
   if ($("hHz")) $("hHz").onclick = function () { hizliAc(); };
   var sm = sayfaMod(sayfa, h[1]); document.body.classList.toggle("salt", !!sm && yt(sm) === "g");
   if (sm && yt(sm) === "g") { var mm = $("m"); if (mm) mm.insertAdjacentHTML("beforebegin", '<div class="saltB">Bu bölümde yalnız <b>görme</b> yetkiniz var; değişiklik yapılamaz.</div>'); }
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri, mesajlar: sMesajlar };
   (S[sayfa] || sBugun)(h[1]);
   rozetCiz(); rozetGuncelle();
 }
@@ -2774,6 +2976,7 @@ function rozetGuncelle(zorla) {
   if (yon()) is.push(topSay("odeme_listeleri", "durum = 'Onayda'").then(function (n) { v.finans = (v.finans || 0) + n; v.bugun = (v.bugun || 0) + n; if (n) L.push(["kt", n + " ödeme listesi onayınızı bekliyor", "#finans/odeme", "liste", "#d97706"]); }));
   else if (finansci()) is.push(topSay("fin_hareketler", "onay = 'Onaylandı' && durum != 'Gerçekleşti'").then(function (n) { v.finans = n; if (n) L.push(["uy", n + " onaylı ödeme yapılmayı bekliyor", "#finans/odeme", "liste", "#d97706"]); }));
   if (yt("ges")) is.push(topSay("ges_olaylar", "ieNo != '' && ieDurum != 'Doğrulandı' && durum != 'Kapandı'").then(function (n) { v.ges = n; if (n) L.push([n > 2 ? "kt" : "uy", n + " açık GES iş emri", "#ges", "gunes", "#f59e0b"]); }));
+  if (rol() !== "ortak") { msjCanli(); is.push(msjOkunmamisSay().then(function (n) { v.msj = n; v.mesajlar = n; })); }
   return Promise.all(is).then(function () { ROZ.v = v; ROZ.L = L; v.zil = L.filter(function (x) { return x[0] === "kt"; }).length || L.length; rozetCiz(); return ROZ; });
 }
 function rozetCiz() { Array.prototype.forEach.call(document.querySelectorAll("[data-rz]"), function (u) { var n = ROZ.v[u.dataset.rz] || 0; u.textContent = n > 99 ? "99+" : n || ""; u.style.display = n ? "" : "none"; }); }
@@ -3177,11 +3380,11 @@ function sAday(id) {
     var tkH = yt("teklif") && T.length ? '<div class="card" style="margin:0"><h3>Teklifler <small style="margin-left:auto;color:var(--muted);font-weight:500">' + T.length + "</small></h3>" + T.map(teklifRow).join("") + "</div>" : "";
     var prjH = (PRJ ? prjKart(PRJ, a, U, H) : a.asama === "Sözleşme" && satisci() ? '<div class="card" style="margin:0"><h3>Projeyi başlat</h3><div class="f"><div class="f2"><label>Sözleşme / başlangıç tarihi<input id="pBas" type="date" value="' + bugun() + '"></label><label>Sözleşme bedeli (USD, KDV hariç)<input id="pBed0" inputmode="decimal" value="' + esc(acT ? acT.fiyatUSD : "") + '"></label></div>' +
         prjPlanFormu("pb", { basla: bugun(), maliyet: acT && acT.malzemeUsd, tur: "Anahtar teslim", basId: "pBas" }) + '<button class="btn or" id="pBasla">Projeyi başlat</button><small style="color:var(--muted)">Tahsilat planı ve malzeme maliyeti Finans\'a planlı hareket olarak düşer.</small></div></div>' : "") + (PRJ && (!PRJ.tur || PRJ.tur === "Anahtar teslim") ? sozlesmeKarti(a, acT, PRJ) : "");
-    var ustH = '<div class="card adU" style="margin:0 0 12px"><div class="adB">' + avatar(a.ad, renk) + '<div style="min-width:0;flex:1"><div class="adAd">' + esc(a.ad) + " " + asamaPill(a.asama) + '</div><small style="color:var(--muted)">' + esc([a.ilce, a.tel, x.sorumlu ? "sorumlu " + x.sorumlu.name.split(" ")[0] : ""].filter(Boolean).join(" · ")) + '</small><div class="adC">' + chip + '</div></div><div class="adEy">' + telA(a.tel).replace("waB", "waB b2") + waBtn(a.tel, "", "b2") + (duz ? '<button class="btn sm" data-ady="not">' + ikon("not", "#2563eb", "kucuk") + "<span>Not</span></button>" : "") + (teklifci() && !PRJ ? '<a class="btn sm pri" href="#teklif/' + id + '">' + ikon("belge", "#fff", "kucuk") + "<span>Teklif hazırla</span></a>" : "") + "</div></div>" + serit + sirH + "</div>";
+    var ustH = '<div class="card adU" style="margin:0 0 12px"><div class="adB">' + avatar(a.ad, renk) + '<div style="min-width:0;flex:1"><div class="adAd">' + esc(a.ad) + " " + asamaPill(a.asama) + '</div><small style="color:var(--muted)">' + esc([a.ilce, a.tel, x.sorumlu ? "sorumlu " + x.sorumlu.name.split(" ")[0] : ""].filter(Boolean).join(" · ")) + '</small><div class="adC">' + chip + '</div></div><div class="adEy">' + telA(a.tel).replace("waB", "waB b2") + waBtn(a.tel, "", "b2") + (duz ? '<button class="btn sm" data-ady="not">' + ikon("not", "#2563eb", "kucuk") + "<span>Not</span></button>" : "") + '<button class="btn sm" data-msjk="aday" data-msjid="' + id + '">' + ikon("mesaj", "#0ea5e9", "kucuk") + "<span>Ekibe yaz</span></button>" + (teklifci() && !PRJ ? '<a class="btn sm pri" href="#teklif/' + id + '">' + ikon("belge", "#fff", "kucuk") + "<span>Teklif hazırla</span></a>" : "") + "</div></div>" + serit + sirH + "</div>";
     $("m").classList.add("genis");
     $("m").innerHTML = '<a href="#adaylar" class="geriL">‹ Müşteriler</a>' + ustH + '<div class="adIz"><div class="adSol">' + adimH + prjH + tkH + onH + "</div><div class=\"adSag\">" + gecH + bilH +
       (duz ? '<div class="card" style="margin:0"><div class="f" style="padding-top:12px"><div class="f2">' + (!kay ? '<button class="btn" data-asm="Kaybedildi">Kaybedildi olarak işaretle</button>' : "<span></span>") + '<button class="btn" id="aSil" style="color:var(--bad);border-color:#f3c4c4">Kaydı sil</button></div></div></div>' : "") + "</div></div>" +
-      (duz ? '<div class="adBar">' + (a.tel ? '<a href="tel:' + esc(a.tel) + '">' + ikon("tel", "#2563eb") + "<span>Ara</span></a>" : "") + (waLink(a.tel) ? '<a href="' + waLink(a.tel) + '" target="_blank" rel="noopener">' + ikon("wa", "#16a34a") + "<span>WhatsApp</span></a>" : "") + '<a href="#" data-ady="not">' + ikon("not", "#2563eb") + '<span>Not</span></a><a href="#" data-ady="hat">' + ikon("saat", "#d97706") + '<span>Hatırlat</span></a><a href="#" data-ady="dig">' + ikon("menu", "#475569") + "<span>Diğer</span></a></div>" : "");
+      (duz ? '<div class="adBar">' + (a.tel ? '<a href="tel:' + esc(a.tel) + '">' + ikon("tel", "#2563eb") + "<span>Ara</span></a>" : "") + (waLink(a.tel) ? '<a href="' + waLink(a.tel) + '" target="_blank" rel="noopener">' + ikon("wa", "#16a34a") + "<span>WhatsApp</span></a>" : "") + '<a href="#" data-ady="not">' + ikon("not", "#2563eb") + '<span>Not</span></a><a href="#" data-ady="hat">' + ikon("saat", "#d97706") + '<span>Hatırlat</span></a><a href="#" data-msjk="aday" data-msjid="' + id + '">' + ikon("mesaj", "#0ea5e9") + '<span>Ekibe yaz</span></a><a href="#" data-ady="dig">' + ikon("menu", "#475569") + "<span>Diğer</span></a></div>" : "");
     document.body.classList.toggle("adBarV", duz);
     var bag = function (i, f) { var e = $(i); if (e) e.onclick = function (ev) { ev.preventDefault(); f(ev); }; };
     if (PRJ) prjBagla(PRJ, a, U, yen);
