@@ -1,7 +1,7 @@
 {
- "surum": 47,
- "paket": "surumler/dsolar-47.zip",
- "sha256": "cca2aa23619dab5036b317327a863b7a3f55bcaa741f0407f338629977a3827b",
- "imza": "lcO3cljwY5Sx6vjeGn9ebIlN4y36C92lhUjT23K5bsDJ8kCu0nMdCEQvi9cK28g6CfgWWbXJszSbHivBs7ceN2+H5wFi2zjd3s8qFeS9qXnSPz6puw2PY1YsuOg7FCo7+jK6M+ZaHfeqZKjB3+t8q4qkC+DDlLzj6eNVPPW+w9J4L6ha8z+6F5OyNCn8XgXk0tNaoZIvGz5jUxJbqXAsC9wFu/0QsBttUv0t0s2+D3Y83YWmTvjF2VGWaqUzLvTpAc4n7EgkY4tuQMmkG7GyUHxEkygS9IYIpUgC/OTC0ttybzFlRy78ZSmUl4xWl3qzteY+PUHN6mP8pZUla1UIEICfNmdZ7Vu7YsBvBscoz0LSE6u/umZTfnmhrJdjgD3pR3RPL1Gf/hQA2tyvQ6kUt+lLxuwu/Is7SUZJddropgyqHynomLQhk8bzv/lCYxTKYbq3Y7jEO3i4rqHfsbLiD1j5i/eYFEydd6PZ64ptf1cL3ltSVN4gkf98xpj6fCec",
- "not": "Proje: finansa KDV dahil tahsilat, maliyet tarihi kuralları, sözleşme takvimi, sözleşme düzenleme, stoktan malzeme; teklifte çift kalem engeli; kâr gösterimi"
+ "surum": 48,
+ "paket": "surumler/dsolar-48.zip",
+ "sha256": "d6cf94737609de92168b69016a5a5b0bb57f78987d6a038f5dc8efa17c1e1a92",
+ "imza": "BQokaapduU9Q/K9amtIh3T/v+OEJu3TuitYI6vtgphiIZhnHbtEkf6NUJStjOAwy4zAFeX3GmPoEyTfST7ZKbOVVMhiA/OjfuSsrIFw4hx+txSmBcGdRIwdTGL5fVbovfrCMMVMXEq/YlOyfedfnm1FJP+8P1qQh3eG5WzJ05t6V0q+uJ7UIbwDjtoJNblFcpK2cBuC2HaSWYlqYysc9z3yj7iK1BOIkXTPK8+CAFhv6ssq+Nt6Q8KhWGJjTl4MlialaumdVOTLRoHh0kuakQVg6jKxF7N/bkgAwo83gnRfjkie9Ur4+3jgU8AAEEIDqi62eHEnDn71r49SQ+losKDy3Texp+pSSgGSJRSSTBJ1/8jcav6u9QUOByF4nqitsG3EmLW33SwOr+H53cSLSQTNb1QT5hLLrMJzRCDWM2nUXrsx6gy9Ch9AyPiwujY3Nlw+mB3AGiDT0cD+jJHv3YKnSGa2p37He3cq64xeyUKPQgoOzFqJLv4yrrdbQDRP5",
+ "not": "Proje: malzeme gideri finansa KDV dahil; proje takvimi sözleşme ayına göre (çağrı mektubu ay sonuna kadar, statik sonraki ayın 15-30'u...)"
 }

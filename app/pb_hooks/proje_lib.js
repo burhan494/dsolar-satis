@@ -1,7 +1,7 @@
 // Proje ödeme planını Finans'a planlı hareket olarak aktarır ve plan değişince günceller.
 // Tahsilatlar KDV dahil yazılır (teklif ve sözleşme "+KDV"dir, nakit akışına giren para KDV dahildir).
 // Malzeme maliyeti: anahtar teslimde sözleşme tarihinden 75 gün sonra, öz tüketim ve malzeme satışında sözleşme tarihinde.
-// Stoktan kullanılan malzemede (maliyet 0) gider yazılmaz.
+// Malzeme gideri de KDV dahil yazılır (maliyet × 1,20). Stoktan kullanılan malzemede (maliyet 0) gider yazılmaz.
 const IMZA = "proje ödeme planından";
 function kdvOran(app) { try { const r = app.findFirstRecordByFilter("ayarlar", "anahtar = 'hesap'"); const d = JSON.parse(r.getString("deger") || "{}"); return +d.kdv >= 0 && +d.kdv < 1 ? +d.kdv : 0.2; } catch (x) { return 0.2; } }
 function gunEkle(t, n) { const d = new Date(String(t).slice(0, 10) + "T12:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
@@ -13,7 +13,7 @@ function satirlar(app, p) {
   const plan = planOku(p), mal = plan.maliyet || {}, bedel = p.getFloat("bedelUsd"), tur = p.getString("tur") || "Anahtar teslim", kdv = kdvOran(app), L = [];
   (plan.tahsilat || []).filter((r) => +r.oran > 0 && r.tarih).forEach((r, i) => L.push({ a: "T" + i, tarih: String(r.tarih).slice(0, 10), yon: "Giriş", kategori: tur === "Malzeme satışı" ? "Malzeme satışı tahsilatı" : "Proje tahsilatı",
     tutar: Math.round(bedel * +r.oran * (1 + kdv)) / 100, aciklama: (r.ad || "Tahsilat") + " %" + r.oran + " · " + tur + " · KDV dahil" }));
-  if (+mal.usd > 0 && !mal.stok) L.push({ a: "M", tarih: malTarih(p, mal), yon: "Çıkış", kategori: "Malzeme", tutar: Math.round(+mal.usd * 100) / 100, aciklama: "Malzeme maliyeti (tekliften)" });
+  if (+mal.usd > 0 && !mal.stok) L.push({ a: "M", tarih: malTarih(p, mal), yon: "Çıkış", kategori: "Malzeme", tutar: Math.round(+mal.usd * (1 + kdv) * 100) / 100, aciklama: "Malzeme maliyeti (tekliften) · KDV dahil" });
   return L;
 }
 function mevcut(app, p) { // bu projenin plandan gelen kayıtları; eski kayıtlar (anahtarsız) sıra ile eşleştirilir
