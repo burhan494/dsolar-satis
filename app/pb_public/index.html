@@ -1043,7 +1043,9 @@ function sTeklif(arg) {
     Array.prototype.forEach.call(document.querySelectorAll("[data-ka]"), function (e) { e.onchange = function () { var k = X.kalemler[+e.dataset.ka], v = num(e.value); if (!(v > 0)) { toast("Geçersiz adet"); e.value = k.adet; return; }
       k.adet = v; k.toplamUsd = Math.round(k.birimUsd * v * 100) / 100; yeniden(); }; });
     bagT("[data-kx]", function (e) { X.kalemler.splice(+e.dataset.kx, 1); yeniden(); });
-    $("kEkB").onclick = function () { var k = KM[$("kEk").value], v = num($("kEkA").value); if (!k || !(v > 0)) { toast("Kalem ve adet seçin"); return; } X.kalemler.push(kalemYap(k, v, X.kur, T.eurUsd));
+    $("kEkB").onclick = function () { var bt = this; if (bt.disabled) return; var k = KM[$("kEk").value], v = num($("kEkA").value); if (!k || !(v > 0)) { toast("Kalem ve adet seçin"); return; }
+      var var0 = X.kalemler.filter(function (x) { return x.id === k.id; })[0]; if (var0 && !confirm(kAd(k) + " listede zaten var (" + sayi(var0.adet, var0.adet % 1 ? 2 : 0) + " " + var0.birim + "). Yeni satır açılmadan adedine " + sayi(v, v % 1 ? 2 : 0) + " eklensin mi?")) return;
+      bt.disabled = true; if (var0) { var0.adet = Math.round((var0.adet + v) * 1000) / 1000; var0.toplamUsd = Math.round(var0.birimUsd * var0.adet * 100) / 100; } else X.kalemler.push(kalemYap(k, v, X.kur, T.eurUsd));
       X.kalemler.sort(function (a, b) { return KAT_SIRA.indexOf(a.kat) - KAT_SIRA.indexOf(b.kat); }); yeniden(); };
     if ($("kMarj")) $("kMarj").onchange = function () { var v = num(this.value); if (v == null || v < 0) { toast("Geçersiz"); return; } X.marj = v; yeniden(); };
     $("kNot").oninput = function () { X.not = this.value; };
@@ -1072,58 +1074,6 @@ var PRJ_RESMI = [["cagri_basvuru", "Çağrı mektubu başvurusu", 5], ["statik",
 function prjKol(P) { var at = !P || !P.tur || P.tur === "Anahtar teslim", K = { saha: { ad: "Saha", adim: PRJ_SAHA } }; if (at) K.resmi = { ad: "Resmi süreç", adim: PRJ_RESMI }; return K; }
 var PRJ_KOL = prjKol(null);
 function gunFark(a, b) { return Math.round((new Date(b.slice(0, 10)) - new Date(a.slice(0, 10))) / 864e5); }
-function prjDurum(P) {
-  var out = { kirmizi: [], sonraki: [], bitti: true, tamam: 0, top: 0 }, b = bugun(), A = P.adimlar || {};
-  var PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim";
-  Object.keys(PK).forEach(function (kol) { var onc = (P.basla || b).slice(0, 10);
-    PK[kol].adim.forEach(function (s) { out.top++; if ((A[s[0]] || {}).durum === "tamam") out.tamam++; });
-    PK[kol].adim.some(function (s) { var x = A[s[0]] || {}; if (x.durum === "tamam") { onc = x.tarih || onc; return false; }
-      out.bitti = false; var kilit = at && s[0] === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam", gec = gunFark(onc, b) - s[2];
-      out.sonraki.push({ kol: kol, k: s[0], ad: s[1], kilit: kilit, gec: gec, son: new Date(new Date(onc).getTime() + s[2] * 864e5).toISOString().slice(0, 10) });
-      if (gec > 0 && !kilit) out.kirmizi.push(s[1] + " (" + gec + " gün gecikti)"); return true; }); });
-  return out;
-}
-function prjKart(P, a, U, H) {
-  var D = prjDurum(P), A = P.adimlar || {}, duz = yd("proje"), PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim";
-  var kol = function (k) { if (!PK[k]) return ""; return '<div><b style="font-size:13px">' + PK[k].ad + "</b>" + PK[k].adim.map(function (s) { var x = A[s[0]] || {}, kilit = at && s[0] === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam" && x.durum !== "tamam";
-    return '<div class="row" ' + (duz ? 'data-pa="' + s[0] + '" style="cursor:pointer;padding:9px 4px"' : 'style="padding:9px 4px"') + '><div class="t"><b class="w" style="font-size:14px;font-weight:600">' + (x.durum === "tamam" ? "✅ " : kilit ? "🔒 " : "⬜ ") + esc(s[1]) + "</b><small>" + esc([x.tarih ? tarih(x.tarih) : kilit ? "uygunluk yazısı bekleniyor" : "", x.sorumlu, x.not].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>"; };
-  return '<div class="card" id="prjKart"><h3>Proje takibi <small style="color:var(--muted)">' + esc(P.tur || "Anahtar teslim") + " · " + D.tamam + "/" + D.top + " adım · başlangıç " + tarih(P.basla) + "</small></h3>" +
-    (P.durum !== "Sürüyor" ? '<div class="bilgi">Proje durumu: ' + esc(P.durum) + "</div>" : D.kirmizi.length ? '<div class="uyari">Geciken: ' + esc(D.kirmizi.join(", ")) + "</div>" : D.bitti ? '<div class="bilgi">Tüm adımlar tamamlandı.</div>' : '<div class="bilgi">Sıradaki: ' + esc(D.sonraki.filter(function (x) { return !x.kilit; }).map(function (x) { return x.ad + " (hedef " + tarih(x.son) + ")"; }).join(", ")) + "</div>") +
-    (P.bedelUsd > 0 ? '<div class="not" style="margin:0 14px 8px"><small>Bedel <b>' + sayi(P.bedelUsd) + " $</b>" + (P.maliyetUsd > 0 ? " · maliyet " + sayi(P.maliyetUsd) + " $ · <b>kâr " + sayi(P.bedelUsd - P.maliyetUsd) + " $ (%" + sayi((P.bedelUsd - P.maliyetUsd) / P.bedelUsd * 100, 1) + ")</b>" : " · maliyet girilmedi") +
-      (P.planAktarildi ? " · ödeme planı Finans'ta: " + ((P.odemePlan && P.odemePlan.tahsilat) || []).map(function (r) { return "%" + r.oran + " " + tarih(r.tarih); }).join(", ") : "") + "</small></div>" : "") +
-    (!P.planAktarildi && yd("proje") ? '<details class="card" style="margin:0 14px 10px;box-shadow:none;border:1px dashed #d5deea"' + (P.tur && P.tur !== "Anahtar teslim" ? " open" : "") + '><summary><h3 style="font-size:14px">Ödeme planı · ne zaman yüzde kaç tahsil edilecek? (girilmedi, nakit akışında görünmüyor)</h3></summary><div class="f">' + prjPlanFormu("pp", { basla: P.basla, maliyet: P.maliyetUsd, tur: P.tur, plan: P.odemePlan }) + '<button class="btn pri" id="ppK">Finans\'a aktar</button></div></details>' : "") +
-    '<div class="f" style="grid-template-columns:' + (PK.resmi ? "1fr 1fr" : "1fr") + ';gap:14px">' + kol("saha") + kol("resmi") + "</div>" + '<div id="paForm"></div>' +
-    (yd("proje") && (yon() || yd("teklif") || yd("fiyat")) ? '<div class="f"><div class="f2"><label>Proje durumu<select id="pDur">' + sec(["Sürüyor", "Tamamlandı", "İptal"], P.durum) + '</select></label><label>Sözleşme bedeli (USD)<input id="pBed" inputmode="decimal" value="' + esc(P.bedelUsd || "") + '"></label></div><div class="f2"><label>Proje türü<select id="pTur">' + sec(PRJ_TURLER, P.tur || "Anahtar teslim") + '</select></label><label>Maliyet (USD, tekliften)<input id="pMal" inputmode="decimal" value="' + esc(P.maliyetUsd || "") + '"></label></div><button class="btn" id="pKay">Proje bilgisini kaydet</button></div>' : "") +
-    '<div id="prjKar"></div></div>';
-}
-function prjBagla(P, a, U, yenile) {
-  var duz = $("paForm"); if (!duz) return;
-  var adimAd = {}, PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim"; Object.keys(PK).forEach(function (k) { PK[k].adim.forEach(function (s) { adimAd[s[0]] = s[1]; }); });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-pa]"), function (e) { e.onclick = function () {
-    var k = e.dataset.pa, A = P.adimlar || {}, x = A[k] || {};
-    if (at && k === "montaj" && (A.ges_uygunluk || {}).durum !== "tamam" && x.durum !== "tamam") { toast("Montaj, belediye GES uygunluk yazısı gelince açılır"); return; }
-    var ekip = U.filter(function (u) { return u.aktif; }).map(function (u) { return u.name || u.email; });
-    duz.innerHTML = '<div class="f" style="border-top:1px solid #edf1f6;padding-top:12px"><b>' + esc(adimAd[k]) + '</b><div class="f2"><label>Durum<select id="paD">' + sec(["Bekliyor", "Tamamlandı"], x.durum === "tamam" ? "Tamamlandı" : "Bekliyor") + '</select></label><label>Tarih<input id="paT" type="date" value="' + esc((x.tarih || bugun()).slice(0, 10)) + '"></label></div>' +
-      '<div class="f2"><label>Sorumlu<input id="paS" list="ekipL" value="' + esc(x.sorumlu || "") + '"></label><label>Not / evrak no<input id="paN" value="' + esc(x.not || "") + '"></label></div><datalist id="ekipL">' + ekip.map(function (n) { return "<option>" + esc(n) + "</option>"; }).join("") + '</datalist><div class="f2"><button class="btn" id="paV">Vazgeç</button><button class="btn pri" id="paK">Kaydet</button></div>' + (x.durum === "tamam" ? '<button class="btn" id="paG" style="color:var(--bad)">İşareti geri al (adım yapılmadı)</button>' : "") + "</div>";
-    duz.scrollIntoView({ behavior: "smooth", block: "center" });
-    $("paV").onclick = function () { duz.innerHTML = ""; };
-    if ($("paG")) $("paG").onclick = function () { var Y = JSON.parse(JSON.stringify(P.adimlar || {})); Y[k] = { durum: "bekliyor", not: [x.not, "geri alındı " + tarih(bugun()) + " (" + (BEN.name || BEN.email) + ")"].filter(Boolean).join(" · ") };
-      var b2 = { adimlar: Y }; if (P.durum === "Tamamlandı") b2.durum = "Sürüyor";
-      api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: b2 }).then(function () { toast("Geri alındı"); yenile(); }).catch(hata); };
-    $("paK").onclick = function () { var Y = JSON.parse(JSON.stringify(P.adimlar || {})); Y[k] = { durum: $("paD").value === "Tamamlandı" ? "tamam" : "bekliyor", tarih: $("paT").value, sorumlu: $("paS").value.trim(), not: $("paN").value.trim() };
-      var D2 = prjDurum({ basla: P.basla, adimlar: Y }), b = { adimlar: Y }; if (D2.bitti && P.durum === "Sürüyor" && yd("proje")) b.durum = "Tamamlandı";
-      api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: b }).then(function () { toast("Kaydedildi"); yenile(); }).catch(hata); };
-  }; });
-  if ($("ppK")) { prjPlanOzet("pp", function () { return +P.bedelUsd || 0; }); $("ppK").onclick = function () { var pl = prjPlanOku("pp", P.bedelUsd); if (!pl) return; if (!(+P.bedelUsd > 0) && pl.plan.tahsilat.length) { toast("Önce sözleşme bedelini girin"); return; } this.disabled = true;
-    api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: { tur: pl.tur, maliyetUsd: pl.maliyet || null, odemePlan: pl.plan } }).then(function () { toast("Ödeme planı Finans'a aktarıldı"); yenile(); }).catch(hata); }; }
-  var pk = $("pKay"); if (pk) pk.onclick = function () { api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: { durum: $("pDur").value, bedelUsd: num($("pBed").value), tur: $("pTur").value, maliyetUsd: num($("pMal").value) } }).then(function () { toast("Kaydedildi"); yenile(); }).catch(hata); };
-  if (yt("fin") && $("prjKar")) liste("fin_hareketler", "aday = " + q(a.id), "tarih").then(function (M) {
-    var g = {}, c = {}; M.forEach(function (m) { var p = m.pb || "TRY", o = m.yon === "Giriş" ? g : c; if (m.durum === "Gerçekleşti") o[p] = (o[p] || 0) + (+m.tutar || 0); });
-    var pb = Object.keys(Object.assign({}, g, c));
-    $("prjKar").innerHTML = '<div class="not"><small>Proje kârlılığı (Finans\'ta bu müşteriye bağlanmış gerçekleşen hareketlerden)</small>' + (pb.length ? pb.map(function (p) { return PB_AD[p] + ": tahsil " + sayi(g[p] || 0) + " · harcanan " + sayi(c[p] || 0) + " · <b>fark " + sayi((g[p] || 0) - (c[p] || 0)) + "</b>"; }).join("<br>") +
-      (P.bedelUsd ? "<br>Sözleşme bedeli: " + sayi(P.bedelUsd) + " USD" : "") : "Henüz bu müşteriye bağlı hareket yok. Finans › Hareketler'de kayıt girerken \"Proje\" alanından bu müşteriyi seçin.") + "</div>";
-  }).catch(function () {});
-}
 var PF = { d: "Sürüyor" };
 /* ---------- Hesapları kasa tablosundan yeniden kur (yalnız yönetici) ---------- */
 function kurKartiGetir() {
@@ -2697,24 +2647,6 @@ function ypOlayYaz(g, i, sonra) { var B = (g.ypBosluk || []).slice(), b = B[i]; 
     .then(function (o) { B[i] = Object.assign({}, b, { olay: o.id }); return api("/api/collections/ges_aylik/records/" + g.id, { method: "PATCH", body: { ypBosluk: B } }); }).then(function () { toast("Olay defterine yazıldı"); sonra(); }).catch(hata); }
 
 /* ---------- Proje ödeme planı ve sözleşme ---------- */
-function prjPlanFormu(pre, d) {
-  var bas = (d.basla || bugun()).slice(0, 10), pl = d.plan && d.plan.tahsilat && d.plan.tahsilat.length ? d.plan.tahsilat : [{ ad: "Peşinat (sözleşme imzası)", oran: 50, tarih: bas }, { ad: "Kurulum ve montaj tamamlanınca", oran: 50, tarih: gunSonra(21, bas) }, { ad: "", oran: 0, tarih: "" }];
-  while (pl.length < 3) pl.push({ ad: "", oran: 0, tarih: "" });
-  var m = (d.plan && d.plan.maliyet) || {};
-  return '<div class="f2"><label>Proje türü<select id="' + pre + 'Tur">' + sec(PRJ_TURLER, d.tur || "Anahtar teslim") + '</select></label><label>Malzeme maliyeti (USD)<input id="' + pre + 'Mal" inputmode="decimal" value="' + esc(d.maliyet != null ? Math.round(d.maliyet) : m.usd || "") + '"></label></div>' +
-    '<label>Malzeme ödeme tarihi (sipariş)<input id="' + pre + 'MalT" type="date" value="' + esc(m.tarih || gunSonra(3, bas)) + '"></label>' +
-    '<b style="font-size:13px;margin-top:4px">Tahsilat planı</b>' + pl.map(function (r, i) { return '<div style="display:grid;grid-template-columns:2fr 70px 1fr;gap:6px"><input id="' + pre + "A" + i + '" placeholder="Açıklama" value="' + esc(r.ad || "") + '"><input id="' + pre + "O" + i + '" inputmode="decimal" placeholder="%" value="' + (r.oran || "") + '"><input id="' + pre + "T" + i + '" type="date" value="' + esc(r.tarih || "") + '"></div>'; }).join("") +
-    '<small style="color:var(--muted)" id="' + pre + 'Oz"></small>';
-}
-function prjPlanOku(pre, bedel) {
-  var t = [], top = 0; for (var i = 0; i < 3; i++) { var o = num($(pre + "O" + i).value) || 0, tr = $(pre + "T" + i).value; if (o > 0) { if (!tr) { toast((i + 1) + ". tahsilat için tarih seçin"); return null; } t.push({ ad: $(pre + "A" + i).value.trim() || "Tahsilat", oran: o, tarih: tr }); top += o; } }
-  if (t.length && Math.abs(top - 100) > 0.01) { toast("Tahsilat oranlarının toplamı %100 olmalı (şu an %" + sayi(top, 1) + ")"); return null; }
-  var mal = num($(pre + "Mal").value) || 0;
-  return { tur: $(pre + "Tur").value, maliyet: mal, plan: { tahsilat: t, maliyet: mal > 0 ? { usd: mal, tarih: $(pre + "MalT").value } : null } };
-}
-function prjPlanOzet(pre, bedelF) { var f = function () { var b = bedelF(), m = num($(pre + "Mal").value) || 0, top = 0; for (var i = 0; i < 3; i++) top += num($(pre + "O" + i).value) || 0;
-  $(pre + "Oz").innerHTML = "Toplam %" + sayi(top, 1) + (Math.abs(top - 100) > 0.01 ? ' <b style="color:var(--bad)">(%100 olmalı)</b>' : "") + (b > 0 ? " · bedel " + sayi(b) + " $ · maliyet " + sayi(m) + " $ · <b>kâr " + sayi(b - m) + " $ (%" + sayi(b ? (b - m) / b * 100 : 0, 1) + ")</b>" : ""); };
-  Array.prototype.forEach.call(document.querySelectorAll("[id^='" + pre + "']"), function (e) { e.addEventListener("input", f); }); f(); }
 // sözleşme: şablondaki {{ALAN}}'lar doldurulur, Word dosyası iner
 var SZ_ALAN = [["AD", "İş sahibi (ad soyad / unvan)"], ["VKN", "VKN / T.C. kimlik no"], ["ADRES", "Adres"], ["ILETISIM", "Telefon - e-posta"], ["IL", "İl"], ["ILCE", "İlçe"], ["MAH", "Mahalle"], ["ADA", "Ada"], ["PARSEL", "Parsel"], ["KWP", "Sistem gücü (kWp)"], ["BEDEL", "Bedel (USD, KDV hariç)"], ["P1", "İmzada ödenecek (%)"], ["P2", "Montaj sonunda ödenecek (%)"], ["TARIH", "Sözleşme tarihi"]];
 function szVarsayilan(a, T, P) { var s = a.sozlesme || {}, pl = P && P.odemePlan && P.odemePlan.tahsilat || [];
@@ -3039,7 +2971,7 @@ function tkButon(t) {
   var bt = "", a = (t.expand || {}).aday || {};
   if (yon() && (t.durum === "Onay bekliyor" || t.durum === "Taslak")) bt = '<button class="btn sm pri" data-t="' + t.id + '" data-d="Gönderildi">Onayla</button>';
   else if (teklifci() && t.durum === "Gönderildi") bt = '<button class="btn sm" data-t="' + t.id + '" data-ad="' + t.aday + '" data-d="Anlaşıldı">Anlaşıldı</button><button class="btn sm" data-t="' + t.id + '" data-ad="' + t.aday + '" data-d="Kaybedildi">Kaybedildi</button>';
-  if (t.kalemler && t.kalemler.length) bt = '<a class="btn sm" href="#tpdf/' + t.id + '">PDF</a>' + (teklifci() && t.durum !== "Anlaşıldı" && t.durum !== "Kaybedildi" ? '<a class="btn sm" href="#teklif/' + t.aday + "," + t.id + '">' + (t.durum === "Gönderildi" ? "Revize" : "Düzenle") + "</a>" : "") + bt;
+  if (t.kalemler && t.kalemler.length) bt = '<a class="btn sm" href="#tpdf/' + t.id + '">PDF</a>' + (teklifci() && t.durum !== "Kaybedildi" ? '<a class="btn sm" href="#teklif/' + t.aday + "," + t.id + '">' + (t.durum === "Gönderildi" ? "Revize" : "Düzenle") + "</a>" : "") + bt;
   if (tkSuresiDoldu(t)) bt = '<span class="pill" style="background:var(--warnbg);color:var(--warn)">süresi doldu</span>' + (a.tel ? '<a class="btn sm" href="' + waLink(a.tel, tkHatirlatMetin(t, a)) + '" target="_blank" rel="noopener">Hatırlat</a>' : "") + bt;
   return bt;
 }
@@ -3170,8 +3102,8 @@ function sProjeler() {
       return '<a class="card pjC" href="#aday/' + p.aday + '" style="margin:0;' + (d.kirmizi.length && p.durum === "Sürüyor" ? "border:2px solid #fca5a5" : "") + '"><div style="display:flex;gap:10px;align-items:center">' + avatar(a.ad, p.durum === "Tamamlandı" ? "#16a34a" : p.durum === "İptal" ? "#64748b" : "#0d9488") + '<div style="min-width:0;flex:1"><b class="w" style="font-size:15px">' + esc(a.ad || "—") + '</b><small style="display:block;color:var(--muted)">' + esc([a.ilce, p.kwp ? sayi(p.kwp, 1) + " kWp" : "", p.bedelUsd ? sayi(p.bedelUsd) + " $" : ""].filter(Boolean).join(" · ")) + '</small></div><b style="font-size:18px">%' + yz + "</b></div>" +
         '<div class="krBar" style="margin:10px 0 8px"><i style="width:' + yz + "%;background:" + (d.kirmizi.length ? "#dc2626" : "#0d9488") + '"></i></div>' + '<div style="display:grid;grid-template-columns:' + (PK.resmi ? "1fr 1.6fr" : "1fr") + ';gap:10px">' + kol("saha") + kol("resmi") + "</div>" +
         '<small style="display:block;margin-top:8px;' + (d.kirmizi.length ? "color:var(--bad);font-weight:600" : "color:#475569") + '">' + esc(p.durum !== "Sürüyor" ? p.durum : d.kirmizi.length ? "Geciken: " + d.kirmizi.join(", ") : nx.length ? "Sıradaki: " + nx.map(function (s) { return s.ad + " (" + tarih(s.son) + ")"; }).join(", ") : "Adımlar tamam") + '</small><small style="display:block;color:var(--muted);margin-top:2px">Başlangıç ' + tarih(p.basla) + " · " + gunFark(p.basla, b) + " gün</small></a>"; };
-    var hf = []; sur.forEach(function (p) { var a = (p.expand || {}).aday || {}; D[p.id].sonraki.filter(function (x) { return !x.kilit && x.son && x.son.slice(0, 10) <= gunSonra(7); }).forEach(function (x) { hf.push({ p: p, a: a, x: x }); }); });
-    hf.sort(function (u, v) { return u.x.son < v.x.son ? -1 : 1; });
+    var hf = []; sur.forEach(function (p) { var a = (p.expand || {}).aday || {}; D[p.id].sonraki.filter(function (x) { return !x.kilit && (x.bas || x.son || "9") <= gunSonra(7); }).forEach(function (x) { hf.push({ p: p, a: a, x: x }); }); });
+    hf.sort(function (u, v) { return u.x.son < v.x.son ? -1 : u.x.son > v.x.son ? 1 : 0; });
     var hfH = hf.length ? '<div class="card"><h3>' + ikon("liste", "#0d9488", "kucuk") + 'Bu hafta yapılacaklar <small style="margin-left:auto;color:var(--muted);font-weight:500">' + hf.length + " adım</small></h3>" + hf.slice(0, 12).map(function (h) { var g = h.x.son.slice(0, 10) < b;
       return '<a class="row" href="#aday/' + h.p.aday + '"><div class="vK"><b>' + tarih(h.x.son).slice(0, 5) + '</b><small style="color:' + (g ? "var(--bad)" : "var(--muted)") + '">' + (g ? gunFark(h.x.son, b) + " gün geç" : ["Paz", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt"][new Date(h.x.son.slice(0, 10) + "T12:00").getDay()]) + '</small></div><div class="t"><b class="w">' + esc(h.x.ad) + "</b><small>" + esc([h.a.ad, h.p.tur, h.p.kwp ? sayi(h.p.kwp, 1) + " kWp" : ""].filter(Boolean).join(" · ")) + "</small></div></a>"; }).join("") + "</div>" : "";
     $("m").innerHTML = '<div class="bUst"><div><div style="font-size:22px;font-weight:800">Projeler</div><small style="color:var(--muted)">Sözleşme sonrası saha ve resmi süreç takibi</small></div></div>' +
@@ -3210,8 +3142,8 @@ function sAday(id) {
     var Y = [], ad1 = String(a.ad || "").split(" ")[0];
     if (PRJ) Y = null;
     else if (kay) Y = [[true, "Kaybedildi", a.kayipNedeni ? "Neden: " + a.kayipNedeni : "neden yazılmamış", duz ? '<button class="btn sm" data-asm="Aday">Yeniden aç</button>' : ""]];
-    else if (asI <= 1) Y = [[G.length > 0, "Müşteriye ulaş", G.length ? G.length + " görüşme notu var" : "ilk görüşmeyi yapıp not düşün", telA(a.tel) + waBtn(a.tel)],
-      [a.aylikFatura > 0 || a.yillikKwh > 0, "Fatura / tüketim bilgisi", a.aylikFatura > 0 ? sayi(a.aylikFatura) + " TL/ay" : a.yillikKwh > 0 ? sayi(a.yillikKwh) + " kWh/yıl" : "faturayı isteyin; ön hesap buna göre çıkar", a.tel && !(a.aylikFatura > 0) ? waBtn(a.tel, "Merhaba " + ad1 + ", güneş enerjisi sisteminiz için son elektrik faturanızın fotoğrafını buradan gönderebilir misiniz? D Solar") : ""],
+    else if (asI <= 1) Y = [[G.length > 0, "Müşteriye ulaş", G.length ? G.length + " görüşme notu var" : "ulaşınca işaretleyin", (G.length ? "" : (duz ? '<button class="btn sm pri" id="yUl">Ulaşıldı ✓</button>' : "")) + telA(a.tel) + waBtn(a.tel)],
+      [a.aylikFatura > 0 || a.yillikKwh > 0, "Fatura / tüketim bilgisi", a.aylikFatura > 0 ? sayi(a.aylikFatura) + " TL/ay" : a.yillikKwh > 0 ? sayi(a.yillikKwh) + " kWh/yıl" : "faturayı isteyin; ön hesap ve teklif buna göre çıkar", (duz ? '<button class="btn sm' + (a.aylikFatura > 0 || a.yillikKwh > 0 ? "" : " pri") + '" id="yFt">' + (a.aylikFatura > 0 || a.yillikKwh > 0 ? "Düzelt" : "Gir") + "</button>" : "") + (a.tel && !(a.aylikFatura > 0) ? waBtn(a.tel, "Merhaba " + ad1 + ", güneş enerjisi sisteminiz için son elektrik faturanızın fotoğrafını buradan gönderebilir misiniz? D Solar") : "")],
       [a.iys && a.iys !== "Sorulacak", "İYS izni", a.iys || "Sorulacak", ""],
       [false, "Keşif ya da teklif", "çatı uygunsa keşif randevusu ya da doğrudan teklif", duz ? '<button class="btn sm" data-asm="Keşif">Keşfe al</button>' : ""]];
     else if (asI === 2) Y = [[!!a.kesifci, "Keşif sorumlusu", x.kesifci ? x.kesifci.name : "atanmadı", ""], [G.some(function (n) { return /keşif|kesif/i.test(n.metin); }), "Keşif yapıldı", "keşif notunu ekleyin (çatı, yön, gölge)", ""], [T.length > 0, "Teklif hazırla", T.length ? T[0].no : "keşiften sonra kalem kalem teklif", teklifci() ? '<a class="btn sm or" href="#teklif/' + id + '">Teklif hazırla</a>' : ""]];
@@ -3244,7 +3176,7 @@ function sAday(id) {
       '<div class="f" style="padding-top:0"><small style="color:var(--muted)">' + esc(O.kaynak) + "; sözleşme gücü " + sayi(O.soz, 1) + " kW" + (O.sozV ? " (varsayıldı)" : "") + '. Bilgi amaçlı; teklif "Teklif hazırla" ile kalem kalem hazırlanır.</small><div class="f2">' + (teklifci() ? '<a class="btn" href="#teklif/' + id + '" style="display:flex;align-items:center;justify-content:center;text-decoration:none">Teklif hazırla</a>' : "") + '<button class="btn" id="oC">Cevap metnini kopyala</button></div></div>') + "</div>" : "";
     var tkH = yt("teklif") && T.length ? '<div class="card" style="margin:0"><h3>Teklifler <small style="margin-left:auto;color:var(--muted);font-weight:500">' + T.length + "</small></h3>" + T.map(teklifRow).join("") + "</div>" : "";
     var prjH = (PRJ ? prjKart(PRJ, a, U, H) : a.asama === "Sözleşme" && satisci() ? '<div class="card" style="margin:0"><h3>Projeyi başlat</h3><div class="f"><div class="f2"><label>Sözleşme / başlangıç tarihi<input id="pBas" type="date" value="' + bugun() + '"></label><label>Sözleşme bedeli (USD, KDV hariç)<input id="pBed0" inputmode="decimal" value="' + esc(acT ? acT.fiyatUSD : "") + '"></label></div>' +
-        prjPlanFormu("pb", { basla: bugun(), maliyet: acT && acT.malzemeUsd, tur: "Anahtar teslim" }) + '<button class="btn or" id="pBasla">Projeyi başlat</button><small style="color:var(--muted)">Tahsilat planı ve malzeme maliyeti Finans\'a planlı hareket olarak düşer.</small></div></div>' : "") + (PRJ && (!PRJ.tur || PRJ.tur === "Anahtar teslim") ? sozlesmeKarti(a, acT, PRJ) : "");
+        prjPlanFormu("pb", { basla: bugun(), maliyet: acT && acT.malzemeUsd, tur: "Anahtar teslim", basId: "pBas" }) + '<button class="btn or" id="pBasla">Projeyi başlat</button><small style="color:var(--muted)">Tahsilat planı ve malzeme maliyeti Finans\'a planlı hareket olarak düşer.</small></div></div>' : "") + (PRJ && (!PRJ.tur || PRJ.tur === "Anahtar teslim") ? sozlesmeKarti(a, acT, PRJ) : "");
     var ustH = '<div class="card adU" style="margin:0 0 12px"><div class="adB">' + avatar(a.ad, renk) + '<div style="min-width:0;flex:1"><div class="adAd">' + esc(a.ad) + " " + asamaPill(a.asama) + '</div><small style="color:var(--muted)">' + esc([a.ilce, a.tel, x.sorumlu ? "sorumlu " + x.sorumlu.name.split(" ")[0] : ""].filter(Boolean).join(" · ")) + '</small><div class="adC">' + chip + '</div></div><div class="adEy">' + telA(a.tel).replace("waB", "waB b2") + waBtn(a.tel, "", "b2") + (duz ? '<button class="btn sm" data-ady="not">' + ikon("not", "#2563eb", "kucuk") + "<span>Not</span></button>" : "") + (teklifci() && !PRJ ? '<a class="btn sm pri" href="#teklif/' + id + '">' + ikon("belge", "#fff", "kucuk") + "<span>Teklif hazırla</span></a>" : "") + "</div></div>" + serit + sirH + "</div>";
     $("m").classList.add("genis");
     $("m").innerHTML = '<a href="#adaylar" class="geriL">‹ Müşteriler</a>' + ustH + '<div class="adIz"><div class="adSol">' + adimH + prjH + tkH + onH + "</div><div class=\"adSag\">" + gecH + bilH +
@@ -3256,7 +3188,12 @@ function sAday(id) {
     if ($("pbTur")) prjPlanOzet("pb", function () { return num($("pBed0").value) || 0; });
     if (PRJ) sozlesmeBagla(a, yen);
     bag("pBasla", function () { if (!$("pBas").value) { toast("Tarih gerekli"); return; } var bd = num($("pBed0").value); if (!(bd > 0)) { toast("Sözleşme bedeli gerekli"); return; } var pl = prjPlanOku("pb", bd); if (!pl) return;
-      api("/api/collections/projeler/records", { method: "POST", body: { aday: id, teklif: acT ? acT.id : "", basla: $("pBas").value + " 12:00:00.000Z", bedelUsd: bd, kwp: acT ? acT.kwp : null, adimlar: {}, durum: "Sürüyor", tur: pl.tur, maliyetUsd: pl.maliyet || null, odemePlan: pl.plan } }).then(function () { toast("Proje başladı" + (pl.plan.tahsilat.length || pl.maliyet ? "; ödeme planı Finans'a aktarıldı" : "")); yen(); }).catch(hata); });
+      api("/api/collections/projeler/records", { method: "POST", body: { aday: id, teklif: acT ? acT.id : "", basla: $("pBas").value + " 12:00:00.000Z", bedelUsd: bd, kwp: acT ? acT.kwp : null, adimlar: {}, durum: "Sürüyor", tur: pl.tur, maliyetUsd: pl.stok ? 0 : pl.maliyet || null, odemePlan: pl.plan } }).then(function () { toast("Proje başladı" + (pl.plan.tahsilat.length || pl.maliyet ? "; ödeme planı Finans'a aktarıldı" : "")); yen(); }).catch(hata); });
+    bag("yUl", function () { api("/api/collections/gorusmeler/records", { method: "POST", body: { aday: id, metin: "✓ Müşteriye ulaşıldı", yazan: BEN.id } }).then(function () { toast("İşaretlendi"); yen(); }).catch(hata); });
+    bag("yFt", function () { panelAc('<div class="pnlB"><b>Fatura / tüketim bilgisi</b><small>' + esc(a.ad) + '</small></div><div class="f"><div class="f2"><label>Aylık fatura (TL)<input id="ftF" inputmode="decimal" value="' + esc(a.aylikFatura || "") + '"></label><label>Yıllık tüketim (kWh)<input id="ftK" inputmode="decimal" value="' + esc(a.yillikKwh || "") + '"></label></div><label>Sözleşme gücü (kW)<input id="ftS" inputmode="decimal" value="' + esc(a.sozlesmeGucu || "") + '"></label><small style="color:var(--muted)">Yıllık tüketim biliniyorsa onu girin; yalnız fatura girilirse tüketim tarifeden hesaplanır.</small><button class="btn pri" id="ftK2">Kaydet</button></div>', "alt");
+      setTimeout(function () { $("ftF").focus(); }, 30);
+      $("ftK2").onclick = function () { var f = num($("ftF").value), k = num($("ftK").value), sz = num($("ftS").value); if (!(f > 0) && !(k > 0)) { toast("Fatura ya da yıllık tüketim girin"); return; }
+        api("/api/collections/adaylar/records/" + id, { method: "PATCH", body: { aylikFatura: f > 0 ? f : null, yillikKwh: k > 0 ? k : null, sozlesmeGucu: sz > 0 ? sz : a.sozlesmeGucu || null } }).then(function () { panelKapat(); toast("Kaydedildi; ön hesap güncellendi"); yen(); }).catch(hata); }; });
     bag("sYap", function () { isBitti(a, yen); }); bag("sErt", function () { adHatirlat(a, yen); }); bag("sHat", function () { adHatirlat(a, yen); });
     bagT("[data-asm]", function (e) { asamaYap(a, e.dataset.asm, yen); });
     var dig = function () { panelAc('<div class="pnlB"><b>' + esc(a.ad) + "</b></div>" + (teklifci() && !PRJ ? '<a class="row" href="#teklif/' + id + '">' + ikon("belge", "#ea580c", "kucuk") + '<div class="t"><b>Teklif hazırla</b></div></a>' : "") +
@@ -3392,7 +3329,7 @@ function sEkip() {
     var listeK = '<div class="card ekL" style="margin:0"><h3>Ekip <small style="color:var(--muted);font-weight:500">' + ekip.filter(function (u) { return u.aktif; }).length + " aktif · " + ekip.filter(function (u) { return !u.aktif; }).length + ' kapalı</small></h3><div id="ekL">' + listeH + '</div><div style="padding:12px 14px;border-top:1px solid var(--line)"><button class="btn pri" id="ekY" style="width:100%">+ Kişi ekle</button></div></div>';
     if (mobil && EK.sec) $("m").innerHTML = ust + '<div id="sifre"></div><a href="#" id="ekG" class="geriL">‹ Ekip</a><div class="card" id="ekD"></div>';
     else $("m").innerHTML = ust + '<div id="sifre"></div>' + (mobil ? listeK + ekipMatris(U) : '<div class="ekA"><div style="display:grid;gap:12px">' + listeK + ekipMatris(U) + '</div><div class="card" id="ekD" style="margin:0"></div></div>');
-    skB(); if (EK.sifre && $("sifre")) { sifreGoster(EK.sifre[0], EK.sifre[1]); EK.sifre = null; }
+    skB(); if (EK.sifre && $("sifre")) { if (Date.now() - EK.sifre[2] < 120000) sifreGoster(EK.sifre[0], EK.sifre[1]); else EK.sifre = null; }
     if ($("ekG")) $("ekG").onclick = function (e) { e.preventDefault(); EK.sec = ""; EK.d = null; sEkip(); };
     var ciz2 = function () { if ($("ekD")) { $("ekD").innerHTML = ekipDetay(U); bagla(); } };
     var bagla = function () {
@@ -3414,7 +3351,7 @@ function sEkip() {
         if (b.y_ekip && b.y_ekip !== (eski.y_ekip || "") && !confirm("Ekip yönetimi verilen kişi başkalarına yetki verebilir ve şifre sıfırlayabilir (yönetici yapamaz). Devam edilsin mi?")) return;
         if (b.rol === "yonetici" && eski.rol !== "yonetici" && !confirm((d.name || d.email) + " yönetici yapılsın mı? Yönetici her şeyi görür ve ödeme onayı verebilir.")) return;
         if (EK.sec === "yeni") { var em = String(d.em || "").trim().toLowerCase(); if (!/@/.test(em)) { toast("E-posta gerekli"); return; } var s = geciciSifre();
-          api("/api/collections/users/records", { method: "POST", body: Object.assign(b, { email: em, emailVisibility: true, aktif: true, password: s, passwordConfirm: s }) }).then(function (r) { EK.sec = r.id; EK.d = null; EK.sifre = [em, s]; sEkip(); window.scrollTo(0, 0); }).catch(hata); return; }
+          api("/api/collections/users/records", { method: "POST", body: Object.assign(b, { email: em, emailVisibility: true, aktif: true, password: s, passwordConfirm: s }) }).then(function (r) { EK.sec = r.id; EK.d = null; EK.sifre = [em, s, Date.now()]; sEkip(); window.scrollTo(0, 0); }).catch(hata); return; }
         api("/api/collections/users/records/" + d.id, { method: "PATCH", body: b }).then(function () { toast("Kaydedildi"); EK.d = null; sEkip(); }).catch(hata); };
     };
     Array.prototype.forEach.call(document.querySelectorAll("[data-eku]"), function (x) { x.onclick = function (e) { e.preventDefault(); EK.sec = x.dataset.eku; EK.d = null; sEkip(); if (mobil) window.scrollTo(0, 0); }; });
@@ -3853,6 +3790,99 @@ function sTeklifPdf(id) {
           var el = document.createElement("a"); el.href = URL.createObjectURL(bl); el.download = f.name; document.body.appendChild(el); el.click(); setTimeout(function () { URL.revokeObjectURL(el.href); el.remove(); }, 1000); durum("Görsel indirildi."); }).catch(function (e) { durum("Görsel oluşturulamadı: " + e.message); }).then(function () { b2.disabled = false; }); };
     });
   }).catch(hata);
+}
+
+/* ---------- v47 proje: takvim pencereleri, sözleşme düzenleme, KDV dahil plan, stoktan malzeme ---------- */
+// sözleşme tarihinden itibaren gün aralığı [başlangıç, bitiş] (Güliz Hanım'ın takvimi)
+var PRJ_PENCERE = { cagri_basvuru: [0, 30], statik: [45, 58], ges_uygunluk: [59, 73], siparis: [73, 90], montaj: [73, 90], tedas: [90, 96], baglanti: [96, 104], itfaiye: [104, 119], kabul: [120, 149], enerji: [120, 149], test: [120, 149], sku: [120, 149] };
+var PRJ_BAGIMLI = { siparis: "ges_uygunluk", montaj: "ges_uygunluk" };
+function prjStok(P) { return P.maliyetUsd !== null && P.maliyetUsd !== "" && +P.maliyetUsd === 0 && !!(P.odemePlan && P.odemePlan.maliyet && P.odemePlan.maliyet.stok); }
+function karYaz(b, m) { b = +b || 0; m = +m || 0; if (!(b > 0)) return ""; return "<b>kâr " + sayi(b - m) + " $" + (m > 0 ? " (maliyet üstüne %" + sayi((b - m) / m * 100, 1) + ")" : "") + '</b><span style="color:var(--muted)"> · satışın %' + sayi((b - m) / b * 100, 1) + "'i</span>"; }
+function prjDurum(P) {
+  var out = { kirmizi: [], sonraki: [], bitti: true, tamam: 0, top: 0 }, b = bugun(), A = P.adimlar || {}, bas = String(P.basla || b).slice(0, 10);
+  var PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim";
+  Object.keys(PK).forEach(function (kol) { var onc = bas;
+    PK[kol].adim.forEach(function (s) { out.top++; if ((A[s[0]] || {}).durum === "tamam") out.tamam++; });
+    if (at) { PK[kol].adim.forEach(function (s) { var x = A[s[0]] || {}; if (x.durum === "tamam") return; out.bitti = false;
+        var w = PRJ_PENCERE[s[0]] || [0, s[2] || 30], ba = gunSonra(w[0], bas), so = gunSonra(w[1], bas), kilit = !!PRJ_BAGIMLI[s[0]] && (A[PRJ_BAGIMLI[s[0]]] || {}).durum !== "tamam", gec = so < b ? gunFark(so, b) : 0;
+        out.sonraki.push({ kol: kol, k: s[0], ad: s[1], kilit: kilit, gec: gec, bas: ba, son: so }); if (gec > 0 && !kilit) out.kirmizi.push(s[1] + " (" + gec + " gün gecikti)"); }); return; }
+    PK[kol].adim.some(function (s) { var x = A[s[0]] || {}; if (x.durum === "tamam") { onc = x.tarih || onc; return false; }
+      out.bitti = false; var so = gunSonra(s[2], String(onc).slice(0, 10)), gec = so < b ? gunFark(so, b) : 0;
+      out.sonraki.push({ kol: kol, k: s[0], ad: s[1], kilit: false, gec: gec, bas: String(onc).slice(0, 10), son: so });
+      if (gec > 0) out.kirmizi.push(s[1] + " (" + gec + " gün gecikti)"); return true; }); });
+  out.sonraki.sort(function (x, y) { return x.bas < y.bas ? -1 : x.bas > y.bas ? 1 : 0; });
+  return out;
+}
+function prjMalVars(tur, bas) { return tur === "Anahtar teslim" ? gunSonra(75, bas) : bas; }
+function prjPlanFormu(pre, d) {
+  var bas = String(d.basla || bugun()).slice(0, 10), pl = d.plan && d.plan.tahsilat && d.plan.tahsilat.length ? d.plan.tahsilat : [{ ad: "Peşinat (sözleşme imzası)", oran: 50, tarih: bas }, { ad: "Kurulum ve montaj tamamlanınca", oran: 50, tarih: gunSonra(90, bas) }, { ad: "", oran: 0, tarih: "" }];
+  while (pl.length < 3) pl.push({ ad: "", oran: 0, tarih: "" });
+  var m = (d.plan && d.plan.maliyet) || {}, tur = d.tur || "Anahtar teslim", stok = !!m.stok;
+  return '<div class="f2"><label>Proje türü<select id="' + pre + 'Tur">' + sec(PRJ_TURLER, tur) + '</select></label><label>Malzeme maliyeti (USD)<input id="' + pre + 'Mal" inputmode="decimal" value="' + esc(stok ? "0" : d.maliyet != null && d.maliyet !== "" ? Math.round(d.maliyet) : m.usd || "") + '"' + (stok ? " disabled" : "") + "></label></div>" +
+    '<label class="ekK" style="font-size:13px"><input type="checkbox" id="' + pre + 'Stok"' + (stok ? " checked" : "") + "> Malzeme stoktan kullanıldı (maliyet 0, finansa gider yazılmaz)</label>" +
+    '<label>Malzeme ödeme tarihi <small style="color:var(--muted)" id="' + pre + 'MalI"></small><input id="' + pre + 'MalT" type="date" value="' + esc(m.tarih || prjMalVars(tur, bas)) + '" data-oto="' + (m.tarih ? "" : "1") + '" data-bas="' + esc(d.basId || "") + '"></label>' +
+    '<b style="font-size:13px;margin-top:4px">Tahsilat planı <small style="color:var(--muted);font-weight:500">(oranlar KDV hariç bedel üzerinden; finansa KDV dahil yazılır)</small></b>' + pl.map(function (r, i) { return '<div style="display:grid;grid-template-columns:2fr 70px 1fr;gap:6px"><input id="' + pre + "A" + i + '" placeholder="Açıklama" value="' + esc(r.ad || "") + '"><input id="' + pre + "O" + i + '" inputmode="decimal" placeholder="%" value="' + (r.oran || "") + '"><input id="' + pre + "T" + i + '" type="date" value="' + esc(r.tarih || "") + '"></div>'; }).join("") +
+    '<small style="color:var(--muted)" id="' + pre + 'Oz"></small>';
+}
+function prjPlanOku(pre, bedel) {
+  var t = [], top = 0; for (var i = 0; i < 3; i++) { var o = num($(pre + "O" + i).value) || 0, tr = $(pre + "T" + i).value; if (o > 0) { if (!tr) { toast((i + 1) + ". tahsilat için tarih seçin"); return null; } t.push({ ad: $(pre + "A" + i).value.trim() || "Tahsilat", oran: o, tarih: tr }); top += o; } }
+  if (t.length && Math.abs(top - 100) > 0.01) { toast("Tahsilat oranlarının toplamı %100 olmalı (şu an %" + sayi(top, 1) + ")"); return null; }
+  var stok = $(pre + "Stok") && $(pre + "Stok").checked, mal = stok ? 0 : num($(pre + "Mal").value) || 0, mt = $(pre + "MalT").value;
+  return { tur: $(pre + "Tur").value, maliyet: mal, stok: stok, plan: { tahsilat: t, maliyet: stok ? { usd: 0, stok: true } : mal > 0 ? { usd: mal, tarih: mt } : null } };
+}
+function prjPlanOzet(pre, bedelF) {
+  var mt = $(pre + "MalT"), basEl = mt && mt.dataset.bas ? $(mt.dataset.bas) : null;
+  var f = function () { var b = bedelF(), st = $(pre + "Stok") && $(pre + "Stok").checked, m = st ? 0 : num($(pre + "Mal").value) || 0, top = 0, kdv = 0.2; for (var i = 0; i < 3; i++) top += num($(pre + "O" + i).value) || 0;
+    var bas = basEl && basEl.value ? basEl.value : null, tur = $(pre + "Tur").value;
+    if (mt) { if (mt.dataset.oto === "1" && bas) mt.value = prjMalVars(tur, bas); $(pre + "MalI").textContent = tur === "Anahtar teslim" ? "(varsayılan: sözleşmeden 75 gün sonra)" : "(varsayılan: sözleşme tarihi)"; mt.parentNode.style.display = st ? "none" : ""; }
+    $(pre + "Mal").disabled = !!st; if (st) $(pre + "Mal").value = "0";
+    $(pre + "Oz").innerHTML = "Toplam %" + sayi(top, 1) + (Math.abs(top - 100) > 0.01 ? ' <b style="color:var(--bad)">(%100 olmalı)</b>' : "") + (b > 0 ? " · bedel " + sayi(b) + " $ + KDV = <b>" + sayi(b * (1 + kdv)) + " $</b> finansa · maliyet " + sayi(m) + " $ · " + karYaz(b, m) : ""); };
+  if (mt) mt.addEventListener("change", function () { mt.dataset.oto = ""; });
+  if (basEl) { basEl.addEventListener("input", f); basEl.addEventListener("change", f); }
+  Array.prototype.forEach.call(document.querySelectorAll("[id^='" + pre + "']"), function (e) { if (e === mt) return; e.addEventListener("input", f); e.addEventListener("change", f); }); f();
+}
+function prjKart(P, a, U, H) {
+  var D = prjDurum(P), W = {}, A = P.adimlar || {}, duz = yd("proje"), PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim";
+  var kol = function (k) { if (!PK[k]) return ""; return '<div><b style="font-size:13px">' + PK[k].ad + "</b>" + PK[k].adim.map(function (s) { var x = A[s[0]] || {}, kilit = at && PRJ_BAGIMLI[s[0]] && (A[PRJ_BAGIMLI[s[0]]] || {}).durum !== "tamam" && x.durum !== "tamam";
+    return '<div class="row" ' + (duz ? 'data-pa="' + s[0] + '" style="cursor:pointer;padding:9px 4px"' : 'style="padding:9px 4px"') + '><div class="t"><b class="w" style="font-size:14px;font-weight:600">' + (x.durum === "tamam" ? "✅ " : kilit ? "🔒 " : "⬜ ") + esc(s[1]) + "</b><small>" + esc([x.tarih ? tarih(x.tarih) : kilit ? "uygunluk yazısı bekleniyor" : "", x.durum !== "tamam" && W[s[0]] ? "plan " + tarih(W[s[0]].bas).slice(0, 5) + "–" + tarih(W[s[0]].son).slice(0, 5) + (W[s[0]].gec > 0 ? " · " + W[s[0]].gec + " gün gecikti" : "") : "", x.sorumlu, x.not].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") + "</div>"; };
+  D.sonraki.forEach(function (x) { W[x.k] = x; });
+  var bu = D.sonraki.filter(function (x) { return !x.kilit && x.bas <= gunSonra(7); }), ilk = bu.length ? bu : D.sonraki.filter(function (x) { return !x.kilit; }).slice(0, 1);
+  return '<div class="card" id="prjKart"><h3>Proje takibi <small style="color:var(--muted)">' + esc(P.tur || "Anahtar teslim") + " · " + D.tamam + "/" + D.top + " adım · başlangıç " + tarih(P.basla) + "</small></h3>" +
+    (P.durum !== "Sürüyor" ? '<div class="bilgi">Proje durumu: ' + esc(P.durum) + "</div>" : D.kirmizi.length ? '<div class="uyari">Geciken: ' + esc(D.kirmizi.join(", ")) + "</div>" : D.bitti ? '<div class="bilgi">Tüm adımlar tamamlandı.</div>' : '<div class="bilgi">' + (bu.length ? "Bu hafta: " : "Sıradaki: ") + esc(ilk.map(function (x) { return x.ad + " (" + tarih(x.bas).slice(0, 5) + "–" + tarih(x.son).slice(0, 5) + ")"; }).join(", ")) + "</div>") +
+    (P.bedelUsd > 0 ? '<div class="not" style="margin:0 14px 8px"><small>Bedel <b>' + sayi(P.bedelUsd) + " $</b>" + (P.maliyetUsd > 0 || prjStok(P) ? " · maliyet " + (prjStok(P) ? "stoktan (0 $)" : sayi(P.maliyetUsd) + " $") + " · " + karYaz(P.bedelUsd, +P.maliyetUsd || 0) : " · maliyet girilmedi") + " · bedel KDV hariç; finansa KDV dahil yazılır" +
+      (P.planAktarildi ? " · ödeme planı Finans'ta: " + ((P.odemePlan && P.odemePlan.tahsilat) || []).map(function (r) { return "%" + r.oran + " " + tarih(r.tarih); }).join(", ") : "") + "</small></div>" : "") +
+    (yd("proje") ? '<details class="card" id="pdK" style="margin:0 14px 10px;box-shadow:none;border:1px dashed #d5deea"' + (!P.planAktarildi && P.tur && P.tur !== "Anahtar teslim" ? " open" : "") + '><summary><h3 style="font-size:14px">' + (P.planAktarildi ? "Sözleşme ve ödeme planını düzenle" : "Ödeme planı · ne zaman yüzde kaç tahsil edilecek? (girilmedi, nakit akışında görünmüyor)") + '</h3></summary><div class="f">' +
+      '<div class="f2"><label>Sözleşme tarihi<input id="pdBas" type="date" value="' + esc(String(P.basla || bugun()).slice(0, 10)) + '"></label><label>Sözleşme bedeli (USD, KDV hariç)<input id="pdBed" inputmode="decimal" value="' + esc(P.bedelUsd || "") + '"></label></div>' +
+      prjPlanFormu("pp", { basla: P.basla, maliyet: P.maliyetUsd, tur: P.tur, plan: P.odemePlan, basId: "pdBas" }) + '<label>Proje durumu<select id="pDur">' + sec(["Sürüyor", "Tamamlandı", "İptal"], P.durum) + '</select></label><button class="btn pri" id="pdKay">' + (P.planAktarildi ? "Kaydet · Finans'taki planlı kayıtlar güncellenir" : "Kaydet ve Finans'a aktar") + '</button><small style="color:var(--muted)">Gerçekleşmiş tahsilat ve ödemelere dokunulmaz; yalnız planlı kayıtlar güncellenir.</small></div></details>' : "") +
+    '<div class="f" style="grid-template-columns:' + (PK.resmi ? "1fr 1fr" : "1fr") + ';gap:14px">' + kol("saha") + kol("resmi") + "</div>" + '<div id="paForm"></div>' +
+    '<div id="prjKar"></div></div>';
+}
+function prjBagla(P, a, U, yenile) {
+  var duz = $("paForm"); if (!duz) return;
+  var adimAd = {}, PK = prjKol(P), at = !P.tur || P.tur === "Anahtar teslim"; Object.keys(PK).forEach(function (k) { PK[k].adim.forEach(function (s) { adimAd[s[0]] = s[1]; }); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pa]"), function (e) { e.onclick = function () {
+    var k = e.dataset.pa, A = P.adimlar || {}, x = A[k] || {};
+    if (at && PRJ_BAGIMLI[k] && (A[PRJ_BAGIMLI[k]] || {}).durum !== "tamam" && x.durum !== "tamam") { toast(adimAd[k] + ", belediye GES uygunluk yazısı alınınca yapılır"); return; }
+    var ekip = U.filter(function (u) { return u.aktif; }).map(function (u) { return u.name || u.email; });
+    duz.innerHTML = '<div class="f" style="border-top:1px solid #edf1f6;padding-top:12px"><b>' + esc(adimAd[k]) + '</b><div class="f2"><label>Durum<select id="paD">' + sec(["Bekliyor", "Tamamlandı"], x.durum === "tamam" ? "Tamamlandı" : "Bekliyor") + '</select></label><label>Tarih<input id="paT" type="date" value="' + esc((x.tarih || bugun()).slice(0, 10)) + '"></label></div>' +
+      '<div class="f2"><label>Sorumlu<input id="paS" list="ekipL" value="' + esc(x.sorumlu || "") + '"></label><label>Not / evrak no<input id="paN" value="' + esc(x.not || "") + '"></label></div><datalist id="ekipL">' + ekip.map(function (n) { return "<option>" + esc(n) + "</option>"; }).join("") + '</datalist><div class="f2"><button class="btn" id="paV">Vazgeç</button><button class="btn pri" id="paK">Kaydet</button></div>' + (x.durum === "tamam" ? '<button class="btn" id="paG" style="color:var(--bad)">İşareti geri al (adım yapılmadı)</button>' : "") + "</div>";
+    duz.scrollIntoView({ behavior: "smooth", block: "center" });
+    $("paV").onclick = function () { duz.innerHTML = ""; };
+    if ($("paG")) $("paG").onclick = function () { var Y = JSON.parse(JSON.stringify(P.adimlar || {})); Y[k] = { durum: "bekliyor", not: [x.not, "geri alındı " + tarih(bugun()) + " (" + (BEN.name || BEN.email) + ")"].filter(Boolean).join(" · ") };
+      var b2 = { adimlar: Y }; if (P.durum === "Tamamlandı") b2.durum = "Sürüyor";
+      api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: b2 }).then(function () { toast("Geri alındı"); yenile(); }).catch(hata); };
+    $("paK").onclick = function () { var Y = JSON.parse(JSON.stringify(P.adimlar || {})); Y[k] = { durum: $("paD").value === "Tamamlandı" ? "tamam" : "bekliyor", tarih: $("paT").value, sorumlu: $("paS").value.trim(), not: $("paN").value.trim() };
+      var D2 = prjDurum({ basla: P.basla, tur: P.tur, adimlar: Y }), b = { adimlar: Y }; if (D2.bitti && P.durum === "Sürüyor" && yd("proje")) b.durum = "Tamamlandı";
+      api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: b }).then(function () { toast("Kaydedildi"); yenile(); }).catch(hata); };
+  }; });
+  if ($("pdKay")) { prjPlanOzet("pp", function () { return num($("pdBed").value) || 0; }); $("pdKay").onclick = function () { var bd = num($("pdBed").value) || 0, pl = prjPlanOku("pp", bd); if (!pl) return; if (!(bd > 0) && pl.plan.tahsilat.length) { toast("Sözleşme bedelini girin"); return; } if (!$("pdBas").value) { toast("Sözleşme tarihi gerekli"); return; } this.disabled = true;
+    api("/api/collections/projeler/records/" + P.id, { method: "PATCH", body: { basla: $("pdBas").value + " 12:00:00.000Z", bedelUsd: bd, tur: pl.tur, maliyetUsd: pl.stok ? 0 : pl.maliyet || null, odemePlan: pl.plan, durum: $("pDur").value } }).then(function () { toast(P.planAktarildi ? "Kaydedildi; Finans'taki planlı kayıtlar güncellendi" : "Kaydedildi; ödeme planı Finans'a aktarıldı"); yenile(); }).catch(hata); }; }
+  if (yt("fin") && $("prjKar")) liste("fin_hareketler", "aday = " + q(a.id), "tarih").then(function (M) {
+    var g = {}, c = {}; M.forEach(function (m) { var p = m.pb || "TRY", o = m.yon === "Giriş" ? g : c; if (m.durum === "Gerçekleşti") o[p] = (o[p] || 0) + (+m.tutar || 0); });
+    var pb = Object.keys(Object.assign({}, g, c));
+    $("prjKar").innerHTML = '<div class="not"><small>Proje kârlılığı (Finans\'ta bu müşteriye bağlanmış gerçekleşen hareketlerden)</small>' + (pb.length ? pb.map(function (p) { return PB_AD[p] + ": tahsil " + sayi(g[p] || 0) + " · harcanan " + sayi(c[p] || 0) + " · <b>fark " + sayi((g[p] || 0) - (c[p] || 0)) + "</b>"; }).join("<br>") +
+      (P.bedelUsd ? "<br>Sözleşme bedeli: " + sayi(P.bedelUsd) + " USD" : "") : "Henüz bu müşteriye bağlı hareket yok. Finans › Hareketler'de kayıt girerken \"Proje\" alanından bu müşteriyi seçin.") + "</div>";
+  }).catch(function () {});
 }
 
 // iPhone: klavye açıkken alt menüyü gizle, kapanınca sabit menüyü yeniden yerleştir (Safari'de ortada asılı kalma hatası)

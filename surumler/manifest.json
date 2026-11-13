@@ -1,7 +1,7 @@
 {
- "surum": 46,
- "paket": "surumler/dsolar-46.zip",
- "sha256": "e19ec9761e72b3e239f9c1f3d12895cc643a8082eaf98a4423e17389dbb99f72",
- "imza": "A4p14hQqSkZrnFgQjLyEincpNMrc3QFGFHdkWyuQFiWtI+JYfLFA3QSl07QDEqX9+mjJB/4oSGerVrnupquikuDFqYhekbOIVwYM+2Sih/iGH+KS5zpIqt+0ubAa/AnG8tuhol2JDs9vGduxFKnokKcRb1z/62V/JkjR8/+BNUhiucN3YLpYwU5NO09vVhh+ZhsByMYIsOfinIs1nyyauJVOlRczhiWyaXYCF2u0A2ggDeD1iLgN3DLYmQDe/zbk2P7aJHyG9DgxfV9i3TxdOov4JdCKFoLlaxvDQ1YGC1uBHi2AUCYIfq34Z+wuIzVVHb4ZkK2HkfQr20eEN/qxROL26dkafe5C1AEsAJgXMvdqFExn+rU1fNeYp3ZBOhQi3MFlJRAB5BYq/hpAeIcsa2fYP+5g9pL+MPAxe+1NfzFDXsk+icVKUfzuMyQtBJfv8884GRRl/VmBKpMrAG/9QS7PXcbREM4LQSJyHZlvb7q8bv0KHy28vkZmsK0JW8SE",
- "not": "Yeni menü, genel arama, hızlı ekle; rehberli müşteri sayfası; Ekip 4 sekme; Finans yeni sekmeler ve muhasebe günü; GES 6 sekme ve yeni aylık rapor; Beacon tarzı kısa/uzun teklif"
+ "surum": 47,
+ "paket": "surumler/dsolar-47.zip",
+ "sha256": "cca2aa23619dab5036b317327a863b7a3f55bcaa741f0407f338629977a3827b",
+ "imza": "lcO3cljwY5Sx6vjeGn9ebIlN4y36C92lhUjT23K5bsDJ8kCu0nMdCEQvi9cK28g6CfgWWbXJszSbHivBs7ceN2+H5wFi2zjd3s8qFeS9qXnSPz6puw2PY1YsuOg7FCo7+jK6M+ZaHfeqZKjB3+t8q4qkC+DDlLzj6eNVPPW+w9J4L6ha8z+6F5OyNCn8XgXk0tNaoZIvGz5jUxJbqXAsC9wFu/0QsBttUv0t0s2+D3Y83YWmTvjF2VGWaqUzLvTpAc4n7EgkY4tuQMmkG7GyUHxEkygS9IYIpUgC/OTC0ttybzFlRy78ZSmUl4xWl3qzteY+PUHN6mP8pZUla1UIEICfNmdZ7Vu7YsBvBscoz0LSE6u/umZTfnmhrJdjgD3pR3RPL1Gf/hQA2tyvQ6kUt+lLxuwu/Is7SUZJddropgyqHynomLQhk8bzv/lCYxTKYbq3Y7jEO3i4rqHfsbLiD1j5i/eYFEydd6PZ64ptf1cL3ltSVN4gkf98xpj6fCec",
+ "not": "Proje: finansa KDV dahil tahsilat, maliyet tarihi kuralları, sözleşme takvimi, sözleşme düzenleme, stoktan malzeme; teklifte çift kalem engeli; kâr gösterimi"
 }
