@@ -1,7 +1,7 @@
 {
- "surum": 49,
- "paket": "surumler/dsolar-49.zip",
- "sha256": "9ba1a11c01bc8d868997a2575707e2163b8a3c5c50cbbd8c85f65be585cefeb3",
- "imza": "QQbWCKlHdFHMej1oVNmT4j9MGV3kVp0oDWVvhefwe0+hn9kdl0Sg/Q6ICVj/yc0qVmsqzq5RYAoJ8lmU3wizby/xfbr2lUO/exBmAMXHhuL3U4axI96vJtzNTmQPD9MZRoKmwcmvj/IwPjPvOYMdVItT287FZH7DQoJTAoC/izkGoxrbAh8wN+gCt4WzzIpTs98ZPcCkIwmsSQZnSntT4eWRleJhQkaQOGwXW2H8nZoGUlYKoEc/OTenEi7gEd2WCTNcYcYGJKxaHFtI687bO82Cist/oo+XO0M4FOSGjG8K5ocQj9P25oscaEqTs6vU0Lim9rz37mwg1gyZmwQZsIe+HNNXYarX3ZqPQgf1QhWEG9Mxpkxugm2ZyTBnouXi7R0+6oYyEYQOZTo5wUmLmh+MWMDQ1F+NhHErlodrL+YOuBEXv41KT9lE7cCG75WPe+HScPPBIcmMUq6NP8KE5IysBwpXW1bgDc2h4jV8zPOp6z6q5FfQQSo7rqEDL5mS",
- "not": "Ekip içi mesajlaşma: Mesajlar sayfası (birebir, grup, kayda bağlı sohbet), anlık mesaj, görüldü, foto/PDF eki, @anma; teklif ve ödeme listesi onaya düşünce yöneticiye onay mesajı ve mesajdan Onayla; müşteri sayfasında Ekibe yaz, ödeme listesinde Yaz"
+ "surum": 50,
+ "paket": "surumler/dsolar-50.zip",
+ "sha256": "318e9251733cabd98c707f791da67bd1caae7723020e2213a95a04f4c5b90931",
+ "imza": "DWzEb2tCmf0A1hlC+96j5CdwwhF6ICJd1BmoA31u7dErpOgZHo/yA+ZYljdmd77JLi9o3qBtJt+DsnWiaB17BoBrQIZY2qT+COfj6cJMX7HRXLZjQxEQLnfzKaOHwU1QHIwKfw1C4u0uAeGE81MsIl75GjFJXSKGmAhB6szQfZQXtW9OT55VM5T5tHXjAj+HSxrB+BhohVhPQjzROSKfililYBJC/r79tdr5BOD1VSklCcCDad1tp0YQ2HQ6xugBBnwdBixdCpGbKO3DU5tY4nKsJjRLNSZ43cpDQcHYo/Gir3DJVgGmdSX0jqKSy2Wyzb09WRdQdLApzSnN66ADMvSxhFZZwpO28K4M7JYcda15U6VT+k5BlH0EG10U/jxLgjn4t6zjQlov394vaW60PQtzanwl38YX31Hs3Abb7gNBAXoVJLOZEJM61f/skQoNVppvomGwo+ak6Ih6M7QX6V5f0OT5kKa4EZXSwGyH4O6x4dDQMuakJbz9zvzxTuLu",
+ "not": "Reklamlar (Meta): reklam formunu dolduranlar otomatik müşteri olur, sorumluya sırayla atanır ve ekibe mesaj gider; harcama, müşteri başı maliyet ve reklamdan sözleşmeye huni"
 }

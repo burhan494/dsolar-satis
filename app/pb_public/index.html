@@ -216,6 +216,21 @@ nav.y a.fab{overflow:visible;background:none!important}
  .msjGeri{display:block}
  .msjM{max-width:88%}
 }
+/* v50 Reklamlar */
+.rkUst{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.rkDur{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}.rkCanli{color:var(--ok);font-weight:700;font-size:13px;margin-right:auto}.rkCanli.kapali{color:var(--muted)}.rkCanli.hata{color:#b91c1c}
+.rkHata{color:#b91c1c;flex-basis:100%;order:3}
+.rkK{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.rkKart{margin:0;padding:12px 14px}.rkKart small{display:block;color:var(--muted);font-weight:600;font-size:12px}.rkKart b{display:block;font-size:24px;margin:4px 0}
+.rkKart.vurgu{border:2px solid var(--orange)}.rkD{font-size:12px!important}.rkD.iyi{color:var(--ok)!important}.rkD.kotu{color:#b91c1c!important}
+.rkG{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.rkHuni{padding:4px 14px 14px;display:grid;gap:7px}.rkH{display:flex;align-items:center;gap:10px}.rkH span{width:110px;font-weight:600;font-size:13px;flex:none}.rkH em{font-style:normal;color:var(--muted);font-size:12px;width:40px}
+.rkB{height:28px;border-radius:7px;color:#fff;font-weight:800;display:flex;align-items:center;padding:0 10px;font-size:13px;min-width:34px}
+.rkTab{overflow-x:auto;padding:0 14px 12px}.rkTab table{width:100%;border-collapse:collapse;font-size:13px}.rkTab th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;padding:6px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+.rkTab td{padding:9px 4px;border-bottom:1px solid #f1f5f9;vertical-align:top}.rkTab td small{display:block;color:var(--muted)}
+.rkL .t{text-decoration:none;color:inherit}.rkL .t small{display:block}.rkAcil{color:#b91c1c;font-weight:700;display:inline!important}
+.rkBos{padding:4px 14px 14px}.rkBos p{color:var(--muted);margin:4px 0 12px}
+@media (max-width:900px){.rkG{grid-template-columns:1fr}}
+@media (max-width:600px){.rkK{grid-template-columns:repeat(2,1fr)}.rkKart b{font-size:20px}.rkH span{width:88px}}
 
 </style>
 </head>
@@ -2859,6 +2874,7 @@ function msjEylem(ey) {
   if (ey.tip === "odeme_onay") return '<div class="msjEy" data-mey="odeme" data-meyid="' + ey.id + '">' + (yon() ? '<button class="btn sm pri" data-mono="' + ey.id + '">✓ Tümünü onayla</button>' : "") + '<button class="btn sm" data-msjodeme="' + ey.id + '">Listeyi aç</button><small class="msjEyD"></small></div>';
   if (ey.tip === "teklif_onay") return '<div class="msjEy" data-mey="teklif" data-meyid="' + ey.id + '">' + (yon() ? '<button class="btn sm pri" data-mtko="' + ey.id + '">✓ Onayla</button>' : "") + '<button class="btn sm" data-msjteklif="' + ey.id + '">Teklife git</button><small class="msjEyD"></small></div>';
   if (ey.tip === "odeme_sonuc") return '<div class="msjEy"><button class="btn sm" data-msjodeme="' + ey.id + '">Listeyi aç</button></div>';
+  if (ey.tip === "lead") return '<div class="msjEy"><a class="btn sm pri" href="#aday/' + ey.id + '">Müşteriyi aç</a></div>';
   if (ey.tip === "teklif_sonuc") return '<div class="msjEy"><button class="btn sm" data-msjteklif="' + ey.id + '">Teklife git</button></div>';
   return ""; }
 function msjEkle(m) { var ak = $("msjAk"); if (!ak) return; var b = ak.querySelector(".bos"); if (b) b.remove(); var son = ak.querySelectorAll(".msjM"), alt = ak.scrollHeight - ak.scrollTop - ak.clientHeight < 120;
@@ -2886,6 +2902,75 @@ function msjBagla() {
 }
 function cikis() { msjKapat(); TOK = null; BEN = null; MSJ.kisiler = null; MSJ.S = []; try { localStorage.removeItem("dsTok"); localStorage.removeItem("dsBen"); } catch (e) {} location.hash = ""; ciz(); }
 
+// v50: Reklamlar (Meta) — formdan gelen müşteriler, harcama ve reklamdan sözleşmeye gerçek huni
+ICO.reklam = '<path d="M4 10v4h3l6 4V6L7 10H4z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 7a7 7 0 0 1 0 10"/>';
+NAV_IK.reklamlar = ["reklam", "#e11d48"];
+setTimeout(function () { if (SATIS_S.indexOf("reklamlar") < 0) SATIS_S.push("reklamlar"); if (KAYNAK.indexOf("Meta reklam") < 0) KAYNAK.push("Meta reklam"); }, 0);
+function reklamci() { return yon() || rol() === "satis"; }
+var RK = { gun: 7 };
+function rkTL(v) { return sayi(v) + " ₺"; }
+function rkFark(s, o, ters) { if (!o) return ""; var f = Math.round((s - o) / o * 100); if (!f) return '<small class="rkD">geçen döneme göre aynı</small>';
+  var iyi = ters ? f < 0 : f > 0; return '<small class="rkD ' + (iyi ? "iyi" : "kotu") + '">' + (f > 0 ? "+" : "") + f + "% önceki " + RK.gun + " güne göre</small>"; }
+function rkKalite(k) { return k === "Uygun değil" ? '<span class="pill p-Kaybedildi">Uygun değil</span>' : k === "Düşük fatura" ? '<span class="pill p-Teklif">Düşük fatura</span>' : ""; }
+function sReklamlar() {
+  if (!reklamci() || !yt("musteri")) { location.hash = "#bugun"; return; }
+  $("m").innerHTML = '<div class="rkUst"><div><h2 style="margin:0">Reklamlar</h2><small style="color:var(--muted)">Instagram ve Facebook reklamlarından gelen müşteriler, harcama ve gerçek getiri</small></div>' +
+    '<div class="chips" style="padding:0">' + [[1, "Bugün"], [7, "7 gün"], [30, "30 gün"], [90, "3 ay"]].map(function (g) { return '<button data-rkg="' + g[0] + '" class="' + (RK.gun === g[0] ? "on" : "") + '">' + g[1] + "</button>"; }).join("") + "</div></div>" +
+    '<div id="rkIc"><div class="card"><div class="bos">Yükleniyor…</div></div></div>';
+  bagT2("[data-rkg]", function (e) { RK.gun = +e.dataset.rkg; sReklamlar(); });
+  api("/api/dsolar/meta-ozet?gun=" + RK.gun).then(rkCiz).catch(function (x) { $("rkIc").innerHTML = '<div class="card"><div class="bos">Özet alınamadı: ' + esc((x && x.message) || x) + "</div></div>"; });
+}
+function rkCiz(O) {
+  var T = O.toplam, H = O.huni, lb = H.lead ? T.harcama / H.lead : 0, sz = H.sozlesme ? T.harcama / H.sozlesme : 0;
+  var ciroTL = O.sozlesmeDeger.usd * (O.kur || 0), getiri = T.harcama && ciroTL ? ciroTL / T.harcama : 0;
+  var durum = !O.bagli ? '<span class="rkCanli kapali">● Meta bağlı değil</span>' : O.hata ? '<span class="rkCanli hata" title="' + esc(O.hata) + '">● Bağlantı hatası</span>' :
+    '<span class="rkCanli">● Meta bağlı' + (O.sonSenk ? " · " + esc(sonGirisYaz(O.sonSenk.replace("T", " "))) : "") + "</span>";
+  var kpi = [["Harcama", rkTL(T.harcama), rkFark(T.harcama, O.onceki.harcama, true)], ["Formdan gelen", sayi(H.lead), H.aranmadi ? '<small class="rkD kotu">' + H.aranmadi + " kişi henüz aranmadı</small>" : '<small class="rkD">Meta\'ya göre ' + sayi(T.lead) + "</small>"],
+    ["Müşteri başı maliyet", lb ? rkTL(lb) : "—", '<small class="rkD">reklam harcaması ÷ gelen form</small>'], ["Keşfe dönen", sayi(H.kesif), H.lead ? '<small class="rkD">%' + Math.round(H.kesif / H.lead * 100) + " · " + H.uygunDegil + " uygun değil</small>" : ""],
+    ["Sözleşme", sayi(H.sozlesme), H.sozlesme ? '<small class="rkD iyi">' + sayi(O.sozlesmeDeger.kwp, 1) + " kWp · " + sayi(O.sozlesmeDeger.usd) + " $</small>" : '<small class="rkD">bu dönemde yok</small>'],
+    ["Kazanılan iş başı maliyet", sz ? rkTL(sz) : "—", getiri ? '<small class="rkD iyi">1 ₺ reklam → ' + sayi(getiri) + " ₺ ciro</small>" : '<small class="rkD">sözleşme gelince hesaplanır</small>', 1]];
+  var huni = [["Gösterim", T.gosterim, "#94a3b8"], ["Form doldurdu", H.lead, "#0ea5e9"], ["Görüşüldü", H.gorusuldu, "#0ea5e9"], ["Keşif", H.kesif, "#6366f1"], ["Teklif", H.teklif, "#8b5cf6"], ["Sözleşme", H.sozlesme, "#16a34a"]];
+  var mx = Math.max(1, H.lead);
+  var huniH = huni.map(function (h, i) { var w = i === 0 ? 100 : Math.max(6, Math.round(h[1] / mx * 88));
+    return '<div class="rkH"><span>' + h[0] + '</span><div class="rkB" style="width:' + w + "%;background:" + h[2] + '">' + sayi(h[1]) + "</div><em>" + (i > 1 && H.lead ? "%" + Math.round(h[1] / H.lead * 100) : "") + "</em></div>"; }).join("");
+  var kampH = O.kampanyalar.length ? '<div class="rkTab"><table><tr><th>Kampanya</th><th>Durum</th><th>Harcama</th><th>Form</th><th>Müşteri başı</th><th>Keşif</th><th>Sözleşme</th></tr>' + O.kampanyalar.map(function (k) {
+    var u = k.uLead || 0, d = k.durum === "ACTIVE" ? '<span class="pill p-Sözleşme">Yayında</span>' : k.durum ? '<span class="pill">' + esc({ PAUSED: "Durduruldu", CAMPAIGN_PAUSED: "Durduruldu", ARCHIVED: "Arşiv", COMPLETED: "Bitti", IN_PROCESS: "İşleniyor", WITH_ISSUES: "Sorunlu" }[k.durum] || k.durum) + "</span>" : "";
+    return "<tr><td><b>" + esc(String(k.ad || "").replace(/^D Solar\s*\|\s*/i, "")) + "</b>" + (k.mesaj ? "<small>" + sayi(k.mesaj) + " mesaj başlatıldı</small>" : "") + "</td><td>" + d + "</td><td>" + rkTL(k.harcama) + "</td><td>" + u + "</td><td>" + (u && k.harcama ? rkTL(k.harcama / u) : "—") + "</td><td>" + (k.kesif || 0) + "</td><td>" + (k.sozlesme || 0) + "</td></tr>"; }).join("") + "</table></div>" : '<div class="bos">Bu dönemde kampanya verisi yok.</div>';
+  var leadH = O.sonLeadler.length ? O.sonLeadler.map(function (l) {
+    var yeni = l.asama === "Aday" && l.kalite !== "Uygun değil", dk = l.zaman ? Math.round((Date.now() - new Date(l.zaman.replace(" ", "T").replace(/Z?$/, "Z")).getTime()) / 60000) : 0;
+    var ne = dk < 60 ? dk + " dk önce" : dk < 1440 ? Math.round(dk / 60) + " saat önce" : Math.round(dk / 1440) + " gün önce";
+    return '<div class="row rkL">' + avatar(l.ad, "#0ea5e9") + '<a class="t" href="#aday/' + l.id + '"><b>' + esc(l.ad) + (l.ilce ? " · " + esc(l.ilce) : "") + "</b><small>" + esc([l.evTipi, l.fatura, l.kampanya].filter(Boolean).join(" · ")) + "</small><small>" +
+      (yeni ? '<b class="rkAcil">' + ne + " · henüz aranmadı</b>" : esc(ne)) + (l.sorumlu ? " · sorumlu " + esc(l.sorumlu.split(" ")[0]) : "") + "</small></a>" + rkKalite(l.kalite) +
+      (yeni && l.tel ? '<a class="btn sm pri" href="tel:' + esc(String(l.tel).replace(/\s/g, "")) + '">Ara</a>' : asamaPill(l.asama)) + "</div>"; }).join("") : '<div class="bos">Bu dönemde formdan gelen müşteri yok.</div>';
+  $("rkIc").innerHTML = '<div class="rkDur">' + durum + (O.hata ? '<small class="rkHata">' + esc(O.hata) + "</small>" : "") + (O.bagli ? '<button class="btn sm" id="rkSenk">Şimdi güncelle</button>' : "") + (yon() ? '<button class="btn sm" id="rkAyar">Bağlantı ayarı</button>' : "") + "</div>" +
+    (!O.bagli ? '<div class="card rkBos"><h3>Meta henüz bağlanmadı</h3><p>Bağlantı kurulunca reklam formunu dolduran herkes burada ve Müşteriler listesinde otomatik açılır, ekibe mesaj gider; harcama ve getiri de burada görünür.</p>' + (yon() ? '<button class="btn pri" id="rkAyar2">Bağlantıyı kur</button>' : "<p>Bağlantıyı yönetici kurar.</p>") + "</div>" : "") +
+    '<div class="rkK">' + kpi.map(function (k) { return '<div class="card rkKart' + (k[3] ? " vurgu" : "") + '"><small>' + k[0] + "</small><b>" + k[1] + "</b>" + (k[2] || "") + "</div>"; }).join("") + "</div>" +
+    '<div class="rkG"><div class="card" style="margin:0"><h3>Reklamdan sözleşmeye <small style="color:var(--muted);font-weight:500">Meta + uygulama birleşik</small></h3><div class="rkHuni">' + huniH + "</div></div>" +
+    '<div class="card" style="margin:0"><h3>Formdan gelenler <small style="color:var(--muted);font-weight:500">otomatik müşteri kaydı</small></h3>' + leadH + "</div></div>" +
+    '<div class="card" style="margin-top:12px"><h3>Kampanyalar <small style="color:var(--muted);font-weight:500">Meta\'dan otomatik</small></h3>' + kampH + "</div>";
+  bagT2("#rkSenk", function (b) { b.disabled = true; b.textContent = "Güncelleniyor…"; api("/api/dsolar/meta-senk", { method: "POST" }).then(function (r) { toast(r.yeniLead ? r.yeniLead + " yeni müşteri geldi" : r.hata ? "Hata: " + r.hata : "Güncel"); sReklamlar(); }).catch(hata); });
+  bagT2("#rkAyar,#rkAyar2", function () { rkAyarAc(); });
+}
+function rkAyarAc() {
+  Promise.all([liste("meta_ayar", "anahtar = 'ana'").catch(function () { return []; }), liste("users", "aktif = true && rol != 'ortak'", "name")]).then(function (R) {
+    var A = R[0][0] || {}, U = R[1], sec = A.atananlar || [];
+    panelAc('<div class="pnlB"><b>Meta bağlantısı</b><small>Reklam hesabı ve sayfa okunur; uygulama Meta\'da hiçbir şeyi değiştirmez.</small></div><div class="f">' +
+      '<label>Erişim anahtarı (sistem kullanıcısı)<input id="mtT" type="password" autocomplete="off" placeholder="' + (A.id ? "Kayıtlı · değiştirmek için yenisini yapıştırın" : "Meta İşletme Ayarları → Sistem kullanıcıları → Anahtar oluştur") + '"></label>' +
+      '<label>Reklam hesabı kimliği<input id="mtH" value="' + esc(A.adHesap || "act_789950181996435") + '"></label>' +
+      '<label>Facebook sayfa kimliği<input id="mtS" value="' + esc(A.sayfaId || "102260085893839") + '"></label>' +
+      '<div><small style="color:var(--muted)">Gelen müşteriler sırayla şu kişilere atanır (seçilmezse yönetici ve satış ekibi):</small><div class="chips" style="flex-wrap:wrap;padding:6px 0">' +
+      U.filter(function (u) { return u.rol === "yonetici" || u.rol === "satis"; }).map(function (u) { return '<button data-mta="' + u.id + '" class="' + (sec.indexOf(u.id) >= 0 ? "on" : "") + '">' + esc(u.name || u.email) + "</button>"; }).join("") + "</div></div>" +
+      (A.hesapAd || A.sayfaAd ? '<small style="color:var(--ok)">Bağlı: ' + esc([A.hesapAd, A.sayfaAd].filter(Boolean).join(" · ")) + "</small>" : "") +
+      '<button class="btn pri" id="mtK">Kaydet ve bağlan</button></div>', "alt");
+    bagT2("[data-mta]", function (b) { b.classList.toggle("on"); });
+    $("mtK").onclick = function () { var b = this; b.disabled = true; b.textContent = "Bağlanıyor…";
+      var at = Array.prototype.map.call(document.querySelectorAll("[data-mta].on"), function (x) { return x.dataset.mta; });
+      api("/api/dsolar/meta-ayar", { method: "POST", body: { token: $("mtT").value.trim(), adHesap: $("mtH").value.trim(), sayfaId: $("mtS").value.trim(), atananlar: at } })
+        .then(function (r) { panelKapat(); toast("Meta bağlandı: " + [r.hesapAd, r.sayfaAd].filter(Boolean).join(" · ") + (r.senk && r.senk.yeniLead ? " · " + r.senk.yeniLead + " yeni müşteri" : "")); sReklamlar(); })
+        .catch(function (x) { b.disabled = false; b.textContent = "Kaydet ve bağlan"; hata(x); }); };
+  });
+}
+
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
 ICO.ara = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';
 ICO.zil = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>';
@@ -2897,7 +2982,7 @@ NAV_IK.satis = ["kisiler", "#7c3aed"]; NAV_IK.katalog = ["paket", "#0891b2"];
 var SATIS_S = ["adaylar", "aday", "yeni", "teklifler", "teklif", "tpdf", "projeler", "katalog"];
 var ROZ = { t: 0, v: {}, L: [] };
 function satisAlt() { var L = []; if (yt("musteri")) L.push(["adaylar", rol() === "saha" && BEN.kendi ? "Keşiflerim" : BEN.kendi && !yon() ? "Müşterilerim" : "Müşteriler"]);
-  if (yt("teklif")) L.push(["teklifler", "Teklifler"]); if (yt("proje")) L.push(["projeler", "Projeler"]); if (yt("teklif") || yt("fiyat")) L.push(["katalog", "Katalog"]); return L; }
+  if (yt("teklif")) L.push(["teklifler", "Teklifler"]); if (reklamci() && yt("musteri")) L.push(["reklamlar", "Reklamlar"]); if (yt("proje")) L.push(["projeler", "Projeler"]); if (yt("teklif") || yt("fiyat")) L.push(["katalog", "Katalog"]); return L; }
 function anaMenu() {
   if (rol() === "ortak") return [["ortak", "Müşterilerim"]];
   var M = [["bugun", "Bugün"], ["mesajlar", "Mesajlar"]], sa = satisAlt(); if (sa.length) M.push(["satis", "Satış", "#" + sa[0][0]]);
@@ -2942,7 +3027,7 @@ function ciz() {
   if ($("hHz")) $("hHz").onclick = function () { hizliAc(); };
   var sm = sayfaMod(sayfa, h[1]); document.body.classList.toggle("salt", !!sm && yt(sm) === "g");
   if (sm && yt(sm) === "g") { var mm = $("m"); if (mm) mm.insertAdjacentHTML("beforebegin", '<div class="saltB">Bu bölümde yalnız <b>görme</b> yetkiniz var; değişiklik yapılamaz.</div>'); }
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri, mesajlar: sMesajlar };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri, mesajlar: sMesajlar, reklamlar: sReklamlar };
   (S[sayfa] || sBugun)(h[1]);
   rozetCiz(); rozetGuncelle();
 }
