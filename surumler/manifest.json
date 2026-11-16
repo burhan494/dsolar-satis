@@ -1,7 +1,7 @@
 {
- "surum": 52,
- "paket": "surumler/dsolar-52.zip",
- "sha256": "a44d1a7dbd547f89b074892a01e7a41b58d5494b1c1e0045f39b763550e356d5",
- "imza": "VSHSFMhCAMzdQPsT/GlJdVBD/MLDxnMFDwVbfRLWAb6wMFGWPFJu+5QbECE7JF8U8QYiA4xQQoJS9Mz6GUWo6oa/JX50tFdL8o3rt1bWkN/7FREdaPhLPJOHsxVy/ZvVJIl29oT33yPD4PUrisBMTl6EV4bn+l6jdCW7RvX7r6MME3ZMAd+tXs9DK7Glu8k7dg+18ySjyA9IUxyqnDGz8EN5NFo6lsx8mSYnpSJPRNXWRHzF5rHlnDHVZrraFL0H6mWTtF11+Iy0qXgPlMnku8JnGmmVqnfmiJYEjAxQcNwK+BNKh25tbydI9Jkic9SrPlo80q2Y2NdVcZFs+6fBT7cpLt3m5Qf0LrHAJScZfz48RKtYQQ8pCMxGXKpAVBbA9WoKbYMCq+bQvN9/B+2VbHC4hHQmoYd6Y57EYt5fYXCkpVzdTo8r+EgYxxNmJluriFqt0kJ7DQPumJxeMe7ZRAv6WPo8uTHcicMOFqeM9k9MC1UHsTSgUaRcGMDckEIX",
- "not": "Mesajlaşma ekranı yenilendi: telefonda tam ekran sohbet, klavyeye yapışık yazı çubuğu, yuvarlak gönder, gruplanan balonlar, resim büyütme, yeni mesaj butonu"
+ "surum": 53,
+ "paket": "surumler/dsolar-53.zip",
+ "sha256": "fc55adaa7ef2faea1a62e86b8f8f9b425ee1fb00466776565bcf6c7a9b0a29b1",
+ "imza": "iWqm9hAyJXR9zVDCASCQIrXqmuOUZ4YlggWCYiYI6LbYTI8xBkj8/PKaOFl64MeFFZJBp4uphUCKospsytecWAYX2GF/zDw7MfIZI35MaCvWlIVQUIr6SLra992ZOXLNy8evV5UlKCqIHnC2x7e6aH4uIklRLyUPaTIkUjkojUctTevtH1r2RnqRd485XayyQhsMog6hhcgN1mGGUxXLkZlDDWsqJGU6DTMhhvEhsVH+/RPFWo6hptKP3t3jfcMxg8S8ktMJXoocI5mIyht4FujrQdK9a8Ho8dfWhZbS3NZQU9fp/zxX6FCGCE8Ma6d/yhsp5rvKJF4GysSpVnx4MqT8oKBqrnoSApgwn5uBp0TiHLarNeGo7dRlJTjNaPy0SpkZIljA+gzFPBMfL/1bF+Hu+6Lo325mgvNH7F/h4w49ri/LV5WXOncOw78xZM/n5/c2JHHGS0ObHyDcPXoIeh/Iq//1lH9PMCTbcJgF7k4Z4JnyUut04IKfldR0f3PJ",
+ "not": "Reklamlar sayfası, Müşteriler bölümünü görme yetkisi olan herkese açıldı (yalnız Satış rolü değil)"
 }

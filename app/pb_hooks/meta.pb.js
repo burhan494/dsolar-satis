@@ -7,10 +7,10 @@ routerAdd("POST", "/api/dsolar/meta-ayar", (e) => {
   catch (x) { return e.json(400, { mesaj: String((x && x.message) || x) }); }
 }, $apis.requireAuth("users"));
 routerAdd("POST", "/api/dsolar/meta-senk", (e) => {
-  const a = e.auth; if (!a || !a.getBool("aktif") || ["yonetici", "satis"].indexOf(a.getString("rol")) < 0) return e.json(403, { mesaj: "Yetki yok" });
+  const a = e.auth; if (!a || !a.getBool("aktif") || !(a.getString("rol") === "yonetici" || (a.getString("rol") !== "ortak" && a.getString("y_musteri") !== ""))) return e.json(403, { mesaj: "Yetki yok" });
   try { return e.json(200, require(`${__hooks}/meta_lib.js`).senk(e.app, true)); } catch (x) { return e.json(502, { mesaj: String((x && x.message) || x) }); }
 }, $apis.requireAuth("users"));
 routerAdd("GET", "/api/dsolar/meta-ozet", (e) => {
-  const a = e.auth; if (!a || !a.getBool("aktif") || ["yonetici", "satis"].indexOf(a.getString("rol")) < 0) return e.json(403, { mesaj: "Yetki yok" });
+  const a = e.auth; if (!a || !a.getBool("aktif") || !(a.getString("rol") === "yonetici" || (a.getString("rol") !== "ortak" && a.getString("y_musteri") !== ""))) return e.json(403, { mesaj: "Yetki yok" });
   try { return e.json(200, require(`${__hooks}/meta_lib.js`).ozet(e.app, a, e.request.url.query().get("gun"))); } catch (x) { return e.json(500, { mesaj: String((x && x.message) || x) }); }
 }, $apis.requireAuth("users"));

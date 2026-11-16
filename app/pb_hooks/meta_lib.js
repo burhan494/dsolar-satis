@@ -179,7 +179,7 @@ function ozet(app, auth, gun) {
     if (s >= 4) { try { const T = app.findRecordsByFilter("teklifler", "aday = {:a} && durum = 'Anlaşıldı'", "-created", 1, 0, { a: a.id })[0]; if (T) { sozDeger.usd += T.getFloat("fiyatUSD"); sozDeger.kwp += T.getFloat("kwp"); } } catch (e) {} } });
   let kur = 0; try { kur = (jget(app.findFirstRecordByData("fin_ayarlar", "anahtar", "kasa_kur"), "deger") || {}).usd || 0; } catch (e) {}
   const yon = auth.getString("rol") === "yonetici";
-  const son = A.filter((a) => yon || a.getString("sorumlu") === auth.id).slice(0, 25).map((a) => ({ id: a.id, ad: a.getString("ad"), tel: a.getString("tel"), ilce: a.getString("ilce"), asama: a.getString("asama"),
+  const son = A.filter((a) => yon || !auth.getBool("kendi") || a.getString("sorumlu") === auth.id).slice(0, 25).map((a) => ({ id: a.id, ad: a.getString("ad"), tel: a.getString("tel"), ilce: a.getString("ilce"), asama: a.getString("asama"),
     evTipi: a.getString("evTipi"), fatura: a.getString("faturaAralik"), kalite: a.getString("leadKalite"), kampanya: a.getString("metaKampanya"), zaman: a.getString("leadZaman"),
     sorumlu: a.getString("sorumlu") ? require(`${__hooks}/mesaj_lib.js`).kisiAd(app, a.getString("sorumlu")) : "" }));
   const kampL = Object.keys(kamp).map((id) => { const o = kamp[id], c = (o.id && K.filter((x) => x.id === o.id)[0]) || kAd[o.ad] || {}; return Object.assign(o, { durum: c.durum || "", gunluk: c.gunluk || null }); })

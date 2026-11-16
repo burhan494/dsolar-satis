@@ -2990,7 +2990,7 @@ function cikis() { msjKapat(); TOK = null; BEN = null; MSJ.kisiler = null; MSJ.S
 ICO.reklam = '<path d="M4 10v4h3l6 4V6L7 10H4z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 7a7 7 0 0 1 0 10"/>';
 NAV_IK.reklamlar = ["reklam", "#e11d48"];
 setTimeout(function () { if (SATIS_S.indexOf("reklamlar") < 0) SATIS_S.push("reklamlar"); if (KAYNAK.indexOf("Meta reklam") < 0) KAYNAK.push("Meta reklam"); }, 0);
-function reklamci() { return yon() || rol() === "satis"; }
+function reklamci() { return yon() || (rol() !== "ortak" && !!yt("musteri")); }
 var RK = { gun: 7 };
 function rkTL(v) { return sayi(v) + " ₺"; }
 function rkFark(s, o, ters) { if (!o) return ""; var f = Math.round((s - o) / o * 100); if (!f) return '<small class="rkD">geçen döneme göre aynı</small>';
