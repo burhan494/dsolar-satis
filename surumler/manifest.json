@@ -1,7 +1,7 @@
 {
- "surum": 50,
- "paket": "surumler/dsolar-50.zip",
- "sha256": "318e9251733cabd98c707f791da67bd1caae7723020e2213a95a04f4c5b90931",
- "imza": "DWzEb2tCmf0A1hlC+96j5CdwwhF6ICJd1BmoA31u7dErpOgZHo/yA+ZYljdmd77JLi9o3qBtJt+DsnWiaB17BoBrQIZY2qT+COfj6cJMX7HRXLZjQxEQLnfzKaOHwU1QHIwKfw1C4u0uAeGE81MsIl75GjFJXSKGmAhB6szQfZQXtW9OT55VM5T5tHXjAj+HSxrB+BhohVhPQjzROSKfililYBJC/r79tdr5BOD1VSklCcCDad1tp0YQ2HQ6xugBBnwdBixdCpGbKO3DU5tY4nKsJjRLNSZ43cpDQcHYo/Gir3DJVgGmdSX0jqKSy2Wyzb09WRdQdLApzSnN66ADMvSxhFZZwpO28K4M7JYcda15U6VT+k5BlH0EG10U/jxLgjn4t6zjQlov394vaW60PQtzanwl38YX31Hs3Abb7gNBAXoVJLOZEJM61f/skQoNVppvomGwo+ak6Ih6M7QX6V5f0OT5kKa4EZXSwGyH4O6x4dDQMuakJbz9zvzxTuLu",
- "not": "Reklamlar (Meta): reklam formunu dolduranlar otomatik müşteri olur, sorumluya sırayla atanır ve ekibe mesaj gider; harcama, müşteri başı maliyet ve reklamdan sözleşmeye huni"
+ "surum": 51,
+ "paket": "surumler/dsolar-51.zip",
+ "sha256": "812e5d0815b10872a9f94d9fb62012b9867f509891db2acd0ec3ca24856ae0dd",
+ "imza": "W9q0HWtcdxrjAdRrZ+c7eNYsy8IMpgYTn5phv6EQCMwM3B0KTytvJ5A81LTBRyvPxXoXZxb45mTiBKxymRC58ebzlZsEAIJuhiQ1l46qW+YdRw/7ojdcURpdacZl4mhybWSJ9PVNEQMVkyyBgkN7LgIf3mX1KYa2xwZGSZ5CfgWpWUN1O0Uxv3Kj0YjObeozxyzrFTN8OQlyVkLYaCXRVuYoa/C4+Ryi0VMOrSqJoEilEfGkMFBcy5gaWAem534V7Z2gzLzEtyDFO0yXxq8iJPICA7T0raQJwkJr39o6sJGtw/Vgc87yQ/8SPhZC9j3qdzizYLrdJStkYa1j7YbVKGCQ05SlC3cDihxnt1WpcaYYciyzot0QbNwArmsyjz4Gz1IflvvRt8CeqqkLKHSX2RIS2CMiQ+E+b/8WiGbZYHceUDiZ2jTL1JZ8owYW0zT/BljzznwFiPZye9tODvu/JCjzdTTF7ELwJSdHCf3UCjZeQK7dMLqc0g58xytv/9g9",
+ "not": "Ödemeyi tek tek onaya gönderme: Gelecek/Gidecek'te her ödemenin yanında Onaya gönder (erken ödeme tarihi ve not ile); yönetime mesaj gider, Ödemeler'de ve mesajda Onayla / Geri çevir; onaylanan ödeme Ödemeye hazır (onaylı) bölümüne geçer"
 }

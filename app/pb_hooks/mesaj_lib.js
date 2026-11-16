@@ -31,4 +31,17 @@ function teklifSohbet(app, t) {
   let ad = ""; try { ad = app.findRecordById("adaylar", t.getString("aday")).getString("ad"); } catch (x) {}
   return { L: module.exports, ad: ad, s: sohbetAc(app, "teklif:" + t.id, "Teklif " + t.getString("no") + (ad ? " · " + ad : ""), "teklif", t.id, [t.getString("hazirlayan")].concat(yoneticiler(app))) };
 }
-module.exports = { simdi, ekipUyeleri, yoneticiler, sohbetAc, yaz, ozetYaz, kisiAd, ekibeEkle, teklifSohbet };
+function binlik(n) { const v = Math.round(n * 100) / 100, t = Math.floor(Math.abs(v)), k = Math.round((Math.abs(v) - t) * 100); return (v < 0 ? "-" : "") + String(t).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + (k ? "," + String(k).padStart(2, "0") : ""); }
+function gunAy(d) { const A = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]; d = String(d || "").slice(0, 10); return d ? (+d.slice(8, 10)) + " " + A[+d.slice(5, 7) - 1] : ""; }
+// tek ödeme onayı mesajları: istek (muhasebe → yönetim), onay / red (yönetim → isteyen)
+function hareketMesaj(app, h, auth, tur) {
+  const isteyen = h.getString("onayIsteyen"), kim = auth ? auth.id : "", ad = h.getString("karsiTaraf") || h.getString("kategori") || "ödeme";
+  const s = sohbetAc(app, "hareket:" + h.id, "Ödeme · " + ad, "hareket", h.id, [isteyen, kim].concat(yoneticiler(app)).filter(Boolean));
+  const tutar = binlik(h.getFloat("tutar")) + " " + ({ TRY: "TL", USD: "$", EUR: "€" }[h.getString("pb") || "TRY"] || h.getString("pb"));
+  const vade = h.getString("vade"), t = h.getString("tarih");
+  if (tur === "istek") yaz(app, s, kim, "💳 " + (kisiAd(app, kim) || "Muhasebe") + " ödemeyi onaya gönderdi: " + ad + " · " + tutar + (vade && vade.slice(0, 10) !== t.slice(0, 10) ? " · vade " + gunAy(vade) + ", ödeme " + gunAy(t) : " · ödeme " + gunAy(t)) + (h.getString("onayNot") ? " · " + h.getString("onayNot") : "") + ". Onaylar mısınız?", { tip: "hareket_onay", id: h.id });
+  else if (tur === "onay") yaz(app, s, kim, "✓ " + (kisiAd(app, kim) || "Yönetici") + " ödemeyi onayladı: " + ad + " · " + tutar + ". Ödendi olarak işaretleyebilirsiniz.", { tip: "hareket_sonuc", id: h.id });
+  else if (tur === "geri") yaz(app, s, kim, "↩ " + (kisiAd(app, kim) || "Muhasebe") + " onay isteğini geri aldı: " + ad + " · " + tutar, { tip: "hareket_sonuc", id: h.id });
+  else yaz(app, s, kim, "✗ " + (kisiAd(app, kim) || "Yönetici") + " ödemeyi onaylamadı: " + ad + " · " + tutar + (h.getString("redNedeni") ? " · neden: " + h.getString("redNedeni") : ""), { tip: "hareket_sonuc", id: h.id });
+}
+module.exports = { simdi, ekipUyeleri, yoneticiler, sohbetAc, yaz, ozetYaz, kisiAd, ekibeEkle, teklifSohbet, hareketMesaj };

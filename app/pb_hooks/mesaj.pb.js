@@ -116,3 +116,23 @@ routerAdd("POST", "/api/dsolar/kayit-sohbet", (e) => {
   const s = L.sohbetAc(e.app, b.tip + ":" + r.id, ad, b.tip, r.id, [a.id].concat(ek, L.yoneticiler(e.app)));
   return e.json(200, { id: s.id });
 }, $apis.requireAuth("users"));
+
+// ---- Tek ödeme onayı (listesiz): muhasebe "Onaya gönder" der, yönetici onaylar ya da geri çevirir ----
+onRecordCreateRequest((e) => {
+  const r = e.record, a = e.auth, bek = r.getString("onay") === "Onay bekliyor" && !r.getString("odemeListesi");
+  if (bek && a) { r.set("onayIsteyen", a.id); r.set("onayIstek", new Date().toISOString().replace("T", " ")); }
+  e.next();
+  if (bek) { try { const L = require(`${__hooks}/mesaj_lib.js`); L.hareketMesaj(e.app, r, a, "istek"); } catch (x) { console.log("ödeme onay mesajı yazılamadı", x); } }
+}, "fin_hareketler");
+onRecordUpdateRequest((e) => {
+  const r = e.record, a = e.auth, o0 = r.original().getString("onay"), o1 = r.getString("onay"), liste = !!r.getString("odemeListesi");
+  const istek = !liste && o1 === "Onay bekliyor" && o0 !== "Onay bekliyor";
+  if (istek && a) { r.set("onayIsteyen", a.id); r.set("onayIstek", new Date().toISOString().replace("T", " ")); r.set("redNedeni", ""); }
+  if (!liste && o0 === "Onay bekliyor" && o1 === "Onaylandı" && a && !r.getString("onaylayan")) { r.set("onaylayan", a.getString("name") || a.getString("email")); r.set("onayTarihi", new Date().toISOString().replace("T", " ")); }
+  e.next();
+  try { const L = require(`${__hooks}/mesaj_lib.js`);
+    if (istek) L.hareketMesaj(e.app, r, a, "istek");
+    else if (!liste && o0 === "Onay bekliyor" && o1 === "Onaylandı") L.hareketMesaj(e.app, r, a, "onay");
+    else if (!liste && o0 === "Onay bekliyor" && (o1 === "" || o1 === "Reddedildi")) L.hareketMesaj(e.app, r, a, a && a.getString("rol") === "yonetici" ? "red" : "geri");
+  } catch (x) { console.log("ödeme onay mesajı yazılamadı", x); }
+}, "fin_hareketler");
