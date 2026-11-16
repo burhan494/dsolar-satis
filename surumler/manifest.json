@@ -1,7 +1,7 @@
 {
- "surum": 51,
- "paket": "surumler/dsolar-51.zip",
- "sha256": "812e5d0815b10872a9f94d9fb62012b9867f509891db2acd0ec3ca24856ae0dd",
- "imza": "W9q0HWtcdxrjAdRrZ+c7eNYsy8IMpgYTn5phv6EQCMwM3B0KTytvJ5A81LTBRyvPxXoXZxb45mTiBKxymRC58ebzlZsEAIJuhiQ1l46qW+YdRw/7ojdcURpdacZl4mhybWSJ9PVNEQMVkyyBgkN7LgIf3mX1KYa2xwZGSZ5CfgWpWUN1O0Uxv3Kj0YjObeozxyzrFTN8OQlyVkLYaCXRVuYoa/C4+Ryi0VMOrSqJoEilEfGkMFBcy5gaWAem534V7Z2gzLzEtyDFO0yXxq8iJPICA7T0raQJwkJr39o6sJGtw/Vgc87yQ/8SPhZC9j3qdzizYLrdJStkYa1j7YbVKGCQ05SlC3cDihxnt1WpcaYYciyzot0QbNwArmsyjz4Gz1IflvvRt8CeqqkLKHSX2RIS2CMiQ+E+b/8WiGbZYHceUDiZ2jTL1JZ8owYW0zT/BljzznwFiPZye9tODvu/JCjzdTTF7ELwJSdHCf3UCjZeQK7dMLqc0g58xytv/9g9",
- "not": "Ödemeyi tek tek onaya gönderme: Gelecek/Gidecek'te her ödemenin yanında Onaya gönder (erken ödeme tarihi ve not ile); yönetime mesaj gider, Ödemeler'de ve mesajda Onayla / Geri çevir; onaylanan ödeme Ödemeye hazır (onaylı) bölümüne geçer"
+ "surum": 52,
+ "paket": "surumler/dsolar-52.zip",
+ "sha256": "a44d1a7dbd547f89b074892a01e7a41b58d5494b1c1e0045f39b763550e356d5",
+ "imza": "VSHSFMhCAMzdQPsT/GlJdVBD/MLDxnMFDwVbfRLWAb6wMFGWPFJu+5QbECE7JF8U8QYiA4xQQoJS9Mz6GUWo6oa/JX50tFdL8o3rt1bWkN/7FREdaPhLPJOHsxVy/ZvVJIl29oT33yPD4PUrisBMTl6EV4bn+l6jdCW7RvX7r6MME3ZMAd+tXs9DK7Glu8k7dg+18ySjyA9IUxyqnDGz8EN5NFo6lsx8mSYnpSJPRNXWRHzF5rHlnDHVZrraFL0H6mWTtF11+Iy0qXgPlMnku8JnGmmVqnfmiJYEjAxQcNwK+BNKh25tbydI9Jkic9SrPlo80q2Y2NdVcZFs+6fBT7cpLt3m5Qf0LrHAJScZfz48RKtYQQ8pCMxGXKpAVBbA9WoKbYMCq+bQvN9/B+2VbHC4hHQmoYd6Y57EYt5fYXCkpVzdTo8r+EgYxxNmJluriFqt0kJ7DQPumJxeMe7ZRAv6WPo8uTHcicMOFqeM9k9MC1UHsTSgUaRcGMDckEIX",
+ "not": "Mesajlaşma ekranı yenilendi: telefonda tam ekran sohbet, klavyeye yapışık yazı çubuğu, yuvarlak gönder, gruplanan balonlar, resim büyütme, yeni mesaj butonu"
 }
