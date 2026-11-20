@@ -1,7 +1,7 @@
 {
- "surum": 59,
- "paket": "surumler/dsolar-59.zip",
- "sha256": "4a3f5240e6241f7279b3695f4a1c75c89585c364a062e5876d17c6ae952ec83c",
- "imza": "gdpNhTiNgCdVpu7Zjyqbb50iAFZMwh0SUnYSq/rq/SsDYLjUd2G84bC6RTlQs7YytyscjTju8RxEi5lsxiwePDMB4Xh11NB9pasp2w1gYurKII7zKEZaoIFyNpsk9KibCrb3TNp6oK5Ho1z70VGyWlZMtuKxk7j5eLVkQAK8NKUZKxJZC27RZSTnhNf046uxiHJ68UwXwMPE38iZycV9771J8NjFE3R05ODI2Ng5YgDGn0NG3Feu0az/ZJ+tZ7gGi3cRpQ/UgXTEn4d0mLhZjSpECT+tXSlRH6FxfeFDAPOLBrtLsXwPgiAmgGVpqBfrjlPVGQ8vC9i0Md9rruUyD74K+lbScTYj1Byr+FOMfF5RWMuMixKacXLO/rgPstNTkQKbdjyIpIKnS4G2opre8qT44u4TQ8/zQGSebP+GSkeT5N1KdVs7wanlXKnlH8bEoqhNkBOhEyxPEkf33R7ANBdolFx3TjygdHfb+K1L3FIB9hP3infbHs45Nybd6C6z",
- "not": "Param: kart ödemeleri ve kendi hesaplar arası transferler harcamadan çıkarıldı, çift döküm satırları temizlendi, kategori kuralları; telefonda eski sürüm kendini yeniler"
+ "surum": 60,
+ "paket": "surumler/dsolar-60.zip",
+ "sha256": "e539c889d1244f2f4f4e99c96638e2472121689d48bb7d1384f46a5f1bc8ec82",
+ "imza": "e9ZfYmzJK+ZI6sPhj98P76/Qd0e+hhkKnjry7cCk5tvY7jZ1PylNMdb/bffmFVVdGW8rwwkwg7GZ6cip0jbt/pqiNZPL0+duYmgSNSGU1y72HPf4zZrbIRjnI0+/Ve0UAe1mvOD8PgDFeQNGbjcLlO9kBI9xrAJhFXQF6hTtpMx2kK3HuzYr5Oq7l6h2ObNE926J+ObHbKB4Azw2Np9ckTwAsCTrO7En7axP94LYVHfWwxIi0vCWxPQSuxg3pMb8V5zBOQB5Q+Zcb2WqtUNlvBLnxR8dDZGZArZztOPqj4C0o8u9oxPcQNcZuD25wZRSEKiYrKsjtA3icGRvVMV2+yi4iFL2J97fK4RUShjFbXxJcyN4vjgqZNT2UolVQpA8VbUGJifB73Q7TpB0rU7uzIDITdfdo5P90P+YxKPX67gDB1R+1YnaDXee1Jea9a7KcCNW9/00TBDAPd3YaffRbVlP4PuJUvcU/w1h5b++MzvQdaxWkUpLZxHQ1npq4e0F",
+ "not": "Param yeni düzen: Özet, Kartlar, Ödemeler, Harcama, Varlık sekmeleri; düzenli ödeme bulma, banka bakiyeleri, tahmini kart ödemeleri"
 }

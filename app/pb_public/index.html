@@ -291,6 +291,63 @@ nav.y a.fab{overflow:visible;background:none!important}
 .prIki h4{font-size:14px}
 @media (max-width:800px){.prIki{grid-template-columns:1fr}}
 
+/* v60: Param sekmeli düzen — telefon öncelikli */
+.prmW{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.prmUst{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prmUst h2{margin:0;font-size:22px}.prmUst small{color:var(--muted);font-size:12px}
+.prmUst .btn.sm{min-height:44px;min-width:44px}
+.prmTab{display:flex;gap:2px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px;overflow-x:auto}
+.prmTab button{flex:1 0 auto;min-height:44px;border:0;background:none;border-radius:10px;font-size:14px;font-weight:700;color:#5f6f82;padding:0 10px;font-family:inherit;cursor:pointer}
+.prmTab button.on{background:var(--navy);color:#fff}
+.prmK{background:#fff;border:1px solid var(--line);border-radius:18px;padding:2px 0;overflow:hidden}
+.prmKb{display:flex;align-items:center;gap:8px;padding:12px 16px 4px}.prmKb h3{margin:0;font-size:16px;flex:1}.prmKb small{color:var(--muted)}
+.prmS{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #eef2f7}
+.prmKb+.prmS,.prmK>.prmS:first-child,.prmAc+.prmS{border-top:0}
+.prmS small{display:block;font-size:12.5px;line-height:1.4}
+.prmAd{display:block;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prmT{font-size:14.5px;white-space:nowrap}
+.prmGun{width:44px;flex:none;text-align:center;background:#f4f7fb;border-radius:10px;padding:4px 0}.prmGun b{display:block;font-size:16px}.prmGun small{font-size:10.5px;color:var(--muted);font-weight:700}
+.prmOk{width:44px;height:44px;flex:none;border-radius:50%;border:2px solid #b9c6d6;background:#fff;color:#fff;font-size:17px;font-weight:800;cursor:pointer;padding:0}
+.prmOk.on{background:var(--ok);border-color:var(--ok)}
+.prmNok{width:10px;height:10px;border-radius:50%;flex:none}
+.prmHero{background:var(--navy);color:#fff;border-radius:18px;padding:18px}
+.prmHero small{color:#c3d0e0;font-size:12.5px;line-height:1.45}
+.prmBuyuk{font-size:32px;font-weight:800;letter-spacing:-.5px;margin:2px 0}
+.prmIki{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.prmIki>div{background:rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}.prmIki b{display:block;font-size:19px;margin-top:2px}
+.prmIki .kotu{background:#fde8e6;color:#8a1c12}.prmIki .kotu small{color:#8a1c12;font-weight:700}
+.prmIki .iyi{background:#dcf3e4;color:#14532d}.prmIki .iyi small{color:#14532d;font-weight:700}
+.prmBar{height:10px;border-radius:99px;background:#e3e9f1;overflow:hidden;display:flex;margin-top:8px}.prmBar span{display:block;height:10px}
+.prmLej{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--muted)}.prmLej i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.prmBas{display:flex;align-items:baseline;justify-content:space-between;padding:0 4px}.prmBas h3{margin:0;font-size:18px}.prmBas small{color:var(--muted)}
+.prmKart{display:flex;flex-direction:column}
+.prmKartY{border:0;border-radius:18px;padding:16px;color:#fff;display:flex;flex-direction:column;gap:10px;text-align:left;font-family:inherit;cursor:pointer;position:relative;z-index:1}
+.prmKart.kapali .prmKartY{opacity:.75}
+.prmKartY .r1{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700}
+.prmKartY .r2{font-size:17px;font-weight:800}.prmKartY .r2 i{font-style:normal;font-weight:600;opacity:.8}
+.prmKartY .r3{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.prmKartY .r3 small{display:block;font-size:12px;opacity:.85}.prmKartY .r3 b{font-size:23px}
+.prmKartY .sag{text-align:right;font-size:12px;opacity:.9;line-height:1.5}
+.prmChip{font-size:12px;font-weight:800;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.prmKartA{background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 18px 18px;margin-top:-16px;padding:20px 0 12px}
+.prmKartA .prmS{padding-left:16px;padding-right:16px}
+.prmEt{display:block;font-size:12px;font-weight:800;color:var(--muted);padding:4px 16px}
+.prmBtn2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 16px 0}.prmBtn2 .btn{min-height:44px}
+.prmKartA>.btn.sm{margin-left:16px!important}
+.prmAy{display:flex;align-items:center;justify-content:space-between;gap:8px}.prmAy .btn{min-width:48px;min-height:48px;font-size:18px}
+.prmAy>div{text-align:center}.prmAy b{display:block;font-size:17px}.prmAy small{color:var(--muted);font-size:12.5px}
+.prmAc{display:block;color:#3d5470;font-size:12.5px;line-height:1.45;padding:0 16px 6px}
+.prmAyB{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.prmAyB button{min-height:54px;border:1px solid #cfdbe8;background:#fff;border-radius:12px;font-family:inherit;color:var(--navy);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.prmAyB button small{font-size:12.5px;font-weight:700}.prmAyB button b{font-size:15px}
+.prmAyB button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.prmKat{width:100%;border:0;background:none;text-align:left;padding:10px 16px 8px;border-top:1px solid #eef2f7;font-family:inherit;color:var(--text);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.prmK>.prmKat:first-child{border-top:0}
+.prmKat .r{display:flex;justify-content:space-between;width:100%;font-size:14.5px}
+.prmBar1{display:block;height:8px;border-radius:99px;background:#eef2f7;width:100%}.prmBar1 span{display:block;height:8px;border-radius:99px}
+#prmKatO .row{padding-left:16px;padding-right:16px}
+@media (max-width:420px){.prmUst h2{font-size:20px}.prmBuyuk{font-size:29px}.prmTab button{font-size:13px;padding:0 6px}}
+.prmLb{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+
 </style>
 </head>
 <body>
@@ -3544,7 +3601,7 @@ function prsSabitHazirla() { PRS_SB = { on: false, k: {}, c: {}, L: [], A: null 
 /* v57: Param — kişisel para bölümü. Yalnız sahibi görür; veri tarayıcıda parolayla (PBKDF2 + AES-GCM) şifrelenir,
    sunucuda/yedeklerde yalnız şifreli metin durur. Ekstre ve hesap dökümü PDF'leri bu cihazda okunur (Beacon'ın okuyucuları). */
 var PRM = { k: null, rec: null, D: null, ym: null, giz: false, tm: null, cari: null, KU: null, kayit: null, acik: {} };
-var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Eğitim & çocuk", "Nafaka & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kendi hesabım", "Diğer"];
+var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Kira", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Eğitim & çocuk", "Nafaka & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kendi hesabım", "Diğer"];
 var PRM_HARIC = { "Kendi hesabım": 1 };
 function prmIkon() { if (typeof ICO !== "undefined" && !ICO.kilit) ICO.kilit = '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'; if (typeof NAV_IK !== "undefined" && !NAV_IK.param) NAV_IK.param = ["kilit", "#ed7d31"]; }
 function prmSahibiMi() { return rol() === "yonetici"; }
@@ -3559,7 +3616,8 @@ function prmSifrele(k, o) { var iv = crypto.getRandomValues(new Uint8Array(12));
 function prmCoz(k, r) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: prmU(r.iv) }, k, prmU(r.veri)).then(function (p) { return JSON.parse(new TextDecoder().decode(p)); }); }
 function prmBos() { return { v: 1, kasa: { tl: 0, usd: 0, eur: 0, altin: 0, altinFiyat: 0, t: "" }, acil: 0, gelirGun: 2, kalemler: [], odendi: {}, ev: { hedef: 0, birikim: 0, aylik: 0 },
   borc: { aylik: 0, gun: 1 }, varliklar: [], hesaplar: {}, belgeler: [], tx: [], nakit: [], katElle: {}, kurallar: [] }; }
-function prmTamamla(D) { var B = prmBos(); Object.keys(B).forEach(function (k) { if (D[k] == null) D[k] = B[k]; }); prmTemizle(D); return D; }
+function prmTamamla(D) { var B = prmBos(); Object.keys(B).forEach(function (k) { if (D[k] == null) D[k] = B[k]; }); prmTemizle(D);
+  if (!D.v2) { D.v2 = 1; var sb = prmBankaTop(D); if (sb > 0) D.kasa.tl = Math.max(0, Math.round(((+D.kasa.tl || 0) - sb) * 100) / 100); } return D; }
 /* v59: aynı hesap dökümü iki PDF'te (çakışan tarih) farklı açıklamayla gelirse çift sayılmasın: hesap+tarih+tutar+bakiye aynıysa aynı hareket */
 function prmBankAnah(t) { return t.bal == null || t.bal === "" ? t.acct + "|" + t.d + "|" + t.desc + "|" + t.amt : t.acct + "|" + t.d + "|" + t.amt + "|" + t.bal; }
 function prmTemizle(D) { var g = {}, n0 = D.tx.length; D.tx = D.tx.filter(function (t) { if (t.acctKind !== "bank") return true; var k = prmBankAnah(t); if (g[k]) return false; g[k] = 1; return true; }); return n0 - D.tx.length; }
@@ -3585,12 +3643,14 @@ function prmM(s) { return PRM.giz ? "•••••" : s; }
 function prmP(v, pb) { return prmM((v < 0 ? "−" : "") + sayi(Math.abs(Math.round(v))) + " " + (pb === "USD" ? "$" : pb === "EUR" ? "€" : "₺")); }
 function prmId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 function prmAktif(k, ym) { if (k.bas && ym < k.bas) return false; if (k.bit && ym > k.bit) return false; return k.periyot === "yillik" ? +ym.slice(5, 7) === (+k.ay || 1) : true; }
-function prmKasaTop(D) { var K = D.kasa; return (+K.tl || 0) + prmTl(K.usd, "USD") + prmTl(K.eur, "EUR") + (+K.altin || 0) * (+K.altinFiyat || 0); }
+function prmKasaTop(D) { var K = D.kasa; return (+K.tl || 0) + prmBankaTop(D) + prmTl(K.usd, "USD") + prmTl(K.eur, "EUR") + (+K.altin || 0) * (+K.altinFiyat || 0); }
 function prmOdemeler(D, ym) { var L = [], pad = function (n) { return String(n).padStart(2, "0"); };
   D.kalemler.forEach(function (k) { if (k.tur !== "gider" || !prmAktif(k, ym)) return; var g = Math.min(+k.gun || 1, gunSay(ym));
     L.push({ key: k.id + "|" + ym, ad: k.ad, tl: prmTl(k.tutar, k.pb), pb: k.pb, ham: +k.tutar || 0, gun: ym + "-" + pad(g), drk: k.odeyen === "DRK", yillik: k.periyot === "yillik", kalem: k }); });
   D.belgeler.forEach(function (b) { if (b.kind !== "card" || !b.due || b.due.slice(0, 7) !== ym || !b.sum) return; var h = D.hesaplar[b.acct] || {};
-    L.push({ key: "k:" + b.id, ad: (h.bank || "Kart") + " kartı" + (h.last ? " •" + h.last : ""), tl: +b.sum.debt || 0, pb: "TRY", ham: +b.sum.debt || 0, gun: b.due, not: "Ekstre · asgari " + sayi(+b.sum.min || 0) + " ₺", kart: true }); });
+    L.push({ key: "k:" + b.id, ad: (h.name || ((h.bank || "Kart") + " kartı")) + (h.last ? " •" + h.last : ""), tl: +b.sum.debt || 0, pb: "TRY", ham: +b.sum.debt || 0, gun: b.due, not: "Ekstre · asgari " + sayi(+b.sum.min || 0) + " ₺", kart: true }); });
+  prmKartlar(D).forEach(function (k) { if (!k.yeni || k.tahminDue.slice(0, 7) !== ym) return;
+    L.push({ key: "kt:" + k.acct + "|" + ym, ad: k.ad + (k.last ? " •" + k.last : ""), tl: k.tahminTutar, pb: "TRY", ham: k.tahminTutar, gun: k.tahminDue, not: "Tahmini · ekstreyi yükle", kart: true, tahmini: true }); });
   if (+D.borc.aylik > 0) L.push({ key: "b|" + ym, ad: "Şirkete borç taksiti", tl: prmTl(D.borc.aylik, "USD"), pb: "USD", ham: +D.borc.aylik, gun: ym + "-" + pad(Math.min(+D.borc.gun || 1, gunSay(ym))), borc: true, not: "Ödenince ortak cariye işlenir" });
   if (+D.ev.aylik > 0) L.push({ key: "e|" + ym, ad: "Ev birikimine ayır", tl: +D.ev.aylik, pb: "TRY", ham: +D.ev.aylik, gun: ym + "-" + pad(Math.min(+D.gelirGun || 1, gunSay(ym))), ev: true });
   return L.sort(function (a, b) { return a.gun < b.gun ? -1 : 1; }); }
@@ -3637,71 +3697,183 @@ function prmGiris() {
       .catch(function () { b.disabled = false; b.textContent = "Aç"; msg.textContent = "Parola yanlış."; }); };
   $("prmGo").onclick = go; ["prmP1", "prmP2"].forEach(function (i) { if ($(i)) $(i).onkeydown = function (e) { if (e.key === "Enter") go(); }; }); $("prmP1").focus();
 }
+/* ---------- v60: sekmeli düzen (telefon öncelikli) ---------- */
+function prmGunEkle(d, n) { var ym = ayEkle(d, n); return ym + "-" + String(Math.min(+d.slice(8, 10) || 1, gunSay(ym))).padStart(2, "0"); }
+/* banka hesaplarının bakiyesi: dökümdeki son bakiye ya da elle girilen; hangisi yeniyse */
+function prmBankalar(D) { var S = {};
+  D.tx.forEach(function (t) { if (t.acctKind !== "bank" || t.bal == null || t.bal === "") return; var s = S[t.acct]; if (!s || t.d >= s.t) S[t.acct] = { t: t.d, tutar: +t.bal || 0, kaynak: "döküm" }; });
+  return Object.keys(D.hesaplar).filter(function (a) { return D.hesaplar[a].kind === "bank" && !D.hesaplar[a].kapali; }).map(function (a) { var h = D.hesaplar[a], s = S[a] || null, e = h.bakiye || null;
+    var x = e && (!s || e.t >= s.t) ? { t: e.t, tutar: +e.tutar || 0, kaynak: "elle" } : s || { t: "", tutar: 0, kaynak: "" };
+    return { acct: a, ad: h.name || ((h.bank || "Banka") + " •" + (h.last || "")), banka: h.bank || "", tutar: x.tutar, t: x.t, kaynak: x.kaynak }; }); }
+function prmBankaTop(D) { return prmBankalar(D).reduce(function (s, b) { return s + b.tutar; }, 0); }
+/* kartlar: son ekstre, yeni ekstre kesildi mi, durum */
+function prmKartlar(D) { var bg = bugun();
+  return Object.keys(D.hesaplar).filter(function (a) { return D.hesaplar[a].kind === "card"; }).map(function (a) { var h = D.hesaplar[a];
+    var docs = D.belgeler.filter(function (b) { return b.acct === a && b.kind === "card" && b.kesim; }).sort(function (x, y) { return x.kesim < y.kesim ? 1 : -1; }), son = docs[0] || null;
+    var sonrakiKesim = son ? prmGunEkle(son.kesim, 1) : "", yeni = !!(son && !h.kapali && sonrakiKesim <= bg), od = son ? D.odendi["k:" + son.id] : null;
+    var durum, dRenk; if (h.kapali) { durum = "Kapandı"; dRenk = "gri"; } else if (yeni) { durum = "Ekstre kesildi · yükle"; dRenk = "tur"; } else if (!son) { durum = "Ekstre yok"; dRenk = "gri"; }
+    else if (od) { durum = "✓ Ödendi"; dRenk = "yesil"; } else if (son.due && son.due < bg) { durum = "Gecikti"; dRenk = "kirmizi"; } else { durum = "Son gün " + tarih(son.due).slice(0, 5); dRenk = "tur"; }
+    return { acct: a, h: h, ad: h.name || (h.bank || "Kart"), banka: h.bank || "", last: h.last || "", docs: docs, son: son, yeni: yeni, tahminDue: son ? prmGunEkle(son.due || son.kesim, 1) : "", tahminTutar: son && son.sum ? +son.sum.debt || 0 : 0, durum: durum, dRenk: dRenk, kapali: !!h.kapali }; })
+    .sort(function (x, y) { return (x.kapali ? 1 : 0) - (y.kapali ? 1 : 0); }); }
+function prmKartRenk(k) { var s = (k.banka + " " + k.ad).toUpperCase(); if (k.kapali) return "#6b7a8c"; if (/HALK/.test(s)) return "#0b4a8b"; if (/PLAT/.test(s)) return "#3a4656"; if (/BONUS/.test(s)) return "#1f6f3d"; if (/GARANT/.test(s)) return "#0e4f45"; if (/YAP[Iİ]|WORLD/.test(s)) return "#4b2a7a"; if (/[İI][SŞ]|MAXIMUM/.test(s)) return "#123a6b"; if (/AKBANK|AXESS/.test(s)) return "#8a1c12"; return "#1d3557"; }
+/* bankadan çıkan bir hareketin "kime" anahtarı: kural kategorisi, yoksa açıklamadaki isim */
+var PRM_AYLAR_U = /\b(OCAK|ŞUBAT|SUBAT|MART|NİSAN|NISAN|MAYIS|HAZİRAN|HAZIRAN|TEMMUZ|AĞUSTOS|AGUSTOS|EYLÜL|EYLUL|EKİM|EKIM|KASIM|ARALIK)\b/g;
+function prmTxAnah(D, t) { var kr = prmKuralKat(D, t); if (kr) return "k:" + kr;
+  var U = String(t.desc || "").toLocaleUpperCase("tr-TR").replace(/CEP ŞUBE|CEP SUBE|İNTERNET ŞUBE|MOBİL|MOBIL|HVL|HAVALE|FAST|EFT|EMRİ|EMRI|GİDEN|GELEN|ÖDEMESİ|CEP|GÖNDERİLEN|SANAL|POS/g, " ").replace(PRM_AYLAR_U, " ").replace(/[0-9]+/g, " ").replace(/[^A-ZÇĞİÖŞÜ ]/g, " ");
+  var W = U.split(/\s+/).filter(function (w) { return w.length >= 2; }); return W.length >= 2 ? "n:" + W.slice(0, 2).join(" ") : W.length === 1 && W[0].length >= 4 ? "n:" + W[0] : ""; }
+function prmBuyukHarf(s) { return s.toLocaleLowerCase("tr-TR").replace(/(^|\s)(\S)/g, function (a, b, c) { return b + c.toLocaleUpperCase("tr-TR"); }); }
+function prmBankCikis(D) { var KT = prmKendiTransfer(D); return D.tx.filter(function (t) { return t.acctKind === "bank" && t.amt < 0 && !KT[t.id] && !PRM_KARTODE.test(t.desc + " " + (t.label || "")) && t.label !== "Kart Ödemesi" && !PRM_HARIC[prmKat(D, t)]; }); }
+/* her ay tekrar eden banka ödemeleri (onaylanınca sabit ödeme olur) */
+function prmDuzenli(D) { var G = {}, var0 = {}, son2 = [ayEkle(bugun(), -1), bugun().slice(0, 7)];
+  D.kalemler.forEach(function (k) { if (k.esles) var0[k.esles] = 1; }); var red = D.duzRed || {};
+  prmBankCikis(D).forEach(function (t) { if (-t.amt < 500) return; var a = prmTxAnah(D, t); if (!a || var0[a] || red[a]) return; var ym = t.d.slice(0, 7), g = G[a] = G[a] || { anah: a, ay: {}, gun: [] };
+    g.ay[ym] = (g.ay[ym] || 0) - t.amt; g.gun.push(+t.d.slice(8, 10)); });
+  return Object.keys(G).map(function (a) { var g = G[a], A = Object.keys(g.ay).sort(), V = A.map(function (y) { return g.ay[y]; }), gn = g.gun.slice().sort(function (x, y) { return x - y; });
+    return { anah: a, ad: a.slice(0, 2) === "k:" ? a.slice(2) : prmBuyukHarf(a.slice(2)), kat: a.slice(0, 2) === "k:" ? a.slice(2) : "", aySay: A.length, son: g.ay[A[A.length - 1]], min: Math.min.apply(null, V), max: Math.max.apply(null, V), gun: gn[Math.floor(gn.length / 2)], gunMin: gn[0], gunMax: gn[gn.length - 1], yakin: A.some(function (y) { return son2.indexOf(y) >= 0; }) }; })
+    .filter(function (g) { return g.aySay >= 2 && g.yakin; }).sort(function (x, y) { return y.son - x.son; }); }
+/* kalem bir bankadaki hareketle eşleşiyorsa o ay kendiliğinden ödendi sayılır */
+function prmKalemOdendi(D, k, ym) { if (!k.esles) return null; var t = prmBankCikis(D).filter(function (t) { return t.d.slice(0, 7) === ym && prmTxAnah(D, t) === k.esles; })[0]; return t ? t.d : null; }
+/* isimsiz havaleler: kime gittiği açıklamadan anlaşılmayanlar */
+function prmIsimsiz(D) { var bas = ayEkle(bugun(), -2);
+  return prmBankCikis(D).filter(function (t) { if (t.d.slice(0, 7) < bas || -t.amt < 1000 || D.katElle[t.id]) return false; var k = prmKat(D, t); return (k === "Gönderilen para" || k === "Diğer") && !prmTxAnah(D, t); })
+    .sort(function (a, b) { return a.amt - b.amt; }); }
+function prmChip(r) { var C = { yesil: ["#dcf3e4", "#14532d"], kirmizi: ["#fde8e6", "#8a1c12"], tur: ["#ffe2c4", "#8a4512"], gri: ["#e3e9f1", "#3d4b5c"] }[r] || ["#e3e9f1", "#3d4b5c"]; return "background:" + C[0] + ";color:" + C[1]; }
+function prmBolum(baslik, sag, govde, stil) { return '<section class="prmK"' + (stil ? ' style="' + stil + '"' : "") + '><div class="prmKb"><h3>' + baslik + "</h3>" + (sag || "") + "</div>" + govde + "</section>"; }
+
 function prmCiz() {
-  var D = PRM.D, m = $("m"); if (!PRM.ym) PRM.ym = bugun().slice(0, 7); var ym = PRM.ym, buAy = ym === bugun().slice(0, 7);
+  var D = PRM.D, m = $("m"); if (!PRM.ym) PRM.ym = bugun().slice(0, 7); if (!PRM.tab) PRM.tab = "ozet"; if (!PRM.hym) PRM.hym = bugun().slice(0, 7);
   Promise.all([kurKartiGetir(), yt("ortak") ? liste("ortak_cari", "", "tarih").catch(function () { return []; }) : Promise.resolve([])]).then(function (R) {
-    PRM.KU = R[0]; PRM.cari = R[1]; var KU = R[0], C = prmCari(), O = prmOdemeler(D, ym), od = D.odendi;
-    var acik = O.filter(function (o) { return !o.drk && !od[o.key]; }), acikTop = acik.reduce(function (s, o) { return s + o.tl; }, 0), topO = O.filter(function (o) { return !o.drk; }).reduce(function (s, o) { return s + o.tl; }, 0);
-    var kalan = (+D.kasa.tl || 0) - acikTop - (+D.acil || 0), gg = +D.gelirGun || 1, bd = +bugun().slice(8), gun = bd < gg ? gg - bd : gunSay(ym) - bd + gg, gunluk = gun > 0 ? Math.max(0, kalan) / gun : 0;
-    var gel = D.kalemler.filter(function (k) { return k.tur === "gelir" && prmAktif(k, ym); }), H = prmHarcamalar(D, ym), KT = {};
-    H.forEach(function (h) { KT[h.kat] = (KT[h.kat] || 0) + h.tutar; }); var katL = Object.keys(KT).sort(function (a, b) { return KT[b] - KT[a]; }), hTop = H.reduce(function (s, h) { return s + h.tutar; }, 0), hMax = katL.length ? KT[katL[0]] : 1;
-    var yil = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot === "yillik" && (!k.bit || k.bit >= ym); }), yilPay = yil.filter(function (k) { return k.odeyen !== "DRK"; }).reduce(function (s, k) { return s + prmTl(k.tutar, k.pb) / 12; }, 0);
-    var V = D.varliklar.filter(function (v) { return !v.satildi; }), vTop = V.reduce(function (s, v) { return s + prmTl(v.deger, v.pb); }, 0), borcTl = C ? prmTl(C.borc, "USD") : 0, net = prmKasaTop(D) + vTop - borcTl;
-    var kart = function (ad, deger, alt, koyu, renk) { return '<div class="card" style="margin:0;padding:16px 18px;' + (koyu ? "background:var(--navy);color:#fff;border-color:var(--navy)" : "") + '"><small style="font-size:12.5px;color:' + (koyu ? "#c3d0e0" : "var(--muted)") + '">' + ad + '</small><div style="font-size:24px;font-weight:800;margin-top:4px;' + (renk ? "color:" + renk : "") + '">' + deger + "</div>" + (alt ? '<small style="font-size:12px;color:' + (koyu ? "#c3d0e0" : "var(--muted)") + '">' + alt + "</small>" : "") + "</div>"; };
-    var ayAd = AYLAR[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
-    var html = '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px"><div style="flex:1 1 240px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h2 style="margin:0;font-size:24px">Param</h2><span class="pill" style="background:var(--okbg);color:var(--ok)">🔒 Şifreli · anahtar sadece sende</span></div><small style="color:var(--muted)" id="prmKay">yalnız sen görürsün</small></div>' +
-      '<div style="display:flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px"><button class="btn sm" id="prmOnc" aria-label="Önceki ay">‹</button><b style="padding:0 8px;font-size:14.5px">' + ayAd + '</b><button class="btn sm" id="prmSon" aria-label="Sonraki ay">›</button></div>' +
-      '<button class="btn" id="prmGiz">' + (PRM.giz ? "Rakamları göster" : "Rakamları gizle") + '</button><button class="btn" id="prmAyar">Ayarlar</button><button class="btn" id="prmKil">Kilitle</button>' +
-      '<label class="btn pri" for="prmPdf" style="cursor:pointer">Ekstre / döküm yükle</label><input type="file" id="prmPdf" accept="application/pdf,.pdf" multiple style="display:none"></div>' +
+    PRM.KU = R[0]; PRM.cari = R[1];
+    var tabs = [["ozet", "Özet"], ["kartlar", "Kartlar"], ["odeme", "Ödemeler"], ["harcama", "Harcama"], ["varlik", "Varlık"]];
+    var html = '<div class="prmW"><div class="prmUst"><div style="flex:1;min-width:0"><h2>Param</h2><small id="prmKay">🔒 şifreli · sadece sen</small></div>' +
+      '<button class="btn sm" id="prmGiz" aria-label="' + (PRM.giz ? "Rakamları göster" : "Rakamları gizle") + '">' + (PRM.giz ? "Göster" : "Gizle") + '</button>' +
+      '<label class="btn sm pri prmLb" for="prmPdf">Yükle</label><input type="file" id="prmPdf" accept="application/pdf,.pdf" multiple style="display:none">' +
+      '<button class="btn sm" id="prmAyar" aria-label="Ayarlar">Ayarlar</button><button class="btn sm" id="prmKil" aria-label="Kilitle">' + ikon("kilit", "#1d3557", "kucuk") + "</button></div>" +
+      '<div class="prmTab" role="group" aria-label="Param bölümleri">' + tabs.map(function (t) { return '<button data-prmtab="' + t[0] + '"' + (PRM.tab === t[0] ? ' class="on" aria-current="page"' : "") + ">" + t[1] + "</button>"; }).join("") + "</div>" +
       '<div id="prmPdfO">' + (PRM.mesaj || "") + "</div>"; PRM.mesaj = "";
-    html += '<div class="izgara kpi4">' + kart("Şu an elimde (toplam)", prmP(prmKasaTop(D)), "TL " + prmP(D.kasa.tl) + " · " + prmP(D.kasa.usd, "USD") + " · " + prmP(D.kasa.eur, "EUR") + " · altın " + (PRM.giz ? "••" : sayi(+D.kasa.altin || 0)) + " gr", true) +
-      kart(buAy ? "Gelire kadar kalacak (" + gun + " gün)" : "Bu ayın ödemeleri", buAy ? prmP(kalan) : prmP(topO), buAy ? "TL kasadan ödenmemişler ve acil durum payı düşüldü" : "", false, buAy ? (kalan < 0 ? "var(--bad)" : "var(--ok)") : "") +
-      kart("Günde en fazla", buAy ? prmP(gunluk) : "—", buAy ? "gelir gününe kadar" : "") + kart("Acil durum payı", prmP(D.acil), "kasada hep kalsın") + "</div>";
-    // ödemeler
-    html += '<div class="izgara" style="align-items:start"><div class="card" style="margin:0"><h3 style="display:flex;align-items:center;gap:8px">Bu ayın ödemeleri <small style="margin-left:auto;color:var(--muted);font-weight:500">' + prmP(topO) + " · " + O.filter(function (o) { return od[o.key]; }).length + " / " + O.length + " ödendi</small></h3>" +
-      (O.length ? O.map(function (o) { var ok = !!od[o.key], gec = !ok && buAy && o.gun < bugun(), notlar = ok ? "✓ ödendi " + tarih(od[o.key]) : (o.not ? o.not + " · " : "") + "son gün " + tarih(o.gun) + (gec ? " · gecikti" : "") + (o.drk ? " · DRK öder" : "") + (o.yillik ? " · yıllık" : "");
-        return '<div class="row" style="gap:12px"><div style="flex:1;min-width:0"><b style="font-size:14.5px">' + esc(o.ad) + '</b><div style="font-size:12.5px;color:' + (ok ? "var(--ok)" : gec ? "var(--bad)" : "var(--muted)") + '">' + esc(notlar) + "</div></div><b style=\"white-space:nowrap\">" + prmP(o.pb === "TRY" ? o.tl : o.ham, o.pb) + '</b><button class="btn sm" data-prmod="' + esc(o.key) + '" aria-label="' + esc(o.ad) + (ok ? " ödendi, geri al" : " ödendi olarak işaretle") + '" style="width:44px;height:44px;border-radius:50%;padding:0;' + (ok ? "background:var(--ok);color:#fff;border-color:var(--ok)" : "") + '">' + (ok ? "✓" : "") + "</button>" +
-          (o.kalem ? '<button class="btn sm" data-prmkd="' + o.kalem.id + '" aria-label="Düzenle" style="padding:0 10px">✎</button>' : "") + "</div>"; }).join("") : '<div class="row" style="color:var(--muted)">Bu ay için ödeme yok. Sabit giderlerini ekle ya da ekstre yükle.</div>') +
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;padding:10px 18px 14px"><button class="btn sm" id="prmKalY">+ Sabit gider / gelir</button><button class="btn sm" id="prmNakY">+ Nakit / havale harcaması</button></div></div>';
-    // sağ sütun: ev planı + şirket
-    var evO = +D.ev.hedef ? Math.min(100, (+D.ev.birikim || 0) / D.ev.hedef * 100) : 0, evAy = +D.ev.aylik > 0 && +D.ev.hedef > +D.ev.birikim ? Math.ceil((D.ev.hedef - D.ev.birikim) / D.ev.aylik) : null;
-    html += '<div style="display:grid;gap:12px"><div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Ev planı <small style="margin-left:auto;color:var(--muted);font-weight:500">hedef ' + prmP(D.ev.hedef) + '</small></h3><div style="padding:0 18px 16px"><div style="font-size:24px;font-weight:800">' + prmP(D.ev.birikim) + '</div><div style="height:10px;background:#e3e9f1;border-radius:99px;overflow:hidden;margin-top:8px"><div style="width:' + evO + '%;height:10px;background:var(--orange)"></div></div>' +
-      '<div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px"><span>Aylık ' + prmP(D.ev.aylik) + '</span><span>' + (evAy != null ? "Bu hızla hedefe: " + AYLAR[+ayEkle(bugun(), evAy).slice(5, 7) - 1] + " " + ayEkle(bugun(), evAy).slice(0, 4) : +D.ev.hedef ? "aylık birikim girilmedi" : "hedef girilmedi") + "</span></div></div></div>" +
-      '<div class="card" style="margin:0;background:var(--infobg);border-color:#cfe3fa"><h3>Şirketle bağlantım <small style="color:var(--muted);font-weight:500">ortak cariden otomatik</small></h3>' +
-      gel.map(function (k) { return '<div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>' + esc(k.ad) + ' <small style="color:var(--muted)">her ayın ' + (+k.gun || 1) + ". günü</small></span><b>" + prmP(k.tutar, k.pb) + "</b></div>"; }).join("") +
-      (C ? '<div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>Bu ay ortak cariden çektiğim</span><b>' + prmP(C.ay(ym), "USD") + '</b></div><div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>Şirkete borcum <small style="color:var(--muted)">(60/40 dengesine göre)</small></span><b style="color:var(--bad)">' + prmP(C.borc, "USD") + "</b></div>" +
-        '<div class="row" style="border-color:#cfe3fa;font-size:12.5px;color:#3d5a80">' + (+D.borc.aylik ? "Ödeme planı: ayda " + prmP(D.borc.aylik, "USD") + " · yaklaşık " + Math.ceil(C.borc / D.borc.aylik) + " ay" : "Ödeme planı girilmedi (Ayarlar)") + "</div>" : '<div class="row" style="color:var(--muted)">Ortak cari görülemiyor.</div>') + "</div></div></div>";
-    // varlıklar
-    html += '<div class="card"><h3 style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">Varlıklarım <small style="margin-left:auto;color:var(--muted);font-weight:500">net varlık (borç düşülmüş) <b style="color:var(--text);font-size:15px">' + prmP(net) + '</b></small></h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;padding:0 18px 12px">' +
-      '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px"><small style="color:var(--muted)">Nakit · TL / döviz / altın</small><div style="font-weight:700">Banka + kasa</div><div style="font-size:18px;font-weight:800">' + prmP(prmKasaTop(D)) + "</div></div>" +
-      V.map(function (v) { return '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><small style="color:var(--muted)">' + esc(v.tur) + (v.sahip === "DRK" ? " · DRK üzerine kayıtlı" : "") + '</small><div style="font-weight:700">' + esc(v.ad || v.tur) + '</div><div style="font-size:18px;font-weight:800">' + prmP(v.deger, v.pb) + "</div>" + (v.not ? '<small style="color:var(--muted)">' + esc(v.not) + "</small>" : "") +
-        '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" data-prmvd="' + v.id + '" style="flex:1">Düzenle</button><button class="btn sm" data-prmvs="' + v.id + '" style="flex:1;color:var(--warn)">Sattım</button></div></div>'; }).join("") +
-      (C ? '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px"><small style="color:var(--muted)">Borç</small><div style="font-weight:700">Şirkete borcum</div><div style="font-size:18px;font-weight:800;color:var(--bad)">−' + prmP(C.borc, "USD") + "</div></div>" : "") +
-      '</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:0 18px 14px"><button class="btn sm" id="prmVarY">+ Varlık ekle</button>' + (D.varliklar.some(function (v) { return v.satildi; }) ? '<button class="btn sm" id="prmSatL">Satılanlar (' + D.varliklar.filter(function (v) { return v.satildi; }).length + ")</button>" : "") + "</div></div>";
-    // harcamalar + yıllık
-    html += '<div class="izgara" style="align-items:start"><div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Harcamalar <small style="margin-left:auto;color:var(--muted);font-weight:500">' + prmP(hTop) + ' · taksitli alım alındığı ayda tam sayılır</small></h3>' +
-      (katL.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:0 18px 10px">' + katL.map(function (k) { return '<button class="btn" data-prmkat="' + esc(k) + '" style="display:block;text-align:left;height:auto;padding:10px 12px;border-radius:12px"><small style="color:var(--muted)">' + esc(k) + '</small><div style="font-size:17px;font-weight:800">' + prmP(KT[k]) + '</div><div style="height:6px;background:#e3e9f1;border-radius:99px;overflow:hidden;margin-top:6px"><div style="width:' + Math.round(KT[k] / hMax * 100) + '%;height:6px;background:var(--blue)"></div></div></button>'; }).join("") + "</div>" : '<div class="row" style="color:var(--muted)">Bu ay harcama yok. Kart ekstresi veya hesap dökümü PDF\'i yükle.</div>') +
-      '<div id="prmKatO"></div></div>' +
-      '<div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Yıllık giderler <small style="margin-left:auto;color:var(--muted);font-weight:500">bu aya düşen pay ' + prmP(yilPay) + "</small></h3>" +
-      (yil.length ? yil.map(function (k) { return '<div class="row" style="justify-content:space-between"><span><b>' + esc(k.ad) + '</b><br><small style="color:var(--muted)">' + AYLAR[(+k.ay || 1) - 1] + " · ayda " + prmP(prmTl(k.tutar, k.pb) / 12) + (k.odeyen === "DRK" ? " · DRK öder" : "") + "</small></span><b>" + prmP(k.tutar, k.pb) + "</b></div>"; }).join("") : '<div class="row" style="color:var(--muted)">Yıllık gider yok (okul, marina, kasko, MTV…). "+ Sabit gider" ile "yıllık" seçerek ekle.</div>') + "</div></div>";
-    html += '<div class="card"><h3>Yüklenen belgeler <small style="color:var(--muted);font-weight:500">' + D.belgeler.length + " belge · " + D.tx.length + " işlem</small></h3>" + (D.belgeler.slice().reverse().slice(0, 12).map(function (b) { var h = D.hesaplar[b.acct] || {};
-      return '<div class="row" style="justify-content:space-between"><span>' + esc((h.bank || "") + " " + (b.kind === "card" ? "kart •" : "hesap •") + (h.last || "")) + ' <small style="color:var(--muted)">' + (b.kind === "card" ? "kesim " + tarih(b.kesim) + " · son ödeme " + tarih(b.due) : tarih(b.from) + " – " + tarih(b.to)) + "</small></span>" + (b.ok ? '<span class="pill" style="background:var(--okbg);color:var(--ok)">tutarlar tuttu</span>' : '<span class="pill" style="background:var(--warnbg);color:var(--warn)">kontrol et</span>') + "</div>"; }).join("") || '<div class="row" style="color:var(--muted)">Henüz belge yok.</div>') + "</div>";
-    m.innerHTML = html; prmBagla(O, H);
+    var f = { ozet: prmSOzet, kartlar: prmSKartlar, odeme: prmSOdeme, harcama: prmSHarcama, varlik: prmSVarlik }[PRM.tab] || prmSOzet, B = f(D);
+    m.innerHTML = html + B.html + "</div>"; prmBagla(B);
   }).catch(hata);
 }
-function prmBagla(O, H) {
-  var D = PRM.D;
-  $("prmOnc").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", -1); prmCiz(); }; $("prmSon").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", 1); prmCiz(); };
-  $("prmGiz").onclick = function () { PRM.giz = !PRM.giz; prmCiz(); }; $("prmKil").onclick = function () { prmKilitle(); };
-  $("prmAyar").onclick = prmAyarlar; $("prmKalY").onclick = function () { prmKalemForm(null); }; $("prmNakY").onclick = prmNakitForm; $("prmVarY").onclick = function () { prmVarlikForm(null); };
-  if ($("prmSatL")) $("prmSatL").onclick = prmSatilanlar;
-  $("prmPdf").onchange = function () { var F = Array.prototype.slice.call(this.files || []); this.value = ""; if (F.length) prmBelgeYukle(F); };
-  Array.prototype.forEach.call(document.querySelectorAll("[data-prmod]"), function (b) { b.onclick = function () { prmOdendi(b.dataset.prmod, O); }; });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-prmkd]"), function (b) { b.onclick = function () { prmKalemForm(D.kalemler.filter(function (k) { return k.id === b.dataset.prmkd; })[0]); }; });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-prmvd]"), function (b) { b.onclick = function () { prmVarlikForm(D.varliklar.filter(function (v) { return v.id === b.dataset.prmvd; })[0]); }; });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-prmvs]"), function (b) { b.onclick = function () { prmSatis(D.varliklar.filter(function (v) { return v.id === b.dataset.prmvs; })[0]); }; });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-prmkat]"), function (b) { b.onclick = function () { prmKatDetay(b.dataset.prmkat, H); }; });
+/* ödeme durumu (elle işaretli ya da bankada eşleşti) */
+function prmOdDurum(D, o) { var e = D.odendi[o.key]; if (e) return e; if (o.kalem) return prmKalemOdendi(D, o.kalem, o.gun.slice(0, 7)); return null; }
+function prmOdSatir(D, o, kisa) { var od = prmOdDurum(D, o), bg = bugun(), gec = !od && o.gun < bg && !o.tahmini, notlar = od ? "✓ ödendi " + tarih(od).slice(0, 5) + (D.odendi[o.key] ? "" : " · bankada görüldü") : (o.not ? o.not + " · " : "") + (gec ? "gecikti" : "son gün " + tarih(o.gun).slice(0, 5)) + (o.drk ? " · DRK öder" : "");
+  return '<div class="prmS"><div class="prmGun"><b>' + +o.gun.slice(8, 10) + "</b><small>" + AYLAR[+o.gun.slice(5, 7) - 1].slice(0, 3).toLocaleUpperCase("tr-TR") + '</small></div><div style="flex:1;min-width:0"><b class="prmAd">' + esc(o.ad) + '</b><small style="color:' + (od ? "var(--ok)" : gec ? "var(--bad)" : "var(--muted)") + '">' + esc(notlar) + '</small></div><b class="prmT">' + (o.tahmini ? "~" : "") + prmP(o.pb === "TRY" ? o.tl : o.ham, o.pb) + "</b>" +
+    (kisa ? "" : '<button class="prmOk' + (od ? " on" : "") + '" data-prmod="' + esc(o.key) + '" aria-label="' + esc(o.ad) + (od ? " ödendi, geri al" : " ödendi olarak işaretle") + '">' + (od ? "✓" : "") + "</button>") + "</div>"; }
+function prmSOzet(D) {
+  var ym = bugun().slice(0, 7), O = prmOdemeler(D, ym), bg = bugun(), gg = +D.gelirGun || 1, bd = +bg.slice(8), gun = bd < gg ? gg - bd : gunSay(ym) - bd + gg, gelirT = bd < gg ? ym + "-" + String(gg).padStart(2, "0") : prmGunEkle(ym + "-" + String(Math.min(gg, 28)).padStart(2, "0"), 1);
+  if (bd >= gg) O = O.concat(prmOdemeler(D, ayEkle(ym, 1)).filter(function (o) { return o.gun <= gelirT; }));
+  var acik = O.filter(function (o) { return !o.drk && !prmOdDurum(D, o) && o.gun <= gelirT; }), acikTop = acik.reduce(function (s, o) { return s + o.tl; }, 0);
+  var BK = prmBankalar(D), kasa = prmKasaTop(D), kalan = (+D.kasa.tl || 0) + prmBankaTop(D) - acikTop - (+D.acil || 0), tah = acik.some(function (o) { return o.tahmini; });
+  var U = [], KR = prmKartlar(D), yeniK = KR.filter(function (k) { return k.yeni; });
+  if (yeniK.length) U.push(["#ed7d31", yeniK.length > 1 ? yeniK.length + " kartın yeni ekstresi kesildi" : yeniK[0].ad + " yeni ekstresi kesildi", yeniK.map(function (k) { return k.ad; }).join(", ") + " · PDF'leri yükle", '<label class="btn sm prmLb" for="prmPdf">Yükle</label>']);
+  if (kalan < 0) U.push(["#b42318", "Ödemelere " + prmP(-kalan) + " eksik", "Elindeki " + prmP(kasa) + " · gelire kadar ödenecek " + prmP(acikTop) + (tah ? " (tahmini)" : ""), '<button class="btn sm" data-prmgit="odeme">Gör</button>']);
+  BK.forEach(function (b) { if (!b.t || (Date.parse(bg) - Date.parse(b.t)) / 864e5 > 7) U.push(["#6b8bb3", b.ad + " bakiyesi eski", (b.t ? "Son bilgi " + tarih(b.t) : "Bakiye yok") + " · bugünkü bakiyeyi yaz", '<button class="btn sm" data-prmbak="' + esc(b.acct) + '">Güncelle</button>']); });
+  KR.forEach(function (k) { var s = k.son; if (s && s.sum && +s.sum.fees > 1000 && s.kesim >= ayEkle(bg, -1) + "-01") U.push(["#b42318", k.ad + ": " + prmP(s.sum.fees) + " faiz / masraf", "Son ekstrede · geç ya da eksik ödeme faizi olabilir", ""]); });
+  var DZ = prmDuzenli(D); if (DZ.length) U.push(["#1565c0", DZ.length + " düzenli ödeme buldum", DZ.slice(0, 3).map(function (g) { return g.ad; }).join(", ") + " · onaylarsan her ay listene gelir", '<button class="btn sm" data-prmgit="odeme">Gör</button>']);
+  var H = prmHarcamalar(D, ym), HO = prmHarcamalar(D, ayEkle(ym, -1)), hT = H.reduce(function (s, h) { return s + h.tutar; }, 0), hTO = HO.reduce(function (s, h) { return s + h.tutar; }, 0), KT = {};
+  H.forEach(function (h) { KT[h.kat] = (KT[h.kat] || 0) + h.tutar; }); var KL = Object.keys(KT).sort(function (a, b) { return KT[b] - KT[a]; }), RN = ["#ed7d31", "#1d3557", "#3f6ea5", "#b9c6d6"];
+  var parca = KL.slice(0, 3).map(function (k, i) { return [k, KT[k], RN[i]]; }); if (KL.length > 3) parca.push(["Gerisi", KL.slice(3).reduce(function (s, k) { return s + KT[k]; }, 0), RN[3]]);
+  var h = '<section class="prmHero"><small>Şu an elimde</small><div class="prmBuyuk">' + prmP(kasa) + '</div><small>' + BK.map(function (b) { return esc(b.banka || b.ad) + " " + prmP(b.tutar); }).join(" · ") + (+D.kasa.tl ? " · nakit " + prmP(D.kasa.tl) : "") + (+D.kasa.usd ? " · " + prmP(D.kasa.usd, "USD") : "") + (+D.kasa.altin ? " · altın " + (PRM.giz ? "••" : sayi(D.kasa.altin)) + " gr" : "") + "</small>" +
+    '<div class="prmIki"><div><small>Gelire kadar (' + +gelirT.slice(8, 10) + " " + AYLAR[+gelirT.slice(5, 7) - 1].slice(0, 3) + ") ödenecek</small><b>" + (tah ? "~" : "") + prmP(acikTop) + '</b></div><div class="' + (kalan < 0 ? "kotu" : "iyi") + '"><small>Ödemelerden sonra</small><b>' + prmP(kalan) + "</b></div></div>" +
+    '<small style="display:block;margin-top:10px">' + (kalan > 0 ? "Gelir gününe kadar günde en fazla " + prmP(kalan / Math.max(1, gun)) + " · " : "") + (tah ? "Yüklenmemiş ekstreler geçen ayın tutarıyla tahmin edildi." : "Acil durum payı " + prmP(D.acil) + " düşüldü.") + "</small></section>";
+  if (U.length) h += prmBolum("Yapman gerekenler", "", U.map(function (u) { return '<div class="prmS"><span class="prmNok" style="background:' + u[0] + '"></span><div style="flex:1;min-width:0"><b class="prmAd">' + esc(u[1]) + '</b><small style="color:var(--muted)">' + esc(u[2]) + "</small></div>" + u[3] + "</div>"; }).join(""));
+  var sira = acik.slice(0, 4); h += prmBolum("Sıradaki ödemeler", '<button class="btn sm" data-prmgit="odeme">Hepsi</button>', sira.length ? sira.map(function (o) { return prmOdSatir(D, o, true); }).join("") : '<div class="prmS" style="color:var(--muted)">' + "Gelir gününe kadar açık ödeme yok.</div>");
+  h += prmBolum("Bu ay harcadığım", "<b>" + prmP(hT) + "</b>", '<div style="padding:0 16px 14px"><small style="color:var(--muted)">' + bd + " günde · " + AYLAR[+ayEkle(ym, -1).slice(5, 7) - 1] + " tamamı " + prmP(hTO) + '</small><div class="prmBar">' + parca.map(function (p) { return '<span style="width:' + Math.max(2, p[1] / (hT || 1) * 100) + "%;background:" + p[2] + '"></span>'; }).join("") + '</div><div class="prmLej">' + parca.map(function (p) { return '<span><i style="background:' + p[2] + '"></i>' + esc(p[0]) + " " + prmP(p[1]) + "</span>"; }).join("") + '</div><button class="btn sm" data-prmgit="harcama" style="margin-top:10px">Ayrıntı</button></div>');
+  return { html: h };
 }
+function prmSKartlar(D) {
+  var KR = prmKartlar(D), ac = PRM.kartAcik, h = '<div class="prmBas"><h3>Kredi kartlarım</h3><small>' + KR.filter(function (k) { return !k.kapali; }).length + " aktif" + (KR.some(function (k) { return k.kapali; }) ? " · " + KR.filter(function (k) { return k.kapali; }).length + " kapalı" : "") + "</small></div>";
+  if (!KR.length) h += '<section class="prmK"><div class="prmS" style="color:var(--muted)">Henüz kart yok. Kart ekstresi PDF\'ini "Yükle" ile ekle.</div></section>';
+  KR.forEach(function (k) { var s = k.son, acik = ac === k.acct, bor = k.yeni ? "Yeni ekstre bekleniyor · son " + prmP(k.tahminTutar) : s && s.sum ? prmP(s.sum.debt) : "—";
+    var eti = k.yeni ? AYLAR[+k.tahminDue.slice(5, 7) - 1] + " ödemesi (tahmini ~" + prmP(k.tahminTutar) + ")" : s ? AYLAR[+(s.due || s.kesim).slice(5, 7) - 1] + " ekstresi" : "";
+    h += '<div class="prmKart' + (k.kapali ? " kapali" : "") + '"><button class="prmKartY" data-prmkart="' + esc(k.acct) + '" aria-expanded="' + acik + '" style="background:' + prmKartRenk(k) + '"><span class="r1"><span>' + esc(k.banka) + '</span><span class="prmChip" style="' + prmChip(k.dRenk) + '">' + esc(k.durum) + '</span></span><span class="r2">' + esc(k.ad) + (k.last ? " <i>•" + esc(k.last) + "</i>" : "") + "</span>" +
+      '<span class="r3"><span><small>' + esc(eti) + "</small><b>" + (k.yeni ? "~" + prmP(k.tahminTutar) : s && s.sum ? prmP(s.sum.debt) : "—") + '</b></span><span class="sag">' + (s ? "Kesim: ayın " + +s.kesim.slice(8, 10) + ". günü<br>Son ödeme " + (k.yeni ? "~" + tarih(k.tahminDue).slice(0, 5) : tarih(s.due).slice(0, 5)) : "") + "</span></span></button>";
+    if (acik) { h += '<div class="prmKartA"><small class="prmEt">EKSTRE GEÇMİŞİ</small>' + k.docs.slice(0, 6).map(function (b) { var od = D.odendi["k:" + b.id], f = b.sum && +b.sum.fees > 0 ? " · faiz/masraf " + prmP(b.sum.fees) : "";
+        return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + AYLAR[+(b.due || b.kesim).slice(5, 7) - 1] + " " + (b.due || b.kesim).slice(0, 4) + '</b><small style="color:' + (od ? "var(--ok)" : "var(--muted)") + '">' + (od ? "ödendi " + tarih(od).slice(0, 5) : "son gün " + tarih(b.due).slice(0, 5)) + esc(f) + (b.ok ? "" : " · tutarlar tutmadı") + '</small></div><b class="prmT">' + prmP(b.sum ? b.sum.debt : 0) + '</b><button class="prmOk' + (od ? " on" : "") + '" data-prmod="k:' + b.id + '" aria-label="' + (od ? "ödendi, geri al" : "ödendi olarak işaretle") + '">' + (od ? "✓" : "") + "</button></div>"; }).join("") +
+        '<div class="prmBtn2"><button class="btn" data-prmisl="' + esc(k.acct) + '">İşlemleri gör</button>' + (k.kapali ? '<button class="btn" data-prmkap="' + esc(k.acct) + '">Tekrar aktif yap</button>' : '<label class="btn pri prmLb" for="prmPdf">Ekstre yükle</label>') + "</div>" +
+        (k.kapali ? "" : '<button class="btn sm" data-prmkap="' + esc(k.acct) + '" style="margin:8px 0 2px;color:var(--muted)">Kart kapandı olarak işaretle</button>') + "</div>"; }
+    h += "</div>"; });
+  var BK = prmBankalar(D); h += '<div class="prmBas" style="margin-top:6px"><h3>Banka hesaplarım</h3><small>' + prmP(prmBankaTop(D)) + "</small></div>";
+  h += '<section class="prmK">' + (BK.length ? BK.map(function (b) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(b.ad) + '</b><small style="color:var(--muted)">' + (b.t ? (b.kaynak === "elle" ? "elle girildi " : "dökümden ") + tarih(b.t) : "bakiye yok") + '</small></div><b class="prmT">' + prmP(b.tutar) + '</b><button class="btn sm" data-prmbak="' + esc(b.acct) + '">Güncelle</button></div>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Hesap dökümü yüklenince burada görünür.</div>') + "</section>";
+  return { html: h };
+}
+function prmSOdeme(D) {
+  var ym = PRM.ym, O = prmOdemeler(D, ym), odS = O.filter(function (o) { return prmOdDurum(D, o); }).length, top = O.filter(function (o) { return !o.drk; }).reduce(function (s, o) { return s + o.tl; }, 0);
+  var h = '<div class="prmAy"><button class="btn" id="prmOnc" aria-label="Önceki ay">‹</button><div><b>' + AYLAR[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4) + "</b><small>" + prmP(top) + " · " + odS + " / " + O.length + ' ödendi</small></div><button class="btn" id="prmSon" aria-label="Sonraki ay">›</button></div>';
+  h += '<section class="prmK">' + (O.length ? O.map(function (o) { return prmOdSatir(D, o) + (o.kalem ? "" : ""); }).join("") : '<div class="prmS" style="color:var(--muted)">Bu ay ödeme yok.</div>') + "</section>";
+  var DZ = prmDuzenli(D);
+  if (DZ.length) h += prmBolum("Bankada düzenli gördüklerim", "", '<small class="prmAc">Hesap dökümlerinden buldum. Onaylarsan her ay ödeme listene kendiliğinden gelir; bankada görünce "ödendi" olur.</small>' + DZ.map(function (g) {
+    return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(g.ad) + '</b><small style="color:#3d5470">' + g.aySay + " aydır · ayın " + (g.gunMin === g.gunMax ? g.gunMin : g.gunMin + "–" + g.gunMax) + ". günü · " + (Math.round(g.min) === Math.round(g.max) ? prmP(g.max) : prmP(g.min) + " – " + prmP(g.max)) + '</small></div><button class="btn sm pri" data-prmdz="' + esc(g.anah) + '">Onayla</button><button class="btn sm" data-prmdzr="' + esc(g.anah) + '" aria-label="' + esc(g.ad) + ' önerisini gizle">✕</button></div>'; }).join(""), "background:var(--infobg);border-color:#cfe3fa");
+  var yil = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot === "yillik" && (!k.bit || k.bit >= ym); });
+  var sab = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot !== "yillik"; });
+  h += prmBolum("Sabit ödemelerim", '<button class="btn sm" id="prmKalY">+ Ekle</button>', (sab.concat(yil).length ? sab.concat(yil).map(function (k) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(k.ad) + '</b><small style="color:var(--muted)">' + (k.periyot === "yillik" ? "yılda bir · " + AYLAR[(+k.ay || 1) - 1] : "ayın " + (+k.gun || 1) + ". günü") + (k.esles ? " · bankadan otomatik" : "") + (k.odeyen === "DRK" ? " · DRK öder" : "") + '</small></div><b class="prmT">' + prmP(k.tutar, k.pb) + '</b><button class="btn sm" data-prmkd="' + k.id + '" aria-label="' + esc(k.ad) + ' düzenle">Düzenle</button></div>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Henüz sabit ödeme yok. Yukarıdan onayla ya da "+ Ekle" ile gir (aidat, sigorta, okul…).</div>'));
+  return { html: h, O: O };
+}
+function prmSHarcama(D) {
+  var bu = bugun().slice(0, 7), AY = [ayEkle(bu, -2), ayEkle(bu, -1), bu], ym = PRM.hym, H = prmHarcamalar(D, ym), KT = {};
+  var h = '<div class="prmAyB">' + AY.map(function (a) { var t = prmHarcamalar(D, a).reduce(function (s, x) { return s + x.tutar; }, 0); return '<button data-prmhym="' + a + '"' + (a === ym ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"') + "><small>" + AYLAR[+a.slice(5, 7) - 1] + "</small><b>" + prmM(t >= 1e6 ? (t / 1e6).toFixed(2).replace(".", ",") + " M" : t >= 1e3 ? Math.round(t / 1e3) + " B" : sayi(Math.round(t))) + "</b></button>"; }).join("") + "</div>";
+  h += '<small class="prmAc" style="padding:0 4px">Kart ödemeleri ve kendi hesapların arası para sayılmaz. Taksitli alım alındığı ay tam yazılır. Kategoriye dokun, işlemleri gör ve düzelt.</small>';
+  H.forEach(function (x) { KT[x.kat] = (KT[x.kat] || 0) + x.tutar; }); var KL = Object.keys(KT).sort(function (a, b) { return KT[b] - KT[a]; }), mx = KL.length ? KT[KL[0]] : 1, RN = ["#ed7d31", "#1d3557", "#3f6ea5", "#6b8bb3", "#8a9bb0", "#a7b6c8"];
+  h += '<section class="prmK">' + (KL.length ? KL.map(function (k, i) { return '<button class="prmKat" data-prmkat="' + esc(k) + '"><span class="r"><b>' + esc(k) + "</b><b>" + prmP(KT[k]) + '</b></span><span class="prmBar1"><span style="width:' + Math.max(2, KT[k] / mx * 100) + "%;background:" + RN[Math.min(i, RN.length - 1)] + '"></span></span></button>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Bu ay harcama yok.</div>') + '<div id="prmKatO"></div></section>';
+  var IS = prmIsimsiz(D);
+  if (IS.length) h += prmBolum("Kime gittiği belli olmayanlar", "", '<small class="prmAc">Açıklamasında isim olmayan havaleler. Ne olduğunu bir kez söyle, doğru kategoriye geçsin.</small>' + IS.slice(0, 8).map(function (t) { var hs = D.hesaplar[t.acct] || {};
+    return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + prmP(-t.amt) + '</b><small style="color:#6b4a2e">' + tarih(t.d).slice(0, 5) + " · " + esc(hs.bank || "") + " · " + esc(String(t.desc || "").slice(0, 28)) + '</small></div><button class="btn sm" data-prmbune="' + t.id + '">Bu ne?</button></div>'; }).join(""), "background:#fff6ee;border-color:#f6d7bd");
+  h += '<button class="btn" id="prmNakY" style="width:100%">+ Nakit / elden harcama ekle</button>';
+  return { html: h, H: H };
+}
+function prmSVarlik(D) {
+  var C = prmCari(), V = D.varliklar.filter(function (v) { return !v.satildi; }), vTop = V.filter(function (v) { return v.sahip !== "DRK"; }).reduce(function (s, v) { return s + prmTl(v.deger, v.pb); }, 0), borcTl = C ? prmTl(C.borc, "USD") : 0, kasa = prmKasaTop(D), net = kasa + vTop - borcTl;
+  var h = '<section class="prmHero"><small>Net varlığım (borçlar düşülmüş)</small><div class="prmBuyuk">' + prmP(net) + "</div><small>" + (V.some(function (v) { return v.sahip === "DRK"; }) ? "Şirket (DRK) üzerindekiler net varlığa sayılmaz." : "") + "</small></section>";
+  var sat = function (ad, alt, tutar, renk, btn) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + ad + '</b><small style="color:var(--muted)">' + alt + '</small></div><b class="prmT"' + (renk ? ' style="color:' + renk + '"' : "") + ">" + tutar + "</b>" + (btn || "") + "</div>"; };
+  h += prmBolum("Nakit, banka, döviz", '<button class="btn sm" id="prmKasaD">Düzenle</button>', sat("Banka hesapları", prmBankalar(D).length + " hesap", prmP(prmBankaTop(D))) + sat("Elde nakit", "TL", prmP(D.kasa.tl)) + sat("Dolar · Euro", prmP(D.kasa.usd, "USD") + " · " + prmP(D.kasa.eur, "EUR"), prmP(prmTl(D.kasa.usd, "USD") + prmTl(D.kasa.eur, "EUR"))) + sat("Altın", (PRM.giz ? "••" : sayi(+D.kasa.altin || 0)) + " gr · gram " + prmP(D.kasa.altinFiyat), prmP((+D.kasa.altin || 0) * (+D.kasa.altinFiyat || 0))));
+  h += prmBolum("Eşyalar ve varlıklar", '<button class="btn sm" id="prmVarY">+ Ekle</button>', (V.length ? V.map(function (v) { return sat(esc(v.ad || v.tur), esc(v.tur) + (v.sahip === "DRK" ? " · DRK şirketinin, net varlığa sayılmaz" : "") + (v.not ? " · " + esc(v.not) : ""), +v.deger ? prmP(v.deger, v.pb) : "değer yok", "", '<button class="btn sm" data-prmvd="' + v.id + '">Düzenle</button>'); }).join("") : '<div class="prmS" style="color:var(--muted)">Araba, tekne, ev… "+ Ekle" ile gir.</div>') +
+    (D.varliklar.some(function (v) { return v.satildi; }) ? '<div class="prmS"><button class="btn sm" id="prmSatL">Satılanlar (' + D.varliklar.filter(function (v) { return v.satildi; }).length + ")</button></div>" : ""));
+  var evO = +D.ev.hedef ? Math.min(100, (+D.ev.birikim || 0) / D.ev.hedef * 100) : 0, evAy = +D.ev.aylik > 0 && +D.ev.hedef > +D.ev.birikim ? Math.ceil((D.ev.hedef - D.ev.birikim) / D.ev.aylik) : null;
+  h += prmBolum("Ev planı", "<b>" + prmP(D.ev.birikim) + "</b>", '<div style="padding:0 16px 14px"><div class="prmBar"><span style="width:' + evO + '%;background:#ed7d31"></span></div><small style="color:var(--muted);display:block;margin-top:6px">' + (+D.ev.hedef ? "Hedef " + prmP(D.ev.hedef) + " · aylık " + prmP(D.ev.aylik) + (evAy != null ? " · bu hızla " + AYLAR[+ayEkle(bugun(), evAy).slice(5, 7) - 1] + " " + ayEkle(bugun(), evAy).slice(0, 4) : "") : "Hedef girilmedi") + '</small><button class="btn sm" id="prmEvD" style="margin-top:10px">Hedef ve aylık birikim</button></div>');
+  var gel = D.kalemler.filter(function (k) { return k.tur === "gelir"; });
+  h += prmBolum("Şirketle bağlantım", "", gel.map(function (k) { return sat(esc(k.ad), "ayın " + (+k.gun || 1) + ". günü · gelir", prmP(k.tutar, k.pb), "var(--ok)", '<button class="btn sm" data-prmkd="' + k.id + '">Düzenle</button>'); }).join("") +
+    (C ? sat("Bu ay ortak cariden çektiğim", "ortak cariden otomatik", prmP(C.ay(bugun().slice(0, 7)), "USD")) + sat("Şirkete borcum", "60/40 dengesine göre" + (+D.borc.aylik ? " · ayda " + prmP(D.borc.aylik, "USD") + ", ~" + Math.ceil(C.borc / D.borc.aylik) + " ay" : " · ödeme planı yok"), "−" + prmP(C.borc, "USD"), "var(--bad)") : '<div class="prmS" style="color:var(--muted)">Ortak cari görülemiyor.</div>') +
+    '<div class="prmS"><button class="btn sm" id="prmGelY">+ Gelir ekle (maaş, kira geliri…)</button></div>', "background:var(--infobg);border-color:#cfe3fa");
+  h += prmBolum("Yüklenen belgeler", "<small>" + D.belgeler.length + " belge · " + D.tx.length + " işlem</small>", D.belgeler.slice().reverse().slice(0, 10).map(function (b) { var hs = D.hesaplar[b.acct] || {};
+    return sat(esc((hs.name || hs.bank || "") + (hs.last ? " •" + hs.last : "")), b.kind === "card" ? "ekstre · kesim " + tarih(b.kesim) : "döküm · " + tarih(b.from) + " – " + tarih(b.to), b.ok ? '<span class="prmChip" style="' + prmChip("yesil") + '">tuttu</span>' : '<span class="prmChip" style="' + prmChip("tur") + '">kontrol et</span>'); }).join("") || '<div class="prmS" style="color:var(--muted)">Henüz belge yok.</div>');
+  return { html: h };
+}
+function prmBagla(B) {
+  var D = PRM.D, hepsi = function (s, f) { Array.prototype.forEach.call(document.querySelectorAll(s), f); }, git = function (t) { PRM.tab = t; prmCiz(); window.scrollTo(0, 0); };
+  hepsi("[data-prmtab]", function (b) { b.onclick = function () { git(b.dataset.prmtab); }; });
+  hepsi("[data-prmgit]", function (b) { b.onclick = function () { git(b.dataset.prmgit); }; });
+  $("prmGiz").onclick = function () { PRM.giz = !PRM.giz; prmCiz(); }; $("prmKil").onclick = function () { prmKilitle(); }; $("prmAyar").onclick = prmAyarlar;
+  $("prmPdf").onchange = function () { var F = Array.prototype.slice.call(this.files || []); this.value = ""; if (F.length) prmBelgeYukle(F); };
+  if ($("prmOnc")) { $("prmOnc").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", -1); prmCiz(); }; $("prmSon").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", 1); prmCiz(); }; }
+  var O = B.O || prmOdemeler(D, PRM.ym).concat(prmOdemeler(D, bugun().slice(0, 7)), prmOdemeler(D, ayEkle(bugun(), 1)));
+  hepsi("[data-prmod]", function (b) { b.onclick = function () { var k = b.dataset.prmod; if (k.slice(0, 2) === "k:" && !O.some(function (o) { return o.key === k; })) { if (D.odendi[k]) delete D.odendi[k]; else D.odendi[k] = bugun(); prmKaydet(); prmCiz(); return; } prmOdendi(k, O); }; });
+  hepsi("[data-prmkd]", function (b) { b.onclick = function () { prmKalemForm(D.kalemler.filter(function (k) { return k.id === b.dataset.prmkd; })[0]); }; });
+  hepsi("[data-prmvd]", function (b) { b.onclick = function () { prmVarlikForm(D.varliklar.filter(function (v) { return v.id === b.dataset.prmvd; })[0]); }; });
+  hepsi("[data-prmkat]", function (b) { b.onclick = function () { prmKatDetay(b.dataset.prmkat, B.H || []); var o = $("prmKatO"); if (o) o.scrollIntoView({ block: "nearest" }); }; });
+  hepsi("[data-prmhym]", function (b) { b.onclick = function () { PRM.hym = b.dataset.prmhym; prmCiz(); }; });
+  hepsi("[data-prmkart]", function (b) { b.onclick = function () { PRM.kartAcik = PRM.kartAcik === b.dataset.prmkart ? null : b.dataset.prmkart; prmCiz(); }; });
+  hepsi("[data-prmkap]", function (b) { b.onclick = function () { var h = D.hesaplar[b.dataset.prmkap]; h.kapali = !h.kapali; prmKaydet(h.kapali ? "Kart kapandı olarak işaretlendi" : "Kart tekrar aktif"); prmCiz(); }; });
+  hepsi("[data-prmisl]", function (b) { b.onclick = function () { prmIslemler(b.dataset.prmisl); }; });
+  hepsi("[data-prmbak]", function (b) { b.onclick = function () { prmBakiyeForm(b.dataset.prmbak); }; });
+  hepsi("[data-prmdz]", function (b) { b.onclick = function () { var g = prmDuzenli(D).filter(function (x) { return x.anah === b.dataset.prmdz; })[0]; if (!g) return;
+    D.kalemler.push({ id: prmId(), ad: g.ad, tur: "gider", tutar: Math.round(g.son), pb: "TRY", gun: g.gun || 1, periyot: "aylik", ay: 1, odeyen: "ben", bas: "", esles: g.anah }); prmKaydet(g.ad + " sabit ödemelere eklendi"); prmCiz(); }; });
+  hepsi("[data-prmdzr]", function (b) { b.onclick = function () { D.duzRed = D.duzRed || {}; D.duzRed[b.dataset.prmdzr] = 1; prmKaydet(); prmCiz(); }; });
+  hepsi("[data-prmbune]", function (b) { b.onclick = function () { prmBuNe(b.dataset.prmbune); }; });
+  if ($("prmKalY")) $("prmKalY").onclick = function () { prmKalemForm(null); };
+  if ($("prmGelY")) $("prmGelY").onclick = function () { prmKalemForm(null); if ($("kTur")) $("kTur").value = "gelir"; };
+  if ($("prmNakY")) $("prmNakY").onclick = prmNakitForm; if ($("prmVarY")) $("prmVarY").onclick = function () { prmVarlikForm(null); };
+  if ($("prmSatL")) $("prmSatL").onclick = prmSatilanlar; if ($("prmKasaD")) $("prmKasaD").onclick = prmAyarlar; if ($("prmEvD")) $("prmEvD").onclick = prmAyarlar;
+}
+function prmBakiyeForm(acct) { var D = PRM.D, b = prmBankalar(D).filter(function (x) { return x.acct === acct; })[0]; if (!b) return;
+  prmPnl(esc(b.ad) + " bakiyesi", '<small style="color:var(--muted)">Bankanın uygulamasında gördüğün bugünkü bakiyeyi yaz. Sonra yeni döküm yüklersen yeni olan geçerli olur.</small>' + prmSayiIn("bkT", "Bugünkü bakiye (₺)", Math.round(b.tutar * 100) / 100) + '<button class="btn pri" id="bkK">Kaydet</button>');
+  $("bkK").onclick = function () { D.hesaplar[acct].bakiye = { tutar: num($("bkT").value) || 0, t: bugun() }; panelKapat(); prmKaydet("Bakiye güncellendi"); prmCiz(); }; }
+function prmIslemler(acct) { var D = PRM.D, hs = D.hesaplar[acct] || {}, L = D.tx.filter(function (t) { return t.acct === acct; }).sort(function (a, b) { return a.d < b.d ? 1 : -1; }).slice(0, 150);
+  prmPnl(esc(hs.name || hs.bank || "İşlemler"), L.map(function (t) { var a = t.acctKind === "card" ? (t.type === "pay" ? -t.amt : t.amt) : -t.amt; return '<div class="row" style="gap:10px;padding-left:0;padding-right:0"><div style="flex:1;min-width:0"><div style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(t.desc || "") + '</div><small style="color:var(--muted)">' + tarih(t.d) + " · " + esc(prmKat(D, t)) + (t.inst ? " · " + t.inst.n + "/" + t.inst.N + " taksit" : "") + '</small></div><b style="white-space:nowrap;' + (a < 0 ? "color:var(--ok)" : "") + '">' + prmP(a) + "</b></div>"; }).join("") || "İşlem yok."); }
+function prmBuNe(id) { var D = PRM.D, t = D.tx.filter(function (x) { return x.id === id; })[0]; if (!t) return;
+  prmPnl("Bu havale ne?", '<div style="font-size:14px"><b>' + prmP(-t.amt) + "</b> · " + tarih(t.d) + '<br><small style="color:var(--muted)">' + esc(t.desc || "") + '</small></div><label>Kategori<select id="bnK">' + sec(PRM_KAT, "Gönderilen para") + '</select></label><label>Kime / not (isteğe bağlı)<input id="bnN" value="' + esc((D.txNot || {})[id] || "") + '"></label><button class="btn pri" id="bnS">Kaydet</button>');
+  $("bnS").onclick = function () { D.katElle[id] = $("bnK").value; D.txNot = D.txNot || {}; if ($("bnN").value.trim()) D.txNot[id] = $("bnN").value.trim(); panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); }; }
+
 function prmOdendi(key, O) {
   var D = PRM.D, o = O.filter(function (x) { return x.key === key; })[0]; if (!o) return; var ok = !!D.odendi[key];
   if (ok) { delete D.odendi[key]; if (o.ev) D.ev.birikim = Math.max(0, (+D.ev.birikim || 0) - o.ham); if (o.borc) toast("Ortak cari kaydını gerekirse Finans → Ortak cari'den silebilirsin"); prmKaydet(); prmCiz(); return; }
@@ -3760,7 +3932,7 @@ function prmKatDetay(kat, H) {
 }
 function prmAyarlar() {
   var D = PRM.D, K = D.kasa;
-  prmPnl("Param ayarları", '<b>Elimdeki para</b><div class="f2">' + prmSayiIn("aTl", "TL (banka + nakit)", K.tl) + prmSayiIn("aUs", "Dolar", K.usd) + '</div><div class="f2">' + prmSayiIn("aEu", "Euro", K.eur) + prmSayiIn("aAl", "Altın (gram)", K.altin) + "</div>" + prmSayiIn("aAf", "Altın gram fiyatı (₺)", K.altinFiyat) +
+  prmPnl("Param ayarları", '<b>Elimdeki para</b><div class="f2">' + prmSayiIn("aTl", "Elde nakit TL (bankalar ayrı sayılır)", K.tl) + prmSayiIn("aUs", "Dolar", K.usd) + '</div><div class="f2">' + prmSayiIn("aEu", "Euro", K.eur) + prmSayiIn("aAl", "Altın (gram)", K.altin) + "</div>" + prmSayiIn("aAf", "Altın gram fiyatı (₺)", K.altinFiyat) +
     '<div class="f2">' + prmSayiIn("aAc", "Acil durum payı (₺)", D.acil) + '<label>Gelir (maaş) günü<input id="aGg" type="number" min="1" max="31" value="' + (+D.gelirGun || 1) + '"></label></div>' +
     '<b>Ev planı</b><div class="f2">' + prmSayiIn("aEh", "Hedef (₺)", D.ev.hedef) + prmSayiIn("aEb", "Şu an biriken (₺)", D.ev.birikim) + "</div>" + prmSayiIn("aEa", "Her ay ayrılacak (₺)", D.ev.aylik) +
     '<b>Şirkete borç ödeme planı</b><div class="f2">' + prmSayiIn("aBa", "Aylık taksit ($)", D.borc.aylik) + '<label>Ayın günü<input id="aBg" type="number" min="1" max="31" value="' + (+D.borc.gun || 1) + '"></label></div>' +
@@ -3965,7 +4137,7 @@ var PRM_BANKCAT = P3BANKCAT, PRM_KW = P3KW;
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 59;
+var DS_SURUM = 60;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
