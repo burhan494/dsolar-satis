@@ -3544,7 +3544,7 @@ function prsSabitHazirla() { PRS_SB = { on: false, k: {}, c: {}, L: [], A: null 
 /* v57: Param — kişisel para bölümü. Yalnız sahibi görür; veri tarayıcıda parolayla (PBKDF2 + AES-GCM) şifrelenir,
    sunucuda/yedeklerde yalnız şifreli metin durur. Ekstre ve hesap dökümü PDF'leri bu cihazda okunur (Beacon'ın okuyucuları). */
 var PRM = { k: null, rec: null, D: null, ym: null, giz: false, tm: null, cari: null, KU: null, kayit: null, acik: {} };
-var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Eğitim & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kendi hesabım", "Diğer"];
+var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Eğitim & çocuk", "Nafaka & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kendi hesabım", "Diğer"];
 var PRM_HARIC = { "Kendi hesabım": 1 };
 function prmIkon() { if (typeof ICO !== "undefined" && !ICO.kilit) ICO.kilit = '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'; if (typeof NAV_IK !== "undefined" && !NAV_IK.param) NAV_IK.param = ["kilit", "#ed7d31"]; }
 function prmSahibiMi() { return rol() === "yonetici"; }
@@ -3558,8 +3558,16 @@ function prmSifrele(k, o) { var iv = crypto.getRandomValues(new Uint8Array(12));
   return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, new TextEncoder().encode(JSON.stringify(o))).then(function (c) { return { iv: prmB(iv), veri: prmB(c) }; }); }
 function prmCoz(k, r) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: prmU(r.iv) }, k, prmU(r.veri)).then(function (p) { return JSON.parse(new TextDecoder().decode(p)); }); }
 function prmBos() { return { v: 1, kasa: { tl: 0, usd: 0, eur: 0, altin: 0, altinFiyat: 0, t: "" }, acil: 0, gelirGun: 2, kalemler: [], odendi: {}, ev: { hedef: 0, birikim: 0, aylik: 0 },
-  borc: { aylik: 0, gun: 1 }, varliklar: [], hesaplar: {}, belgeler: [], tx: [], nakit: [], katElle: {} }; }
-function prmTamamla(D) { var B = prmBos(); Object.keys(B).forEach(function (k) { if (D[k] == null) D[k] = B[k]; }); return D; }
+  borc: { aylik: 0, gun: 1 }, varliklar: [], hesaplar: {}, belgeler: [], tx: [], nakit: [], katElle: {}, kurallar: [] }; }
+function prmTamamla(D) { var B = prmBos(); Object.keys(B).forEach(function (k) { if (D[k] == null) D[k] = B[k]; }); prmTemizle(D); return D; }
+/* v59: aynı hesap dökümü iki PDF'te (çakışan tarih) farklı açıklamayla gelirse çift sayılmasın: hesap+tarih+tutar+bakiye aynıysa aynı hareket */
+function prmBankAnah(t) { return t.bal == null || t.bal === "" ? t.acct + "|" + t.d + "|" + t.desc + "|" + t.amt : t.acct + "|" + t.d + "|" + t.amt + "|" + t.bal; }
+function prmTemizle(D) { var g = {}, n0 = D.tx.length; D.tx = D.tx.filter(function (t) { if (t.acctKind !== "bank") return true; var k = prmBankAnah(t); if (g[k]) return false; g[k] = 1; return true; }); return n0 - D.tx.length; }
+/* kendi hesapların arası para: bir hesaptan çıkan tutar 0-3 gün içinde başka kendi hesabına aynen giriyorsa harcama değildir */
+function prmKendiTransfer(D) { var G = {}, S = {}; D.tx.forEach(function (t) { if (t.acctKind === "bank" && t.amt > 0) (G[t.amt.toFixed(2)] = G[t.amt.toFixed(2)] || []).push(t); });
+  D.tx.forEach(function (t) { if (t.acctKind !== "bank" || t.amt >= 0) return; var L = G[(-t.amt).toFixed(2)] || [], d0 = Date.parse(t.d);
+    if (L.some(function (x) { var f = (Date.parse(x.d) - d0) / 864e5; return x.acct !== t.acct && f >= 0 && f <= 3; })) S[t.id] = 1; }); return S; }
+var PRM_KARTODE = /KART ÖDEME|KART ODEME|KARTI ÖDEME|KARTI ODEME|KART ÖDEMES|KREDİ KARTI|KREDI KARTI|KRED[İI] KART ODEME|K\.KARTI|EKSTRE BORC TAHS|EKSTRE BORÇ TAHS/i;
 function prmKilitle(sessiz) { PRM.k = null; PRM.D = null; clearTimeout(PRM.tm); if (!sessiz && /^#param/.test(location.hash)) sParam(); }
 function prmDokun() { clearTimeout(PRM.tm); if (PRM.k) PRM.tm = setTimeout(function () { prmKilitle(); toast("Param kilitlendi"); }, 15 * 60000); }
 ["click", "keydown", "touchstart"].forEach(function (e) { document.addEventListener(e, function () { if (PRM.k) prmDokun(); }, { passive: true }); });
@@ -3586,15 +3594,16 @@ function prmOdemeler(D, ym) { var L = [], pad = function (n) { return String(n).
   if (+D.borc.aylik > 0) L.push({ key: "b|" + ym, ad: "Şirkete borç taksiti", tl: prmTl(D.borc.aylik, "USD"), pb: "USD", ham: +D.borc.aylik, gun: ym + "-" + pad(Math.min(+D.borc.gun || 1, gunSay(ym))), borc: true, not: "Ödenince ortak cariye işlenir" });
   if (+D.ev.aylik > 0) L.push({ key: "e|" + ym, ad: "Ev birikimine ayır", tl: +D.ev.aylik, pb: "TRY", ham: +D.ev.aylik, gun: ym + "-" + pad(Math.min(+D.gelirGun || 1, gunSay(ym))), ev: true });
   return L.sort(function (a, b) { return a.gun < b.gun ? -1 : 1; }); }
-function prmKat(D, t) { if (D.katElle[t.id]) return D.katElle[t.id]; if (t.type === "fee") return "Banka masrafı"; if (t.cat2) return t.cat2;
+function prmKat(D, t) { if (D.katElle[t.id]) return D.katElle[t.id]; var kr = prmKuralKat(D, t); if (kr) return kr; if (t.type === "fee") return "Banka masrafı"; if (t.cat2) return t.cat2;
   var U = String(t.desc || "").toLocaleUpperCase("tr-TR"), U2 = U.replace(/İ/g, "I"), kw = PRM_KW.filter(function (x) { return x[1].test(U) || x[1].test(U2); })[0];
   if (t.bcat && PRM_BANKCAT[t.bcat]) return kw && ["Abonelik & dijital", "Seyahat", "Tekne", "Sigorta"].indexOf(kw[0]) >= 0 ? kw[0] : PRM_BANKCAT[t.bcat];
   if (kw) return kw[0]; if (t.acctKind === "bank") return /HAVALE|EFT|FAST|TRANSFER/i.test(U) ? "Gönderilen para" : /ATM|NAKİT|NAKIT/i.test(U) ? "Nakit" : "Diğer"; return "Diğer"; }
 /* harcama tutarı: taksitli alım alındığı ayda tam sayılır; sonraki taksitler sayılmaz */
 function prmHarcamaTutar(t) { if (t.inst) { if (+t.inst.n !== 1) return 0; return +t.inst.total || (+t.amt || 0) * (+t.inst.N || 1); } return +t.amt || 0; }
-function prmHarcamalar(D, ym) { var L = [];
+function prmKuralKat(D, t) { var U = String(t.desc || "").toLocaleUpperCase("tr-TR"), x = (D.kurallar || []).filter(function (k) { return k.k && U.indexOf(String(k.k).toLocaleUpperCase("tr-TR")) >= 0; })[0]; return x ? x.kat : ""; }
+function prmHarcamalar(D, ym) { var L = [], KT = prmKendiTransfer(D);
   D.tx.forEach(function (t) { if (String(t.d || "").slice(0, 7) !== ym) return;
-    if (t.acctKind === "bank") { if (t.amt >= 0 || /KART ÖDEME|KREDİ KARTI|KREDI KARTI/i.test(t.desc + " " + (t.label || "")) || t.label === "Kart Ödemesi") return; L.push({ t: t, tutar: -t.amt, kat: prmKat(D, t) }); return; }
+    if (t.acctKind === "bank") { if (t.amt >= 0 || KT[t.id] || PRM_KARTODE.test(t.desc + " " + (t.label || "")) || t.label === "Kart Ödemesi") return; L.push({ t: t, tutar: -t.amt, kat: prmKat(D, t) }); return; }
     if (t.type !== "spend" && t.type !== "fee") return; var a = prmHarcamaTutar(t); if (!a) return; L.push({ t: t, tutar: a, kat: prmKat(D, t) }); });
   D.nakit.forEach(function (n) { if ((n.d || "").slice(0, 7) === ym) L.push({ t: { id: n.id, d: n.d, desc: n.desc, nakit: true }, tutar: +n.tutar || 0, kat: n.kat || "Nakit" }); });
   return L.filter(function (x) { return !PRM_HARIC[x.kat]; }); }
@@ -3755,12 +3764,16 @@ function prmAyarlar() {
     '<div class="f2">' + prmSayiIn("aAc", "Acil durum payı (₺)", D.acil) + '<label>Gelir (maaş) günü<input id="aGg" type="number" min="1" max="31" value="' + (+D.gelirGun || 1) + '"></label></div>' +
     '<b>Ev planı</b><div class="f2">' + prmSayiIn("aEh", "Hedef (₺)", D.ev.hedef) + prmSayiIn("aEb", "Şu an biriken (₺)", D.ev.birikim) + "</div>" + prmSayiIn("aEa", "Her ay ayrılacak (₺)", D.ev.aylik) +
     '<b>Şirkete borç ödeme planı</b><div class="f2">' + prmSayiIn("aBa", "Aylık taksit ($)", D.borc.aylik) + '<label>Ayın günü<input id="aBg" type="number" min="1" max="31" value="' + (+D.borc.gun || 1) + '"></label></div>' +
+    '<b>Kategori kuralları</b><small style="color:var(--muted)">Her satıra: açıklamada geçen kelime = kategori. Örn: KİRA BEDELİ = Ev & yaşam. Kategoriler: ' + esc(PRM_KAT.join(", ")) + '</small><textarea id="aKr" rows="4" style="font-size:13.5px">' + esc((D.kurallar || []).map(function (k) { return k.k + " = " + k.kat; }).join("\n")) + '</textarea>' +
     '<button class="btn pri" id="aKay">Kaydet</button><hr style="border:0;border-top:1px solid var(--line);margin:6px 0">' +
     '<b>Güvenlik ve yedek</b><button class="btn" id="aPar">Parolayı değiştir</button><button class="btn" id="aYed">Şifreli yedek indir</button>' +
     '<label class="btn" for="aBea" style="cursor:pointer;text-align:center">Beacon verisini içe aktar (.json)</label><input type="file" id="aBea" accept=".json,application/json" style="display:none"><small style="color:var(--muted)">Beacon\'dan geçmişi almanın en kolay yolu: eski ekstre ve hesap dökümü PDF\'lerini "Ekstre / döküm yükle" ile toplu seçip yüklemek; sabit giderleri bir kez buradan girmek.</small>');
   $("aKay").onclick = function () { var n = function (i) { return num($(i).value) || 0; };
     Object.assign(D.kasa, { tl: n("aTl"), usd: n("aUs"), eur: n("aEu"), altin: n("aAl"), altinFiyat: n("aAf"), t: bugun() }); D.acil = n("aAc"); D.gelirGun = Math.max(1, Math.min(31, +$("aGg").value || 1));
     Object.assign(D.ev, { hedef: n("aEh"), birikim: n("aEb"), aylik: n("aEa") }); Object.assign(D.borc, { aylik: n("aBa"), gun: Math.max(1, Math.min(31, +$("aBg").value || 1)) });
+    var kh = []; D.kurallar = $("aKr").value.split("\n").map(function (l) { var p = l.split("="); if (p.length < 2) return null; var k = p[0].trim(), kat = p.slice(1).join("=").trim(); if (!k) return null;
+      var m = PRM_KAT.filter(function (c) { return c.toLocaleLowerCase("tr-TR") === kat.toLocaleLowerCase("tr-TR"); })[0]; if (!m) { kh.push(kat); return null; } return { k: k, kat: m }; }).filter(Boolean);
+    if (kh.length) toast("Tanınmayan kategori atlandı: " + kh.join(", "));
     panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); };
   $("aPar").onclick = prmParolaDegis;
   $("aYed").onclick = function () { var r = PRM.rec, b = new Blob([JSON.stringify({ tur: "dsolar-param-sifreli", tarih: new Date().toISOString(), salt: r.salt, iv: r.iv, veri: r.veri })], { type: "application/json" }), a = document.createElement("a");
@@ -3797,9 +3810,9 @@ function prmIceAl(D, r, kaynakDoc) {
     var doc = { id: prmId(), acct: acct, kind: "card", kesim: r.kesim, due: r.due, sum: r.sum, ok: !!r.ok, at: bugun() }; D.belgeler.push(doc);
     (r.tx || []).forEach(function (t) { D.tx.push({ id: prmId(), doc: doc.id, acct: acct, acctKind: "card", d: t.d, desc: t.desc, amt: t.amt, type: t.type, bcat: t.cat || t.bcat || "", inst: t.inst || null }); });
     return (r.tx || []).length + " işlem · dönem borcu " + sayi(r.sum ? r.sum.debt : 0) + " ₺ · son ödeme " + tarih(r.due) + (eski ? " (eski aynı ekstre değiştirildi)" : "") + (r.ok ? "" : " · tutarlar tutmadı, kontrol et"); }
-  var var0 = {}; D.tx.forEach(function (t) { if (t.acct === acct) var0[t.d + "|" + t.desc + "|" + t.amt + "|" + t.bal] = 1; });
+  var var0 = {}; D.tx.forEach(function (t) { if (t.acct === acct) var0[prmBankAnah(t)] = 1; });
   var doc2 = { id: prmId(), acct: acct, kind: "bank", from: r.from, to: r.to, ok: !!r.ok, at: bugun() }, yeni = 0; D.belgeler.push(doc2);
-  (r.rows || []).forEach(function (x) { var k = x.d + "|" + x.desc + "|" + x.amt + "|" + x.bal; if (var0[k]) return; var0[k] = 1; yeni++; D.tx.push({ id: prmId(), doc: doc2.id, acct: acct, acctKind: "bank", d: x.d, desc: x.desc, amt: x.amt, bal: x.bal, label: x.label || "", type: x.amt < 0 ? "out" : "in" }); });
+  (r.rows || []).forEach(function (x) { var k = prmBankAnah({ acct: acct, d: x.d, desc: x.desc, amt: x.amt, bal: x.bal }); if (var0[k]) return; var0[k] = 1; yeni++; D.tx.push({ id: prmId(), doc: doc2.id, acct: acct, acctKind: "bank", d: x.d, desc: x.desc, amt: x.amt, bal: x.bal, label: x.label || "", type: x.amt < 0 ? "out" : "in" }); });
   return yeni + " yeni hareket (" + ((r.rows || []).length - yeni) + " zaten vardı)" + (r.ok ? "" : " · bakiye kontrolü tutmadı");
 }
 /* ---------- Beacon içe aktarma (en iyi çaba) ---------- */
@@ -3949,6 +3962,20 @@ const P3KW = [[P3SAVE, /G\.E\. ?\d|AGESA|EMEKL[İI]L[İI]K|BIREYSEL EMEK|HAYAT-?
   ["Spor", /SPOR|TENİS|TENIS|FITNESS|\bGYM\b|PADEL|YÜZME/], ["Resmi işler", /NOTER|VERGİ|BELEDİYE|NÜFUS|TAPU|MAHKEME/], ["Sigorta", /SİGORTA|SIGORTA|POLİÇE|POLICE|PR[İI]M TAHS[İI]LAT/], ["Eğitim & çocuk", /OKUL|KOLEJ|KİTAP|KITAP|KIRTASİYE|EĞİTİM|KURS/], ["Tekne", /MARINA|\bYAT\b|YACHT|TEKNE|DENIZCILIK|BAĞLAMA|BAGLAMA|\bMARIN\b/]];
 
 var PRM_BANKCAT = P3BANKCAT, PRM_KW = P3KW;
+
+/* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
+   DS_SURUM her pakette paket numarasıyla aynı olmalı. */
+var DS_SURUM = 59;
+function surumDenetle() {
+  fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
+    if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
+    try { if (sessionStorage.getItem(a)) return; sessionStorage.setItem(a, "1"); } catch (e) { return; }
+    if (typeof PRM !== "undefined" && PRM.kayit) return;
+    location.replace(location.pathname + "?v=" + j.surum + location.hash);
+  }).catch(function () {});
+}
+setTimeout(surumDenetle, 1500);
+document.addEventListener("visibilitychange", function () { if (!document.hidden) surumDenetle(); });
 
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
 ICO.ara = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';

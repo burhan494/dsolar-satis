@@ -1,7 +1,7 @@
 {
- "surum": 58,
- "paket": "surumler/dsolar-58.zip",
- "sha256": "212d9cec4d04b9e3b087992f17f39099f6b03c35d047c13f63ad4b029240d51b",
- "imza": "KDIQwMXsSU/m08ZPs6uHSHkWGaS0/XKDtQMpd3e+9QzbUIhgimAUfP4WMPIJUjK0aWJ1rm9kzR88TfG/AxyLclMFmL9G+Lj8yRr8pfhrZvbPaPzpliglFY4/1gCibP9/3qFAbFJHtTUIfklS0zcL+jI3jmDRtehKL1Hq8TrziI3/sFr3TIJwSU6PI/yRF1XaDlwd6bXmIzeP9TDoqoioW/TmQl41xwUxKNC7rZtY1ac4XEuXUBbSRtYH/tTOQxWY11PCpbzASLWUfm4+fNmoTIWx3APJ41k6fGDUQy3PpIEKhUT54p1Gk5j6+nPY2xJeATGVNRyXaKSs4UfDIrGydSPEIcVEqH6JyTLI4VvHc5OGSLQ0vb+agvbX3gWBZHC++q2uEorJ27DIL54qIG6DZcArVltjJcc80lhiJUWY09u2UBTsKsfbP4jwl766tYE0uJzrQu+i2bCjqY+dG64vakFsjypmktxInvBC7lH6vod5M+c0QRjQessbYEi5WGZo",
- "not": "Param: Halkbank ekstresinde faiz satırları ve sayfa geçişindeki işlem düzeltildi"
+ "surum": 59,
+ "paket": "surumler/dsolar-59.zip",
+ "sha256": "4a3f5240e6241f7279b3695f4a1c75c89585c364a062e5876d17c6ae952ec83c",
+ "imza": "gdpNhTiNgCdVpu7Zjyqbb50iAFZMwh0SUnYSq/rq/SsDYLjUd2G84bC6RTlQs7YytyscjTju8RxEi5lsxiwePDMB4Xh11NB9pasp2w1gYurKII7zKEZaoIFyNpsk9KibCrb3TNp6oK5Ho1z70VGyWlZMtuKxk7j5eLVkQAK8NKUZKxJZC27RZSTnhNf046uxiHJ68UwXwMPE38iZycV9771J8NjFE3R05ODI2Ng5YgDGn0NG3Feu0az/ZJ+tZ7gGi3cRpQ/UgXTEn4d0mLhZjSpECT+tXSlRH6FxfeFDAPOLBrtLsXwPgiAmgGVpqBfrjlPVGQ8vC9i0Md9rruUyD74K+lbScTYj1Byr+FOMfF5RWMuMixKacXLO/rgPstNTkQKbdjyIpIKnS4G2opre8qT44u4TQ8/zQGSebP+GSkeT5N1KdVs7wanlXKnlH8bEoqhNkBOhEyxPEkf33R7ANBdolFx3TjygdHfb+K1L3FIB9hP3infbHs45Nybd6C6z",
+ "not": "Param: kart ödemeleri ve kendi hesaplar arası transferler harcamadan çıkarıldı, çift döküm satırları temizlendi, kategori kuralları; telefonda eski sürüm kendini yeniler"
 }
