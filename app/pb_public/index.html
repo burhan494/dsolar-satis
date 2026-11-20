@@ -3773,7 +3773,7 @@ function prmOdSatir(D, o, kisa) { var od = prmOdDurum(D, o), bg = bugun(), gec =
 function prmSOzet(D) {
   var ym = bugun().slice(0, 7), O = prmOdemeler(D, ym), bg = bugun(), gg = +D.gelirGun || 1, bd = +bg.slice(8), gun = bd < gg ? gg - bd : gunSay(ym) - bd + gg, gelirT = bd < gg ? ym + "-" + String(gg).padStart(2, "0") : prmGunEkle(ym + "-" + String(Math.min(gg, 28)).padStart(2, "0"), 1);
   if (bd >= gg) O = O.concat(prmOdemeler(D, ayEkle(ym, 1)).filter(function (o) { return o.gun <= gelirT; }));
-  var acik = O.filter(function (o) { return !o.drk && !prmOdDurum(D, o) && o.gun <= gelirT; }), acikTop = acik.reduce(function (s, o) { return s + o.tl; }, 0);
+  var acik = O.filter(function (o) { return !o.drk && !prmOdDurum(D, o) && o.gun <= gelirT; }), acikTop = acik.reduce(function (s, o) { return s + (o.kalem ? Math.max(0, o.tl - prmKalemGiden(D, o.kalem, o.gun.slice(0, 7)).top) : o.tl); }, 0);
   var GL = prmGelecekAcik(D, gelirT), glTop = GL.reduce(function (s, x) { return s + prmTl(x.tutar, x.pb); }, 0), BK = prmBankalar(D), kasa = prmKasaTop(D), kalan = (+D.kasa.tl || 0) + prmBankaTop(D) + glTop - acikTop - (+D.acil || 0), tah = acik.some(function (o) { return o.tahmini; });
   var U = [], KR = prmKartlar(D), yeniK = KR.filter(function (k) { return k.yeni; });
   if (yeniK.length) U.push(["#ed7d31", yeniK.length > 1 ? yeniK.length + " kartın yeni ekstresi kesildi" : yeniK[0].ad + " yeni ekstresi kesildi", yeniK.map(function (k) { return k.ad; }).join(", ") + " · PDF'leri yükle", '<label class="btn sm prmLb" for="prmPdf">Yükle</label>']);
@@ -4277,7 +4277,7 @@ function prmEkBagla() { var D = PRM.D, bul = function (L, id) { return (L || [])
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 65;
+var DS_SURUM = 66;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;

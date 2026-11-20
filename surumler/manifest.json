@@ -1,7 +1,7 @@
 {
- "surum": 65,
- "paket": "surumler/dsolar-65.zip",
- "sha256": "16c7a7efadccc0512dec0d0a65b91219c0e5b23cb138f4dedbade6acb2b0eaea",
- "imza": "PQzH7gwgUKNn2vDhG5CSodVdP0AzcQ0qiPsoMXe4SQOfAfpF9ftpo7zdat5BwbKb9fubKwoetIm7Omq8l8jBNoe/dEqSZJYCgVC7nLcSzVedXdf/LjEnRyEBucIxLF959T85KW4ldbMVe+4/XnGPj0jUobZObFD/OpUpkrqCQzREiYcCpJ7P+lbeWsEKrlEeYHkzWE7MC2+HbOM2M6wEgpl10lyhNP5QcWB7SciG1TKd+lzPV4Ep3m+gO68sWWwn5XrLlE2Gu0m/HyhPN+YmXYkCOyHXR7dFGCAXihvKv26FroaOiBIPf7v61afmu9mPwUKcba81jhFZC9/eMsMZVoTZnPsxruSJ0XVS7zRl9rqX1Msa9U3Q1Z4DNaw0cM32AoBgQJLjdQNsFDSkziA4OQLV89Lj/GsDVbpEqCtg7hKFxY9HK1R0D/68afolWjmJygIDPS2RwGMbWTMvCRRvn+Sbpa8887T4SMkuz2S/yAMIu4fZieUK+rzrJee2Xve8",
- "not": "Param: kartın bankadaki güncel borcu girilebilir; açık Param'da sayfa kendiliğinden yenilenmez"
+ "surum": 66,
+ "paket": "surumler/dsolar-66.zip",
+ "sha256": "de6c9086b51d0d7653a8435422a7625cca9d5e1f4a1357421179bfa022537a2a",
+ "imza": "Ksb65mgocLwWU+FVC14fHd78a4DXvNmxfgRhzA/+slDzHURDGSecyiOtStRJjcW0JTWWwtqABt2lyCKc1vndsxD0hXk9g4tuusjHHnGtApdAUYCg/hOgSiCfxJwqPGbMsdpJB5nXCoFkIE9Q8t4A1W7HD6k2kwq+BXbkIBZqniLwnj8Poau8SrB1vZ7rnVkDwBaRvUTgk+ghQty4/uwu0X+7Eo78M4TN1yQ0BXcOZpuPu9xnVepVOTGji880lzVvBnIsJusLtUD8ItrG/GuBIbOryg5gwg8paSWMmUIakPMZMc2yzmVld5qaM8p0N2BsHVZu5PcVaQGMVupG6MjD0aJ7Gda795S1epRokbbszvvMt+P8mWbsI97TJZZ0FXv5Hm2y0lrbVoO0Tp5xYRRMf7xkZ4uyIwYo5YHWO4Ht7luk4A7GdMVrlx8GheAJAcxRFwgnAUsS+9ZK7L8xXg5v4W30P3yfBBJozXfZPShGMPkfKTuF55C5/YiaD+rt2JFG",
+ "not": "Param: kısmi ödenen sabit ödemenin sadece kalanı açık sayılır"
 }
