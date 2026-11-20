@@ -4134,7 +4134,6 @@ function prmKoc(D) { var L = [], KR = prmKartlar(D);
     if (bit.length) { var top = bit.reduce(function (x, t) { return x + (+t.amt || 0); }, 0); L.push({ r: "#1b6b3a", b: k.ad + ": " + bit.length + " taksit bitti", n: "Gelecek ay ~" + prmP(top) + " daha az borç gelecek (" + bit.slice(0, 2).map(function (t) { return prmBuyukHarf(String(t.desc || "").slice(0, 18)); }).join(", ") + ")" }); } });
   var aktif = KR.filter(function (k) { return !k.kapali && k.son && k.son.sum; }); if (aktif.length > 1) { var en = aktif.slice().sort(function (a, b) { return (+b.son.sum.purch || 0) - (+a.son.sum.purch || 0); })[0], mil = aktif.filter(function (k) { return /MILES|MİLES/i.test(k.ad); })[0];
     if (mil && mil !== en) L.push({ r: "#1565c0", b: "Harcamayı " + mil.ad + " kartında topla", n: "En çok " + en.ad + " kullanılıyor; Miles kartı her harcamada mil kazandırır" }); }
-  if (!D.kalemler.some(function (k) { return k.tur === "gelir"; })) L.push({ r: "#6b8bb3", b: "Gelirin girilmedi", n: "Maaş/kira geliri ekle; gelire kadar kalan hesabı doğru olsun", git: "varlik" });
   return L; }
 function prmKocHtml(D, n) { var L = prmKoc(D).slice(0, n || 99); if (!L.length) return "";
   return L.map(function (u) { return '<div class="prmS"><span class="prmNok" style="background:' + u.r + '"></span><div style="flex:1;min-width:0"><b class="prmAd" style="white-space:normal">' + esc(u.b) + '</b><small style="color:var(--muted)">' + esc(u.n) + "</small></div>" + (u.git ? '<button class="btn sm" data-prmgit="' + u.git + '">Gör</button>' : "") + "</div>"; }).join(""); }
@@ -4346,7 +4345,7 @@ function prmV68Bagla(B) { var D = PRM.D, hepsi = function (s, f) { Array.prototy
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 68;
+var DS_SURUM = 69;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;

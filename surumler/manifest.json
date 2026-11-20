@@ -1,7 +1,7 @@
 {
- "surum": 68,
- "paket": "surumler/dsolar-68.zip",
- "sha256": "ee8cc889abad55c35c49615c31e0ffef50d0313d5c922dbc89636d5a579a90ed",
- "imza": "YDoB5tpJdDake0QpNrYeRRHIrAtKJ64MuaCsI0MIiFt8drXg5w8Xczk6C6Rb4dzqpocbnnhZM0E3VuHoqfIaOrqbQauTlQY36U84iWN9wtYMYb3JmhBYKoAETvCy94Lp8ZT5Ry9DGmGRhBZA0/so0pNm6H581tOfz82x/YpBkTKlcDhc8gWoPStkTJzwzgVWYj/wK3wiFpQMepSaSnwlfDqi6UBf5muFKKjhXUt7OPAoQUdt2153B3BrEEteyM09DvJc6W2BWxOJEYru1RTWowPXoIBYqWpXKzfOs8vifA6FmJnEaJdUZUV0rMTiAURLyoe7jBuDMd41qyPM4hK45SheDZwaDXCXMYpEWTgeKe9+HlXxE0SuOqnqIwv3aZlfuDMqOupLCl4sh1Q8hZhWp57za9h9hy5Fk13ym5/AHzHAUz1w46PTlzV9Mx6sRCrchA2IMldTx0t0XVznmSGzdvR9Y70Y3Ua8n/umrH7WYX5gB15AGqmrQSMXPyc5S69J",
- "not": "Param: sade ekranlar, bugün hangi kart, aylık bütçe, 12 aylık plan, ay sonu karnesi, ekstre tekrar yüklenince ödendi korunur"
+ "surum": 69,
+ "paket": "surumler/dsolar-69.zip",
+ "sha256": "851fdc6e331fd12ddbc78f3123b2e70754144b4d590b8aabb77acd718b92025e",
+ "imza": "kemObcuEUgsk92ez6y7alhWTXdR9jOnKlBHGbyc4Z2tRO7WmQkypz1yf7zLir+cqf7lkUz34ATQs4NjVJ/ljdWYHuwNpKZDsffXrN7A0lCSpVg7ctXYnCnc0D2TWNqJtV63PjhGfKKfixZQ8Ti7SI3xpJttglIoa5GOv+ExHc037MQDxKf602DfsWz3mYBYwbJkuw/drhG9S7p2G2VqSoKeVMJ0PCGW4KsJqpCA6yT9UE4QM8JwwQDZ5SWuo8uZoypbVOFIaGD+8KM6qlmSz8UAx36OiMGOI6JomqLCLsIdjGT/rV8y/NBPijehCe/vfC7eTaN+SzLcFn1YkEZFF0JhRy/SCevMiwhSY56s8LKblh9WxIQtBt2CGKiXmKyRegMSLrC8Xs0XnmkxhkmvQ1s5/AKPMRrfaKpQck88Api/acGgHHvbg/X2pSG3tKkH3ku7/l9UokIBigv+MKnhW7guNMKL8rpiiiTHKVqWvwxKSkZqi9w7F1SOE4jRj96O9",
+ "not": "Param: 'gelirin girilmedi' uyarısı kaldırıldı"
 }
