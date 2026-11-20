@@ -287,6 +287,9 @@ nav.y a.fab{overflow:visible;background:none!important}
 .scLej i{width:18px;height:18px;border-radius:50%;background:#f59e0b;color:#fff;font-style:normal;font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .scLej b{color:var(--text,#0f172a)}
 .scV label{font-size:13px}
+.prIki{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;cursor:default}
+.prIki h4{font-size:14px}
+@media (max-width:800px){.prIki{grid-template-columns:1fr}}
 
 </style>
 </head>
@@ -3120,7 +3123,7 @@ function tekOnayBagla(MM, sonra) {
 /* ---------- v54 Finans · 5 yıllık senaryo (yalnız ortak/yönetici) ---------- */
 var SC = { gor: "yil", sen: "baz" };
 var SC_GEL = ["GES geliri", "Varlık satışı", "Cari alacak", "Çek tahsilatı", "Proje tahsilatı", "Finansman"];
-var SC_GID = ["Sabit giderler", "Kredi ödemeleri", "Kredi kartları", "Cari ödemeler", "KDV (kira)", "Kurumlar vergisi", "Orhan Bey payı", "Ortaklara ödeme"];
+var SC_GID = ["Sabit giderler", "Personel çıkış", "Kredi ödemeleri", "Kredi kartları", "Cari ödemeler", "KDV (kira)", "Kurumlar vergisi", "Orhan Bey payı", "Ortaklara ödeme"];
 function scVarsayilan(V, AY) {
   var vg = {}, ges = 4650000, arsa = 0;
   (V || []).forEach(function (v) { if (v.durum === "Satıldı") return; var d = v.deger != null && v.deger !== 0 ? +v.deger : +v.tahminiUsd || 0, pb = v.pb || "USD";
@@ -3162,6 +3165,10 @@ function scHesap(D, S, o) {
       ekle(a, k.yon, k.grup, usd, k); });
     if (a >= S.kesinti) { var tl = (+S.sabitHedef || 0) * Math.pow(1 + (+S.enf || 0), i / 12), u = tl / KU.usd * kf(i, "TRY");
       ekle(a, "Çıkış", "Sabit giderler", u, { t: a + "-05", ad: "Sabit giderler (senaryo: " + sayi(S.sabitHedef) + " TL bugünkü para, enflasyonla)", tutar: Math.round(tl), pb: "TRY", sab: true }); A[a].gider += u; } });
+  // personel çıkışı (planlanmamış aktif personel, azaltma ayından bir gün önce, ihbar ödenerek)
+  if (S.prsCikis !== false && D.P && D.P.length) { var pc = prsTarihEkle(S.kesinti + "-01", -1), pa = pc.slice(0, 7);
+    if (A[pa]) D.P.filter(function (p) { return p.durum === "Aktif"; }).forEach(function (p) { var r = prsHesap(p, pc, "Ödenecek", D.PA), i = idx[pa]; if (!(r.isveren > 0)) return;
+      ekle(pa, "Çıkış", "Personel çıkış", r.isveren / KU.usd * kf(i, "TRY"), { t: pc, ad: p.ad + " çıkışı (senaryo: kıdem " + sayi(r.kidem) + " ₺, ihbar " + sayi(r.ihbar) + " ₺, izin " + sayi(r.izin) + " ₺)", tutar: Math.round(r.isveren), pb: "TRY" }); }); }
   // geçen ay tahsil edilmiş kiranın KDV'si (ödeme günü henüz gelmediyse)
   if (S.kdvNet) D.M.forEach(function (m) { if (m.durum !== "Gerçekleşti" || grupOf(m) !== "GES geliri") return; var ma = m.tarih.slice(0, 7), od = ayEkle(ma + "-01", 1) + "-26";
     if (od < b || !A[od.slice(0, 7)]) return; var u = usdKarsilik(+m.tutar || 0, m.pb || "TRY", KU); ekle(od.slice(0, 7), "Çıkış", "KDV (kira)", u - u / (1 + kdvO), { t: od, ad: "Kira KDV'si (" + ayAd(ma) + " tahsilatı, gerçekleşen)", tutar: Math.round((+m.tutar || 0) * kdvO / (1 + kdvO)), pb: m.pb || "TRY" }); });
@@ -3199,17 +3206,18 @@ function scTarihler(D, S) { var L = [["2026-11", "Bugün"], [S.kesinti, "Persone
   Object.keys(son).forEach(function (k) { L.push([son[k].slice(0, 7), k + " son taksit"]); });
   Object.keys(S.varlik || {}).forEach(function (id) { var v = S.varlik[id], vv = (D.V || []).filter(function (x) { return x.id === id; })[0]; if (v && v.dahil && vv) L.push([v.tarih, vv.ad + " satışı"]); });
   if (S.cikis && S.cikis.tarih) L.push([S.cikis.tarih, "Çıkış senaryosu tarihi"]);
+  if (D.P && D.P.length) { var po = prsOzet(D.P, D.PA); if (po.son) L.push([po.son.t.slice(0, 7), "Kıdem doğmadan son fesih (" + tarih(po.son.t) + ", ihbar ödenerek)"]); }
   return L.sort(function (a, b) { return a[0] < b[0] ? -1 : 1; }); }
 function fSenaryo() {
   if (!yt("ortak")) { location.hash = "#finans/akis"; return; }
   Promise.all([liste("fin_hesaplar", "", "ad"), liste("fin_hareketler", "", "tarih"), liste("fin_sabitler", "", "ad"), kurKartiGetir(),
     yt("ges") ? liste("ges_aylik", "", "donem").catch(function () { return []; }) : Promise.resolve([]), liste("ortak_cari", "", "tarih").catch(function () { return []; }),
-    liste("fin_ayarlar", "anahtar = 'nakit_ayar' || anahtar = 'beacon_genel' || anahtar = 'ges_ayar' || anahtar = 'senaryo5'").catch(function () { return []; }),
-    liste("varliklar", "", "ad").catch(function () { return []; })]).then(function (R) {
+    liste("fin_ayarlar", "anahtar = 'nakit_ayar' || anahtar = 'beacon_genel' || anahtar = 'ges_ayar' || anahtar = 'senaryo5' || anahtar = 'personel_ayar'").catch(function () { return []; }),
+    liste("varliklar", "", "ad").catch(function () { return []; }), liste("personel", "", "ad").catch(function () { return []; })]).then(function (R) {
     var H = R[0], M = R[1], KU = R[3], AY = {}, scK = null; R[6].forEach(function (x) { AY[x.anahtar] = x.deger; if (x.anahtar === "senaryo5") scK = x; });
     var K = kasaHesap(H, bakiyeler(H, M.filter(function (m) { return m.durum === "Gerçekleşti"; })), KU);
     var tampon = AY.nakit_ayar && AY.nakit_ayar.tamponUsd != null ? +AY.nakit_ayar.tamponUsd : AY.beacon_genel && AY.beacon_genel.tampon ? Math.round(usdKarsilik(+AY.beacon_genel.tampon.tutar || 0, AY.beacon_genel.tampon.pb === "TL" ? "TRY" : AY.beacon_genel.tampon.pb, KU)) : 0;
-    var D = { M: M, S: R[2], G: R[4], AY: AY, KU: KU, OC: R[5], V: R[7], kasa0: K.T.kul, tampon: tampon };
+    var D = { M: M, S: R[2], G: R[4], AY: AY, KU: KU, OC: R[5], V: R[7], P: R[8] || [], PA: prsAyar(AY), kasa0: K.T.kul, tampon: tampon };
     var S = scBirles(scVarsayilan(R[7], AY), (scK && scK.deger) || {}); window._SC = { D: D, S: S };
     var Rb = scHesap(D, S, { uretim: 0, varlik: true, erken: false }), Rk = scHesap(D, S, { uretim: S.kotu, varlik: false, erken: false }), Ri = scHesap(D, S, { uretim: S.iyi, varlik: true, erken: false }),
       Re = S.erken.banka ? scHesap(D, S, { uretim: 0, varlik: true, erken: true }) : null;
@@ -3275,6 +3283,7 @@ function fSenaryo() {
       '<div class="f2"><label>Kurumlar vergisi %<input id="scKv" inputmode="decimal" value="' + sayi(S.kv * 100, 1) + '"></label><label>Yıllık amortisman ($) <small>vergi matrahından düşülür</small><input id="scAm" inputmode="decimal" value="' + S.amortUsd + '"></label></div>' +
       '<div class="f2"><label>Kötü senaryo üretim farkı %<input id="scKt" inputmode="decimal" value="' + sayi(S.kotu * 100, 1) + '"></label><label>İyi senaryo üretim farkı %<input id="scIy" inputmode="decimal" value="' + sayi(S.iyi * 100, 1) + '"></label></div>' +
       '<label class="nVd"><input type="checkbox" id="scKd"' + (S.kdvNet ? " checked" : "") + "> Kiradaki KDV'yi devlete ödenecek say (ertesi ay 26'sı)</label>" +
+      '<label class="nVd"><input type="checkbox" id="scPc"' + (S.prsCikis !== false ? " checked" : "") + "> Personel çıkış maliyetini ekle (Personel kartlarındaki aktif herkes, azaltma ayından bir gün önce, ihbar ödenerek)</label>" +
       "<h4 style=\"margin:10px 0 4px\">Varlık satış planı</h4>" + (vSat.length ? vSat.map(function (v) { var o = S.varlik[v.id]; return '<div class="f2 scV" data-vid="' + v.id + '" style="align-items:end"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" class="scVd"' + (o.dahil ? " checked" : "") + "> " + esc(v.ad) + '</label><label>Ay<input type="month" class="scVt" value="' + esc(o.tarih || "") + '"></label><label>Tutar (' + esc(PB_AD[o.pb] || o.pb) + ')<input class="scVu" inputmode="decimal" value="' + (o.tutar || 0) + '"></label></div>'; }).join("") : '<div class="bos">Satılabilir varlık yok.</div>') +
       '<h4 style="margin:10px 0 4px">Çıkış senaryosu</h4><div class="f2"><label>Satış ayı<input type="month" id="scCt" value="' + esc(C.tarih) + '"></label><label>Santral değeri ($)<input id="scCg" inputmode="decimal" value="' + C.gesUsd + '"></label></div>' +
       '<div class="f2"><label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="scCa"' + (C.arsaDahil ? " checked" : "") + "> Uzunburun arsası satışa dahil</label><label>Orhan Bey payı % (santral değeri)<input id=\"scCo\" inputmode=\"decimal\" value=\"" + sayi(C.orhanPay * 100, 1) + '"></label></div>' +
@@ -3297,7 +3306,7 @@ function fSenaryo() {
     var yuzde = function (id) { return num($(id).value) / 100; };
     $("scK").onclick = function () { var S2 = JSON.parse(JSON.stringify(S));
       S2.kesinti = $("scKs").value || S.kesinti; S2.sabitHedef = num($("scSh").value); S2.enf = yuzde("scEn"); S2.kurArtis = yuzde("scKr"); S2.orhanBas = $("scOb").value || S.orhanBas; S2.orhanOran = yuzde("scOo");
-      S2.kv = yuzde("scKv"); S2.amortUsd = num($("scAm").value); S2.kotu = yuzde("scKt"); S2.iyi = yuzde("scIy"); S2.kdvNet = $("scKd").checked;
+      S2.kv = yuzde("scKv"); S2.amortUsd = num($("scAm").value); S2.kotu = yuzde("scKt"); S2.iyi = yuzde("scIy"); S2.kdvNet = $("scKd").checked; S2.prsCikis = $("scPc").checked;
       Array.prototype.forEach.call(document.querySelectorAll(".scV"), function (r) { var o = S2.varlik[r.dataset.vid]; o.dahil = r.querySelector(".scVd").checked; o.tarih = r.querySelector(".scVt").value || o.tarih; o.tutar = num(r.querySelector(".scVu").value); });
       S2.cikis.tarih = $("scCt").value || C.tarih; S2.cikis.gesUsd = num($("scCg").value); S2.cikis.arsaDahil = $("scCa").checked; S2.cikis.orhanPay = yuzde("scCo");
       SC.ayarAcik = true; kaydet(S2); };
@@ -3325,6 +3334,189 @@ function scPdf(D, S, Rg, Y, sen3, tampon, KU, netC) {
     '<div style="flex:1"><b>Varsayımlar</b><ul style="margin:4px 0;padding-left:18px;color:#334155">' + ["Kur " + sayi(KU.usd, 2) + " TL/$" + (S.kurArtis ? ", yılda %" + sayi(S.kurArtis * 100) + " artış" : " (sabit)"), ayAd(S.kesinti) + "'ten itibaren sabit gider " + sayi(S.sabitHedef) + " TL/ay, yılda %" + sayi(S.enf * 100) + " enflasyon", "Santral kirası kira modelinden (tarife 2027'den yılda %20 artış), KDV ertesi ay devlete", "Kurumlar vergisi %" + sayi(S.kv * 100) + ", amortisman " + sayi(S.amortUsd) + " $/yıl", "Orhan Bey payı " + ayAd(S.orhanBas) + "'ten itibaren kiranın %" + sayi(S.orhanOran * 100) + "'i", "Tampon " + sayi(tampon) + " $; altı ortak girişiyle 60/40 tamamlanır"].map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul></div></div>";
   document.body.appendChild(d); toast("PDF hazırlanıyor…");
   sayfaPdf([d], "D Solar 5 yillik senaryo " + bugun()).then(function () { d.remove(); }).catch(function (e) { d.remove(); hata(e); });
+}
+
+/* ---------- v55 Finans · Personel (kıdem, ihbar, izin; yalnız ortak/yönetici) ---------- */
+FIN_IK.personel = ["kisiler", "#0f766e"];
+var PRS = { ac: "", toplu: "", ihb: "Ödenecek" };
+var PRS_VARS = { tavan: [["2026-07-01", 73729.87]], au: 33030, damga: 0.00759, sgkI: 0.15, sgkV: 0.1775, sgkVyok: 0.2275,
+  dil: [[0, 0.15], [190000, 0.20], [400000, 0.27], [1500000, 0.35], [5300000, 0.40]] };
+function prsAyar(AY) { var a = JSON.parse(JSON.stringify(PRS_VARS)), k = (AY && AY.personel_ayar) || {}; Object.keys(k).forEach(function (x) { a[x] = k[x]; }); return a; }
+function prsGv(m, A) { var t = 0; A.dil.forEach(function (d, i) { var inc = d[1] - (i ? A.dil[i - 1][1] : 0); if (m > d[0]) t += (m - d[0]) * inc; }); return t; }
+function prsNet(b, mo, A) { var cum = b * 0.85 * (mo - 1), g = prsGv(cum + b * 0.85, A) - prsGv(cum, A), au = A.au * 0.85, ist = Math.min(g, prsGv(au * mo, A) - prsGv(au * (mo - 1), A));
+  return b - b * A.sgkI - (g - ist) - (b * A.damga - Math.min(b, A.au) * A.damga); }
+function prsBrutAra(n, mo, A) { var lo = n, hi = n * 3; for (var i = 0; i < 60; i++) { var m = (lo + hi) / 2; if (prsNet(m, mo, A) < n) lo = m; else hi = m; } return Math.round(hi); }
+function prsGun(a, b) { return Math.round((new Date(b.slice(0, 10) + "T12:00:00") - new Date(a.slice(0, 10) + "T12:00:00")) / 864e5); }
+function prsTarihEkle(t, g) { var d = new Date(t.slice(0, 10) + "T12:00:00"); d.setDate(d.getDate() + g); return d.toISOString().slice(0, 10); }
+function prsTavan(t, A) { var v = A.tavan[0][1]; A.tavan.slice().sort(function (x, y) { return x[0] < y[0] ? -1 : 1; }).forEach(function (x) { if (x[0] <= t) v = +x[1]; }); return v; }
+function prsMaas(p, t) { var g = (p.maasGecmis || []).filter(function (m) { return m.tarih <= t; }).sort(function (x, y) { return x.tarih < y.tarih ? -1 : 1; }).pop(); return g ? { net: +g.net || 0, brut: +g.brut || 0 } : { net: +p.net || 0, brut: +p.brut || 0 }; }
+function prsBrut(p, t, A) { var m = prsMaas(p, t); if (p.sigortasiz) return m.net; if (m.net > 0) return prsBrutAra(m.net, +t.slice(5, 7), A); return m.brut; }
+function prsEkGun(p) { return (p.onceki || []).filter(function (o) { return o.tazminat === "Ödenmedi" && o.giris && o.cikis; }).reduce(function (s, o) { return s + prsGun(o.giris, o.cikis); }, 0); }
+function prsHafta(g) { return g < 182.5 ? 2 : g < 547.5 ? 4 : g < 1095 ? 6 : 8; }
+function prsIzinHak(y) { return y < 5 ? 14 : y < 15 ? 20 : 26; }
+/* p: personel kaydı, c: çıkış tarihi (yyyy-aa-gg), ihb: "Ödenecek" | "Çalışarak kullandırılacak" */
+function prsHesap(p, c, ihb, A) {
+  var g0 = (p.giris || c).slice(0, 10), gun = Math.max(0, prsGun(g0, c)) + prsEkGun(p), hf = prsHafta(gun), ode = ihb !== "Çalışarak kullandırılacak";
+  var kGun = gun + (ode ? hf * 7 : 0), yil = kGun / 365, b = prsBrut(p, c, A), yan = (+p.yemek || 0) + (+p.yol || 0) + (+p.diger || 0), giy = b + yan;
+  var kidem = yil >= 1 ? Math.min(giy, prsTavan(c, A)) * yil : 0, ihbar = ode ? giy / 30 * hf * 7 : 0;
+  var izGun = +p.izinGun || 0, it = (p.izinTarih || g0).slice(0, 10); for (var n = 1; n <= Math.floor(gun / 365); n++) { var yd = prsTarihEkle(g0, Math.round(n * 365.25)); if (yd > it && yd <= c) izGun += prsIzinHak(n); }
+  var izin = b / 30 * izGun, R = { c: c, ihb: ihb, gun: gun, kGun: kGun, yil: yil, hafta: hf, brut: b, giy: giy, kidem: kidem, ihbar: ihbar, izinGun: izGun, izin: izin };
+  if (p.sigortasiz) { R.kDmg = R.iGv = R.iDmg = R.zSgk = R.zGv = R.zDmg = R.zSgkV = 0; }
+  else { var mo = +c.slice(5, 7), bt = (p.izinTarih || "").slice(0, 10), cum = bt && bt.slice(0, 4) === c.slice(0, 4) ? (+p.gvMatrah || 0) + b * 0.85 * Math.max(0, mo - +bt.slice(5, 7) - 1) : b * 0.85 * (mo - 1);
+    R.kDmg = kidem * A.damga; R.iGv = prsGv(cum + ihbar, A) - prsGv(cum, A); R.iDmg = ihbar * A.damga; R.zSgk = izin * A.sgkI;
+    R.zGv = prsGv(cum + ihbar + (izin - R.zSgk), A) - prsGv(cum + ihbar, A); R.zDmg = izin * A.damga; R.zSgkV = izin * (p.tesvik === false ? A.sgkVyok : A.sgkV); }
+  R.net = kidem - R.kDmg + ihbar - R.iGv - R.iDmg + izin - R.zSgk - R.zGv - R.zDmg; R.devlet = R.kDmg + R.iGv + R.iDmg + R.zSgk + R.zGv + R.zDmg + R.zSgkV; R.isveren = kidem + ihbar + izin + R.zSgkV;
+  R.aylik = p.sigortasiz ? prsMaas(p, c).net + yan : b * (1 + (p.tesvik === false ? A.sgkVyok : A.sgkV)) + yan;
+  var bir = prsTarihEkle(g0, 365 - prsEkGun(p)); R.birYil = bir; R.sonCikisOde = prsTarihEkle(bir, -(prsHafta(364) * 7) - 1); R.sonCikisCal = prsTarihEkle(bir, -1);
+  return R;
+}
+function prsTl(v) { return sayi(Math.round(v || 0)) + " ₺"; }
+function prsAktif(L) { return L.filter(function (p) { return p.durum !== "Ayrıldı"; }); }
+/* 5 yıllık senaryo ve kasa için: aktif personelin bugünkü tazminat yükü ve en yakın "kıdem doğmadan son fesih" tarihi */
+function prsOzet(L, A) { var b = bugun(), top = 0, son = null;
+  prsAktif(L).forEach(function (p) { var r = prsHesap(p, b, "Ödenecek", A); top += r.isveren; if (r.birYil > b && (!son || r.sonCikisOde < son.t)) son = { t: r.sonCikisOde, p: p.ad, bir: r.birYil }; });
+  return { top: top, son: son }; }
+function fPersonel() {
+  if (!yt("ortak")) { location.hash = "#finans"; return; }
+  Promise.all([liste("personel", "", "ad"), liste("fin_ayarlar", "anahtar = 'personel_ayar'").catch(function () { return []; }), liste("fin_sabitler", "", "ad").catch(function () { return []; }), kurKartiGetir()]).then(function (R) {
+    var L = R[0], ayK = R[1][0], A = prsAyar(ayK ? { personel_ayar: ayK.deger } : {}), S = R[2], KU = R[3], b = bugun(), PM = {}; L.forEach(function (p) { PM[p.id] = p; });
+    var ak = prsAktif(L), hs = ak.map(function (p) { return { p: p, r: prsHesap(p, b, "Ödenecek", A) }; }), top = hs.reduce(function (s, x) { return s + x.r.isveren; }, 0), ay = hs.reduce(function (s, x) { return s + x.r.aylik; }, 0);
+    var yak = hs.filter(function (x) { return x.r.birYil > b; }).sort(function (x, y) { return x.r.sonCikisOde < y.r.sonCikisOde ? -1 : 1; })[0];
+    var kpi = function (ik, renk, ad, deger, alt, kotu) { return '<div class="card" style="margin:0;padding:14px 16px;display:flex;gap:12px;align-items:center">' + ikon(ik, renk) + '<div style="min-width:0"><small style="color:var(--muted);font-size:12px">' + ad + '</small><div style="font-size:20px;font-weight:800;' + (kotu ? "color:var(--bad)" : "") + '">' + deger + "</div>" + (alt ? '<small style="color:var(--muted);font-size:11.5px">' + alt + "</small>" : "") + "</div></div>"; };
+    var html = '<div class="izgara kpi4">' + kpi("kisiler", "#0f766e", "Aktif personel", ak.length + " kişi", L.length - ak.length ? (L.length - ak.length) + " ayrılmış" : "") +
+      kpi("cuzdan", "#2563eb", "Aylık personel maliyeti", prsTl(ay), sayi(ay / KU.usd) + " $ · net + vergi/SGK + yan ödemeler") +
+      kpi("asagi", "#d97706", "Bugün çıkarsak (tazminat yükü)", prsTl(top), sayi(top / KU.usd) + " $ · kıdem + ihbar + izin") +
+      kpi("saat", yak ? "#dc2626" : "#16a34a", "Kıdem doğmadan son fesih", yak ? tarih(yak.r.sonCikisOde) : "—", yak ? "ihbar ödenerek · " + esc(yak.p.ad) + " " + tarih(yak.r.birYil) + "'de 1 yılı doldurur" : "") + "</div>";
+    // toplu hesap
+    var tT = PRS.toplu || "", tH = tT ? ak.map(function (p) { return { p: p, r: prsHesap(p, tT, PRS.ihb, A) }; }) : [];
+    html += '<div class="card"><h3>Toplu çıkış hesabı</h3><div class="f"><div class="f2"><label>Çıkış tarihi<input type="date" id="prT" value="' + esc(tT) + '"></label><label>İhbar<select id="prI">' + sec(["Ödenecek", "Çalışarak kullandırılacak"], PRS.ihb) + "</select></label></div></div>" +
+      (tH.length ? '<div class="ntk"><table class="nt2" style="min-width:760px"><thead><tr><th class="ilk">Personel</th><th>Süre</th><th>Kıdem</th><th>İhbar</th><th>İzin</th><th>Çalışana net</th><th>Devlete</th><th>Şirket maliyeti</th></tr></thead><tbody>' +
+        tH.map(function (x) { var r = x.r; return "<tr><td class=\"ilk\">" + esc(x.p.ad) + (x.p.sigortasiz ? ' <span class="pill">sigortasız</span>' : "") + "</td><td>" + sayi(r.gun / 30, 1) + " ay" + (r.yil < 1 ? '<small style="color:#16a34a">kıdem yok</small>' : "") + "</td><td>" + prsTl(r.kidem) + "</td><td>" + prsTl(r.ihbar) + "<small>" + (r.ihbar ? r.hafta + " hafta" : "") + "</small></td><td>" + prsTl(r.izin) + "<small>" + (r.izinGun ? r.izinGun + " gün" : "") + "</small></td><td>" + prsTl(r.net) + "</td><td>" + prsTl(r.devlet) + '</td><td class="k">' + prsTl(r.isveren) + "</td></tr>"; }).join("") +
+        '<tr class="ana"><td class="ilk">Toplam</td><td></td>' + ["kidem", "ihbar", "izin", "net", "devlet", "isveren"].map(function (k) { return '<td class="k">' + prsTl(tH.reduce(function (s, x) { return s + x.r[k]; }, 0)) + "</td>"; }).join("") + "</tr></tbody></table></div>" +
+        '<div class="not"><small>Toplam ≈ ' + sayi(tH.reduce(function (s, x) { return s + x.r.isveren; }, 0) / KU.usd) + " $. Bu tablo yalnız hesaptır; akışa bir şey eklemez. Kişiyi gerçekten çıkarmak için kartındaki \"İşten çıkar\"ı kullanın.</small></div>" : '<div class="not"><small>Bir tarih seçin; bütün aktif personel o tarihte çıksa ne tutacağını gösterir.</small></div>') + "</div>";
+    // kartlar
+    html += '<div class="card"><h3 style="display:flex;align-items:center;gap:8px">Personel <span style="margin-left:auto;display:flex;gap:6px"><button class="btn sm" id="prX">Excel\'den yükle</button><button class="btn sm pri" id="prY">+ Personel</button></span></h3><input type="file" id="prXf" accept=".xlsx,.xls" style="display:none"><div id="prXo"></div><div id="prYo"></div>' +
+      (L.length ? L.slice().sort(function (x, y) { return (x.durum === "Ayrıldı") - (y.durum === "Ayrıldı") || (x.ad < y.ad ? -1 : 1); }).map(function (p) { var r = prsHesap(p, b, "Ödenecek", A), ac = PRS.ac === p.id;
+        var rozet = p.durum === "Ayrıldı" ? '<span class="pill">ayrıldı</span>' : p.durum === "Çıkış planlandı" ? '<span class="pill" style="background:#fef3c7;color:#92400e">çıkış ' + tarih(p.cikis) + "</span>" : r.birYil > b ? '<span class="pill" style="background:#dcfce7;color:#166534">kıdem ' + tarih(r.birYil) + "'de doğar</span>" : "";
+        var izn = (p.izinler || []).filter(function (z) { return z.bit >= b; })[0];
+        return '<div class="row prR" data-pr="' + p.id + '" style="cursor:pointer;flex-wrap:wrap"><div class="t"><b class="w">' + esc(p.ad) + " " + rozet + (izn ? ' <span class="pill" style="background:#e0e7ff;color:#3730a3">' + esc(izn.tur) + " " + tarih(izn.bas) + "–" + tarih(izn.bit) + "</span>" : "") + (p.sigortasiz ? ' <span class="pill" style="background:#fde8e8;color:var(--bad)">sigortasız</span>' : "") + "</b><small>" +
+          esc([p.gorev, p.yer, p.giris ? "giriş " + tarih(p.giris) : "", "net " + prsTl(prsMaas(p, b).net), p.sigortasiz ? "" : "brüt ≈ " + prsTl(r.brut)].filter(Boolean).join(" · ")) + '</small></div><div style="text-align:right"><small style="color:var(--muted)">bugün çıkarsak</small><br><b>' + (p.durum === "Ayrıldı" ? "—" : prsTl(r.isveren)) + "</b></div>" + (ac ? '<div class="prDet" style="flex-basis:100%" onclick="event.stopPropagation()">' + prsDetay(p, A, KU) + "</div>" : "") + "</div>"; }).join("") : '<div class="bos">Henüz personel yok. Finansın doldurduğu personel bilgi formunu "Excel\'den yükle" ile alın.</div>') + "</div>";
+    // sabit giderler
+    var sb = prsSabit(ak, A, b), es = function (re) { return S.filter(function (s) { return s.yon !== "Giriş" && re.test(s.ad); })[0]; }, eM = es(/maaş/i), eY = es(/yemek/i), eS = es(/sgk/i), eG = es(/muhtasar|stopaj/i);
+    html += '<details class="card"><summary><h3 style="display:inline">Sabit giderleri kartlardan güncelle</h3></summary><div class="ntk"><table class="nt2" style="min-width:480px"><thead><tr><th class="ilk">Kalem</th><th>Şu an (sabit)</th><th>Kartlardan</th></tr></thead><tbody>' +
+      [["Maaş (net ödemeler)", eM, sb.net], ["Yemek / yol / diğer", eY, sb.yan], ["SGK primi (işçi + işveren)", eS, sb.sgk], ["Muhtasar (gelir + damga vergisi)", eG, sb.gv]].map(function (x) { return "<tr><td class=\"ilk\">" + x[0] + (x[1] ? "<small>" + esc(x[1].ad) + "</small>" : '<small style="color:var(--bad)">sabit kalem bulunamadı</small>') + "</td><td>" + (x[1] ? prsTl(x[1].tutar) : "—") + '</td><td class="k">' + prsTl(x[2]) + "</td></tr>"; }).join("") +
+      '</tbody></table></div><div class="not"><small>Aktif personelin bu ayki net maaşları, yan ödemeleri ve bordrodan doğan SGK/vergi tutarları (asgari ücret istisnası dahil, yaklaşık). Sigortasız çalışan için yalnız net ödeme. "Güncelle" bulunan sabit kalemlerin tutarını değiştirir; nakit akışı buna göre yenilenir.</small></div><div style="padding:0 14px 12px"><button class="btn" id="prSb">Sabit giderleri güncelle</button></div></details>';
+    // ayarlar
+    html += '<details class="card"><summary><h3 style="display:inline">Hesap ayarları</h3></summary><div class="f">' +
+      '<label>Kıdem tavanı dönemleri <small>(her satır: başlangıç tarihi; tutar)</small><textarea id="paTv" rows="3">' + A.tavan.map(function (x) { return x[0] + "; " + x[1]; }).join("\n") + "</textarea></label>" +
+      '<div class="f2"><label>Asgari ücret (brüt, aylık)<input id="paAu" inputmode="decimal" value="' + A.au + '"></label><label>Damga vergisi (binde)<input id="paDm" inputmode="decimal" value="' + sayi(A.damga * 1000, 2) + '"></label></div>' +
+      '<div class="f2"><label>İşveren SGK + işsizlik, teşvikli %<input id="paSv" inputmode="decimal" value="' + sayi(A.sgkV * 100, 2) + '"></label><label>Teşviksiz %<input id="paSy" inputmode="decimal" value="' + sayi(A.sgkVyok * 100, 2) + '"></label></div>' +
+      '<label>Gelir vergisi dilimleri <small>(her satır: alt sınır; oran %)</small><textarea id="paGv" rows="5">' + A.dil.map(function (x) { return x[0] + "; " + sayi(x[1] * 100); }).join("\n") + "</textarea></label>" +
+      '<button class="btn pri" id="paK">Kaydet</button><small style="color:var(--muted)">2026: kıdem tavanı 73.729,87 ₺ (Tem–Ara), asgari ücret 33.030 ₺. 2027 rakamları açıklanınca buraya ekleyin.</small></div></details>';
+    $("fm").innerHTML = html;
+    // olaylar
+    $("prT").onchange = function () { PRS.toplu = this.value; fPersonel(); }; $("prI").onchange = function () { PRS.ihb = this.value; if (PRS.toplu) fPersonel(); };
+    Array.prototype.forEach.call(document.querySelectorAll(".prR"), function (r) { r.onclick = function () { PRS.ac = PRS.ac === r.dataset.pr ? "" : r.dataset.pr; fPersonel(); }; });
+    if (PRS.ac && PM[PRS.ac]) prsDetayBagla(PM[PRS.ac], A, KU);
+    $("prY").onclick = function () { $("prYo").innerHTML = '<div class="f" style="padding:10px 0">' + prsForm({}) + '<button class="btn pri" id="pfK">Ekle</button></div>'; $("pfK").onclick = function () { var bd = prsFormOku(); if (!bd) return; bd.durum = "Aktif"; api("/api/collections/personel/records", { method: "POST", body: bd }).then(function () { toast("Eklendi"); fPersonel(); }).catch(hata); }; };
+    $("prX").onclick = function () { $("prXf").click(); };
+    $("prXf").onchange = function () { var f = this.files[0]; if (f) prsExcel(f, L); };
+    $("prSb").onclick = function () { var is = []; [[eM, sb.net], [eY, sb.yan], [eS, sb.sgk], [eG, sb.gv]].forEach(function (x) { if (x[0]) is.push(api("/api/collections/fin_sabitler/records/" + x[0].id, { method: "PATCH", body: { tutar: Math.round(x[1]) } })); });
+      if (!is.length) { toast("Eşleşen sabit kalem yok"); return; } if (!confirm(is.length + " sabit gider kalemi kartlardan hesaplanan tutarla güncellensin mi?")) return; Promise.all(is).then(function () { toast("Sabit giderler güncellendi"); fPersonel(); }).catch(hata); };
+    $("paK").onclick = function () { var sat = function (id) { return $(id).value.split("\n").map(function (s) { return s.split(";").map(function (x) { return x.trim(); }); }).filter(function (x) { return x[0] && x[1]; }); };
+      var a = { tavan: sat("paTv").map(function (x) { return [x[0], num(x[1])]; }), au: num($("paAu").value), damga: num($("paDm").value) / 1000, sgkV: num($("paSv").value) / 100, sgkVyok: num($("paSy").value) / 100, sgkI: A.sgkI, dil: sat("paGv").map(function (x) { return [num(x[0]), num(x[1]) / 100]; }) };
+      (ayK ? api("/api/collections/fin_ayarlar/records/" + ayK.id, { method: "PATCH", body: { deger: a } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "personel_ayar", deger: a } })).then(function () { toast("Kaydedildi"); fPersonel(); }).catch(hata); };
+  }).catch(hata);
+}
+function prsSabit(ak, A, t) { var o = { net: 0, yan: 0, sgk: 0, gv: 0 }, mo = +t.slice(5, 7);
+  ak.forEach(function (p) { var m = prsMaas(p, t), yan = (+p.yemek || 0) + (+p.yol || 0) + (+p.diger || 0); o.yan += yan; if (p.sigortasiz) { o.net += m.net; return; }
+    var b = prsBrut(p, t, A), sv = p.tesvik === false ? A.sgkVyok : A.sgkV, n = prsNet(b, mo, A); o.net += n; o.sgk += b * (A.sgkI + sv); o.gv += b - b * A.sgkI - n; });
+  return o; }
+function prsForm(p) { var v = function (k) { return p[k] != null ? p[k] : ""; }, d = function (k) { return p[k] ? String(p[k]).slice(0, 10) : ""; }, o = (p.onceki || [])[0] || {};
+  return '<div class="f2"><label>Ad soyad<input id="pfA" value="' + esc(v("ad")) + '"></label><label>Görevi<input id="pfG" value="' + esc(v("gorev")) + '"></label></div>' +
+    '<div class="f2"><label>Çalıştığı yer<input id="pfY" value="' + esc(v("yer")) + '" list="pfYL"></label><label>Son işe giriş<input type="date" id="pfT" value="' + d("giris") + '"></label></div><datalist id="pfYL"><option>Ofis<option>Santral (GES)<option>Saha</datalist>' +
+    '<div class="f2"><label>Önceki dönem tazminatı<select id="pfOt">' + sec(["Yok", "Ödendi", "Ödenmedi"], o.tazminat || "Yok") + '</select></label><label>Önceki dönem giriş / çıkış<span style="display:flex;gap:6px"><input type="date" id="pfOg" value="' + esc((o.giris || "").slice(0, 10)) + '"><input type="date" id="pfOc" value="' + esc((o.cikis || "").slice(0, 10)) + '"></span></label></div>' +
+    '<div class="f2"><label>Aylık NET maaş<input id="pfN" inputmode="decimal" value="' + v("net") + '"></label><label>Son bordro BRÜT <small>(bilgi)</small><input id="pfB" inputmode="decimal" value="' + v("brut") + '"></label></div>' +
+    '<div class="f2"><label>Yemek (aylık)<input id="pfYm" inputmode="decimal" value="' + v("yemek") + '"></label><label>Yol (aylık)<input id="pfYo" inputmode="decimal" value="' + v("yol") + '"></label></div>' +
+    '<div class="f2"><label>Diğer düzenli ödeme<input id="pfD" inputmode="decimal" value="' + v("diger") + '"></label><label>Kalan yıllık izin (gün) / bilgi tarihi<span style="display:flex;gap:6px"><input id="pfI" inputmode="decimal" value="' + v("izinGun") + '" style="width:80px"><input type="date" id="pfIt" value="' + d("izinTarih") + '"></span></label></div>' +
+    '<div class="f2"><label>Bu yıl kümülatif GV matrahı <small>(bilgi tarihi itibarıyla)</small><input id="pfM" inputmode="decimal" value="' + v("gvMatrah") + '"></label><label style="flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap"><span><input type="checkbox" id="pfS"' + (p.sigortasiz ? " checked" : "") + '> Sigortasız</span><span><input type="checkbox" id="pfTs"' + (p.tesvik !== false ? " checked" : "") + "> SGK teşviki var</span></label></div>" +
+    '<label>Not<input id="pfNt" value="' + esc(v("not")) + '"></label>'; }
+function prsFormOku() { var ad = $("pfA").value.trim(); if (!ad) { toast("Ad gerekli"); return null; } var t = function (id) { return $(id).value ? $(id).value + " 12:00:00.000Z" : ""; };
+  var on = $("pfOt").value === "Yok" ? [] : [{ tazminat: $("pfOt").value, giris: $("pfOg").value, cikis: $("pfOc").value }];
+  return { ad: ad, gorev: $("pfG").value.trim(), yer: $("pfY").value.trim(), giris: t("pfT"), onceki: on, net: num($("pfN").value), brut: num($("pfB").value), yemek: num($("pfYm").value), yol: num($("pfYo").value), diger: num($("pfD").value),
+    izinGun: num($("pfI").value), izinTarih: t("pfIt"), gvMatrah: num($("pfM").value), sigortasiz: $("pfS").checked, tesvik: $("pfTs").checked, not: $("pfNt").value.trim() }; }
+function prsDetay(p, A, KU) { var b = bugun(), c0 = p.cikis ? p.cikis.slice(0, 10) : PRS.dc || prsTarihEkle(b, 28), ih = p.ihbar || PRS.di || "Ödenecek", r = prsHesap(p, c0, ih, A), izn = (p.izinler || []).filter(function (z) { return z.bit >= b; })[0];
+  var sat = function (a, v, alt) { return '<tr><td class="ilk">' + a + "</td><td>" + prsTl(v) + (alt ? "<small>" + alt + "</small>" : "") + "</td></tr>"; };
+  var h = '<div class="prIki"><div><h4 style="margin:4px 0">İşten çıkar</h4>' +
+    (p.durum === "Çıkış planlandı" ? '<div class="uyari" style="margin:0 0 8px">Çıkış planlandı: ' + tarih(p.cikis) + " · ihbar " + esc(p.ihbar || "") + ". Ödemeler Gelecek/Gidecek'te, onayınızda.</div>" : "") +
+    '<div class="f2"><label>Çıkış tarihi<input type="date" id="pdC" value="' + c0 + '"' + (p.durum === "Ayrıldı" ? " disabled" : "") + '></label><label>İhbar<select id="pdI">' + sec(["Ödenecek", "Çalışarak kullandırılacak"], ih) + "</select></label></div>" +
+    '<div class="ntk"><table class="nt2" style="min-width:300px"><tbody>' + '<tr><td class="ilk">Süre</td><td>' + sayi(r.gun) + " gün" + (r.kGun !== r.gun ? "<small>ihbar eklenince " + sayi(r.kGun) + " gün</small>" : "") + "</td></tr>" +
+    sat("Brüt (o ay, netten)", r.brut, p.sigortasiz ? "sigortasız: net kabul" : "") + sat("Giydirilmiş brüt", r.giy, "yemek/yol/diğer dahil") +
+    sat("Kıdem tazminatı", r.kidem, r.yil < 1 ? "1 yıl dolmadı (" + tarih(r.birYil) + ")" : sayi(r.yil, 2) + " yıl") + sat("İhbar tazminatı", r.ihbar, r.ihbar ? r.hafta + " hafta" : ih === "Ödenecek" ? "" : r.hafta + " hafta çalışarak") + sat("Yıllık izin ücreti", r.izin, r.izinGun + " gün") +
+    '<tr class="ana"><td class="ilk">Çalışana net</td><td class="k">' + prsTl(r.net) + "</td></tr>" + sat("Devlete (vergi + SGK)", r.devlet) + '<tr class="ana"><td class="ilk">Şirket maliyeti</td><td class="k">' + prsTl(r.isveren) + "<small>" + sayi(r.isveren / KU.usd) + " $</small></td></tr></tbody></table></div>" +
+    (r.birYil > b ? '<div class="not"><small>Kıdem ' + tarih(r.birYil) + "'de doğar. Kıdemsiz çıkış için ihbar ödenerek fesih en geç " + tarih(r.sonCikisOde) + ", çalışarak kullandırılırsa çıkış en geç " + tarih(r.sonCikisCal) + ".</small></div>" : "") +
+    (p.sigortasiz ? '<div class="uyari" style="margin:6px 0">Sigortasız çalışma: SGK cezası riski; uyuşmazlıkta kıdem/ihbar fiili çalışma süresi üzerinden istenebilir. Müşavirle görüşün.</div>' : "") +
+    (p.durum === "Aktif" ? '<button class="btn pri" id="pdK">Akışa ekle (onaya düşer)</button>' : p.durum === "Çıkış planlandı" ? '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn" id="pdIp">Planı iptal et</button><button class="btn" id="pdAy">Ayrıldı olarak işaretle</button></div>' : "") + "</div>";
+  // karşılaştırma (izin varsa)
+  h += "<div>";
+  if (izn && p.durum === "Aktif") { var cB = prsTarihEkle(izn.bit, 1), rA = r, rB = prsHesap(p, cB, ih, A), aylar = Math.max(0, prsGun(c0, izn.bas)) / 30.4, mB = rB.isveren + rA.aylik * aylar, risk = /doğum/i.test(izn.tur) ? 4 * r.giy : 0;
+    h += '<h4 style="margin:4px 0">Şimdi mi, izin sonrası mı?</h4><div class="ntk"><table class="nt2" style="min-width:300px"><thead><tr><th class="ilk"></th><th>' + tarih(c0) + "'de çıkar</th><th>İzin sonrası (" + tarih(cB) + ")</th></tr></thead><tbody>" +
+      '<tr><td class="ilk">Çıkış maliyeti</td><td>' + prsTl(rA.isveren) + "</td><td>" + prsTl(rB.isveren) + '</td></tr><tr><td class="ilk">Arada maaş maliyeti</td><td>—</td><td>' + prsTl(rA.aylik * aylar) + "<small>" + sayi(aylar, 1) + " ay; izin döneminde 0</small></td></tr>" +
+      (risk ? '<tr><td class="ilk">Olası ayrımcılık tazminatı riski</td><td style="color:var(--bad)">' + prsTl(risk) + '<small>4 aylık ücrete kadar</small></td><td>—</td></tr>' : "") +
+      '<tr class="ana"><td class="ilk">Toplam</td><td class="k">' + prsTl(rA.isveren + risk) + '</td><td class="k">' + prsTl(mB) + "</td></tr></tbody></table></div>" +
+      '<div class="not"><small>' + esc(izn.tur) + " " + tarih(izn.bas) + "–" + tarih(izn.bit) + ". Doğum izninde ücreti SGK öder; ücretsiz izinde maaş yok. Hamilelik/doğum izniyle bağlantılı fesih ayrımcılık sayılabilir; karar öncesi hukukçuya danışın.</small></div>"; }
+  h += '<h4 style="margin:10px 0 4px">İzin dönemi</h4><div class="f2"><label>Tür<select id="pzT">' + sec(["Doğum izni", "Ücretsiz izin", "Rapor", "Diğer"]) + '</select></label><label>Başlangıç / bitiş<span style="display:flex;gap:6px"><input type="date" id="pzB"><input type="date" id="pzE"></span></label></div><button class="btn sm" id="pzK">İzin ekle</button>' +
+    (p.izinler && p.izinler.length ? "<div style=\"margin-top:6px\">" + p.izinler.map(function (z, i) { return '<small style="display:block">' + esc(z.tur) + " " + tarih(z.bas) + "–" + tarih(z.bit) + ' <a href="javascript:void 0" data-pzx="' + i + '">sil</a></small>'; }).join("") + "</div>" : "") +
+    '<h4 style="margin:10px 0 4px">Maaş değişikliği</h4><div class="f2"><label>Geçerlilik tarihi<input type="date" id="pmT" value="' + b + '"></label><label>Yeni NET maaş<input id="pmN" inputmode="decimal"></label></div><button class="btn sm" id="pmK">Kaydet</button>' +
+    ((p.maasGecmis || []).length ? (p.maasGecmis || []).slice().sort(function (x, y) { return x.tarih < y.tarih ? 1 : -1; }).map(function (m) { return '<small style="display:block;color:var(--muted)">' + tarih(m.tarih) + ": net " + prsTl(m.net) + "</small>"; }).join("") : "") +
+    '<details style="margin-top:10px"><summary><b>Kartı düzenle</b></summary><div class="f" style="padding:8px 0">' + prsForm(p) + '<div style="display:flex;gap:6px"><button class="btn pri" id="pfK2">Kaydet</button><button class="btn" id="pfX">Kartı sil</button></div></div></details></div></div>';
+  return h; }
+function prsDetayBagla(p, A, KU) { var b = bugun(), P = function (body) { return api("/api/collections/personel/records/" + p.id, { method: "PATCH", body: body }).then(function () { fPersonel(); }).catch(hata); };
+  if ($("pdC")) $("pdC").onchange = function () { PRS.dc = this.value; if (p.durum === "Aktif") fPersonel(); }; if ($("pdI")) $("pdI").onchange = function () { PRS.di = this.value; if (p.durum === "Aktif") fPersonel(); };
+  if ($("pdK")) $("pdK").onclick = function () { var c = $("pdC").value, ih = $("pdI").value; if (!c) { toast("Çıkış tarihi seçin"); return; } var r = prsHesap(p, c, ih, A), dv = ayEkle(c, 1) + "-26";
+    if (!confirm(p.ad + " için " + tarih(c) + " çıkışı akışa eklensin mi?\nÇalışana net: " + prsTl(r.net) + "\nDevlete: " + prsTl(r.devlet) + "\nŞirket maliyeti: " + prsTl(r.isveren))) return;
+    var kal = [], ac = []; if (r.kidem) ac.push("kıdem " + prsTl(r.kidem)); if (r.ihbar) ac.push("ihbar " + prsTl(r.ihbar)); if (r.izin) ac.push("izin " + prsTl(r.izin) + " (" + r.izinGun + " gün)");
+    if (r.net > 0) kal.push({ tarih: c + " 12:00:00.000Z", yon: "Çıkış", kategori: "Tazminat (personel çıkış)", tutar: Math.round(r.net * 100) / 100, pb: "TRY", durum: "Planlandı", karsiTaraf: p.ad, aciklama: "Personel çıkış ödemesi (net): " + ac.join(", "), not: "personel:" + p.id, onay: "Onay bekliyor", giren: BEN.id });
+    if (r.devlet > 0) kal.push({ tarih: dv + " 12:00:00.000Z", yon: "Çıkış", kategori: "Vergi-SGK", tutar: Math.round(r.devlet * 100) / 100, pb: "TRY", durum: "Planlandı", karsiTaraf: "Vergi dairesi / SGK", aciklama: p.ad + " çıkışı: gelir/damga vergisi ve SGK", not: "personel:" + p.id, onay: "Onay bekliyor", giren: BEN.id });
+    if (!kal.length) { P({ durum: "Çıkış planlandı", cikis: c + " 12:00:00.000Z", ihbar: ih, hareketler: [] }); toast("Ödeme gerekmiyor; çıkış planlandı"); return; }
+    Promise.all(kal.map(function (k) { return api("/api/collections/fin_hareketler/records", { method: "POST", body: k }); })).then(function (H) {
+      return P({ durum: "Çıkış planlandı", cikis: c + " 12:00:00.000Z", ihbar: ih, hareketler: H.map(function (h) { return h.id; }) }); }).then(function () { toast("Akışa eklendi; onayınıza düştü"); }).catch(hata); };
+  if ($("pdIp")) $("pdIp").onclick = function () { if (!confirm("Çıkış planı iptal edilsin mi? Henüz ödenmemiş planlı ödemeler silinir.")) return;
+    Promise.all((p.hareketler || []).map(function (id) { return api("/api/collections/fin_hareketler/records/" + id).then(function (m) { return m.durum === "Gerçekleşti" ? null : api("/api/collections/fin_hareketler/records/" + id, { method: "DELETE" }); }).catch(function () { return null; }); }))
+      .then(function () { return P({ durum: "Aktif", cikis: "", ihbar: "", hareketler: [] }); }).catch(hata); };
+  if ($("pdAy")) $("pdAy").onclick = function () { if (confirm(p.ad + " ayrıldı olarak işaretlensin mi?")) P({ durum: "Ayrıldı" }); };
+  $("pzK").onclick = function () { var z = { tur: $("pzT").value, bas: $("pzB").value, bit: $("pzE").value }; if (!z.bas || !z.bit || z.bit < z.bas) { toast("Başlangıç ve bitiş girin"); return; } P({ izinler: (p.izinler || []).concat([z]) }); };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pzx]"), function (e) { e.onclick = function () { var L = (p.izinler || []).slice(); L.splice(+e.dataset.pzx, 1); P({ izinler: L }); }; });
+  $("pmK").onclick = function () { var t = $("pmT").value, n = num($("pmN").value); if (!t || !(n > 0)) { toast("Tarih ve net maaş girin"); return; } var G = (p.maasGecmis || []).slice();
+    if (!G.length) G.push({ tarih: (p.giris || t).slice(0, 10), net: +p.net || 0, brut: +p.brut || 0 }); G.push({ tarih: t, net: n }); P({ maasGecmis: G, net: t <= b ? n : p.net }); };
+  $("pfK2").onclick = function () { var bd = prsFormOku(); if (bd) P(bd); };
+  $("pfX").onclick = function () { if (confirm(p.ad + " kartı kalıcı olarak silinsin mi? (Akıştaki ödemeler silinmez)")) api("/api/collections/personel/records/" + p.id, { method: "DELETE" }).then(function () { PRS.ac = ""; fPersonel(); }).catch(hata); };
+}
+/* finansın doldurduğu "Personel bilgi formu" (.xlsx) */
+function prsExcel(f, L) {
+  kutuphane("/xlsx.full.min.js", "XLSX").then(function () { return f.arrayBuffer(); }).then(function (buf) {
+    var wb = XLSX.read(buf, { type: "array", cellDates: true }), ws = wb.Sheets.Personel || wb.Sheets[wb.SheetNames[wb.SheetNames.length - 1]];
+    var R = XLSX.utils.sheet_to_json(ws, { header: 1, raw: true, defval: null }), hi = R.findIndex(function (r) { return r && r.some(function (c) { return /ad soyad/i.test(String(c || "")); }); });
+    if (hi < 0) { toast("Personel sayfası bulunamadı"); return; }
+    var H = R[hi].map(function (c) { return String(c || "").toLocaleLowerCase("tr"); }), col = function (re) { return H.findIndex(function (h) { return re.test(h); }); };
+    var ix = { ad: col(/ad soyad/), gorev: col(/görev/), yer: col(/çalıştığı yer/), giris: col(/son işe giriş/), ot: col(/önceki dönem tazminat/), og: col(/önceki dönem giriş/), oc: col(/önceki dönem çıkış/), net: col(/net maaş/), brut: col(/brüt/), yemek: col(/yemek/), yol: col(/^yol/), diger: col(/diğer düzenli/), izin: col(/izin/), gv: col(/matrah/), bt: col(/bilgi tarihi/), ts: col(/teşvik/), not: col(/^not/) };
+    var tr = function (v) { if (v == null || v === "") return ""; if (v instanceof Date) return new Date(v.getTime() - v.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); var m = /(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})/.exec(String(v)); return m ? m[3] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[1]).slice(-2) : ""; };
+    var sy = function (v) { return typeof v === "number" ? v : num(String(v || "").replace(/[^\d.,-]/g, "")) || 0; }, g = function (r, k) { return ix[k] >= 0 ? r[ix[k]] : null; };
+    var K = R.slice(hi + 1).filter(function (r) { var a = String(g(r, "ad") || "").trim(); return a && !/örnek/i.test(a) && String(r[0] || "").toLowerCase() !== "örn"; }).map(function (r) {
+      var ot = String(g(r, "ot") || "Yok"), sig = /sigortas[ıi]z/i.test(String(g(r, "brut") || "") + " " + String(g(r, "not") || ""));
+      return { ad: String(g(r, "ad")).trim(), gorev: String(g(r, "gorev") || "").trim(), yer: String(g(r, "yer") || "").trim(), giris: tr(g(r, "giris")), onceki: /ödendi|ödenmedi/i.test(ot) ? [{ tazminat: /ödenmedi/i.test(ot) ? "Ödenmedi" : "Ödendi", giris: tr(g(r, "og")), cikis: tr(g(r, "oc")) }] : [],
+        net: sy(g(r, "net")), brut: sig ? 0 : sy(g(r, "brut")), yemek: sy(g(r, "yemek")), yol: sy(g(r, "yol")), diger: sy(g(r, "diger")), izinGun: sy(g(r, "izin")), izinTarih: tr(g(r, "bt")), gvMatrah: sig ? 0 : sy(g(r, "gv")),
+        sigortasiz: sig, tesvik: !/yok/i.test(String(g(r, "ts") || "")), not: String(g(r, "not") || "").trim() }; });
+    var var_ = {}; L.forEach(function (p) { var_[p.ad.toLocaleLowerCase("tr")] = p; });
+    $("prXo").innerHTML = '<div class="uyari" style="margin:8px 0">' + K.length + " kişi okundu. Aynı isimli kart varsa güncellenir, yoksa yeni kart açılır.</div>" + K.map(function (k) { var e = var_[k.ad.toLocaleLowerCase("tr")];
+        return '<div class="row"><div class="t"><b>' + esc(k.ad) + (e ? ' <span class="pill">güncellenecek</span>' : ' <span class="pill" style="background:#dcfce7;color:#166534">yeni</span>') + (k.sigortasiz ? ' <span class="pill">sigortasız</span>' : "") + "</b><small>" + esc(["giriş " + (k.giris ? tarih(k.giris) : "—"), k.onceki.length ? "önceki dönem: " + k.onceki[0].tazminat : "", "net " + prsTl(k.net), k.brut ? "bordro brüt " + prsTl(k.brut) : "", "yemek " + prsTl(k.yemek)].filter(Boolean).join(" · ")) + "</small></div></div>"; }).join("") +
+      (K.some(function (k) { return !k.giris; }) ? '<div class="uyari" style="margin:6px 0">Giriş tarihi boş olan satır var; hesap için kartta tamamlayın.</div>' : "") + '<button class="btn pri" id="prXk">İçeri al</button> <button class="btn" id="prXi">Vazgeç</button>';
+    $("prXi").onclick = function () { $("prXo").innerHTML = ""; $("prXf").value = ""; };
+    $("prXk").onclick = function () { var bt = this; bt.disabled = true; var t = function (d) { return d ? d + " 12:00:00.000Z" : ""; };
+      sirali(K, function (k) { var e = var_[k.ad.toLocaleLowerCase("tr")], body = Object.assign({}, k, { giris: t(k.giris), izinTarih: t(k.izinTarih) });
+        if (!e) body.durum = "Aktif"; return api("/api/collections/personel/records" + (e ? "/" + e.id : ""), { method: e ? "PATCH" : "POST", body: body }); })
+        .then(function () { toast(K.length + " personel kartı işlendi"); fPersonel(); }).catch(function (e) { bt.disabled = false; hata(e); }); };
+  }).catch(hata);
 }
 
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
@@ -4008,9 +4200,9 @@ function sEkip() {
 FIN_IK.borc = ["kart", "#e11d48"];
 function sFinans(alt) {
   if (!finansci()) { location.hash = "#bugun"; return; }
-  alt = alt || (yt("fin") ? "kasa" : "odeme"); if (!yt("fin") && alt !== "odeme") alt = "odeme"; if ((alt === "ortak" || alt === "varlik") && !yt("ortak")) alt = "kasa"; if (alt === "ozet") alt = "kasa"; if (alt === "borc") alt = "kredi"; if (alt !== "odeme") { OD.liste = ""; OD.yeni = null; }
+  alt = alt || (yt("fin") ? "kasa" : "odeme"); if (!yt("fin") && alt !== "odeme") alt = "odeme"; if ((alt === "ortak" || alt === "varlik" || alt === "personel") && !yt("ortak")) alt = "kasa"; if (alt === "ozet") alt = "kasa"; if (alt === "borc") alt = "kredi"; if (alt !== "odeme") { OD.liste = ""; OD.yeni = null; }
   $("m").classList.add("genis");
-  var GR = { kasa: "kasa", akis: "akis", plan: "akis", senaryo: "akis", odeme: "odeme", kredi: "borc", cek: "borc", rapor: "rapor", ortak: "diger", diger: "diger", sabit: "diger", hareket: "diger", hesap: "diger", soru: "diger", varlik: "diger" }, akt = GR[alt] || "kasa";
+  var GR = { kasa: "kasa", akis: "akis", plan: "akis", senaryo: "akis", odeme: "odeme", kredi: "borc", cek: "borc", rapor: "rapor", ortak: "diger", personel: "diger", diger: "diger", sabit: "diger", hareket: "diger", hesap: "diger", soru: "diger", varlik: "diger" }, akt = GR[alt] || "kasa";
   var T = yt("fin") ? [["kasa", "Kasa"], ["akis", "Akış"]] : [];
   T.push(["odeme", "Ödemeler"]);
   if (yt("fin")) { T.push(["borc", "Borçlar"]); T.push(["rapor", "Raporlar"]); T.push(["diger", "Diğer"]); }
@@ -4020,13 +4212,13 @@ function sFinans(alt) {
     (alt2 ? '<div class="seg finS">' + alt2.map(function (x) { return '<button onclick="location.hash=\'#finans/' + x[0] + '\'" class="' + (x[0] === alt ? "on sg" : "") + '">' + x[1] + "</button>"; }).join("") + "</div>" : "") +
     (akt === "diger" && alt !== "diger" ? '<a href="#finans/diger" class="geriL">‹ Diğer</a>' : "") + '<div id="fm"><div class="bos">Yükleniyor…</div></div>';
   if (HIZLI.fin && alt === "plan") { FP.ekle = true; }
-  ({ kasa: fKasa, akis: fNakit, plan: fPlan, senaryo: fSenaryo, odeme: fOdeme, hareket: fHareket, hesap: fHesap, kredi: fKredi, cek: fCek, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik, diger: fDiger, rapor: fRapor }[alt] || fKasa)();
+  ({ kasa: fKasa, akis: fNakit, plan: fPlan, senaryo: fSenaryo, odeme: fOdeme, hareket: fHareket, hesap: fHesap, kredi: fKredi, cek: fCek, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik, personel: fPersonel, diger: fDiger, rapor: fRapor }[alt] || fKasa)();
   if (HIZLI.fin) { var hz = HIZLI.fin; HIZLI.fin = ""; var n = 0, iv = setInterval(function () { var s = $("pT"); if (++n > 40) clearInterval(iv); if (!s) return; clearInterval(iv);
     s.value = hz === "tahsilat" ? "Cari alacak (müşteri)" : "Cari ödeme (tedarikçi)"; s.dispatchEvent(new Event("change")); s.closest("details").open = true; s.scrollIntoView({ behavior: "smooth", block: "center" }); }, 150); }
 }
 function fDiger() {
   var L = [["sabit", "Sabit giderler", "Maaş, kira, SGK, müşavir… her ay otomatik nakit akışına düşer"], ["hareket", "Tüm hareketler", "Gerçekleşen ve planlanan bütün kayıtlar, kontrol işaretleri"], ["hesap", "Hesap yönetimi", "Hesap ekle/kapat, kasa tablosundan yeniden kur"], ["soru", "Finans soruları", "Finans ekibiyle soru-cevap"]];
-  if (yt("ortak")) { L.unshift(["ortak", "Ortaklar", "Ortak cari, sermaye dengesi (60/40)"]); L.splice(2, 0, ["varlik", "Varlıklar", "Arsa, dükkan, araç; satış durumu"]); }
+  if (yt("ortak")) { L.unshift(["ortak", "Ortaklar", "Ortak cari, sermaye dengesi (60/40)"]); L.splice(2, 0, ["varlik", "Varlıklar", "Arsa, dükkan, araç; satış durumu"]); L.splice(3, 0, ["personel", "Personel", "Personel kartları, kıdem/ihbar/izin hesabı, işten çıkış"]); }
   $("fm").innerHTML = '<div class="card">' + L.map(function (x) { return '<a class="row" href="#finans/' + x[0] + '">' + ikon((FIN_IK[x[0]] || ["menu"])[0], (FIN_IK[x[0]] || [0, "#475569"])[1], "kucuk") + '<div class="t"><b>' + x[1] + "</b><small>" + x[2] + '</small></div><span style="color:var(--muted)">›</span></a>'; }).join("") + "</div>";
 }
 function fKasa() { fKasa0(); var n = 0, iv = setInterval(function () { var h = document.querySelector("#fm .card.hero"); if (++n > 60) clearInterval(iv); if (!h) return; clearInterval(iv); kasaIleri(h); }, 120);
@@ -4040,7 +4232,10 @@ function kasaIleri(hero) {
     var v = K.T.kul, min = { v: v, t: b }; L.forEach(function (k) { v += (k.yon === "Giriş" ? 1 : -1) * (k.usd || 0); if (v < min.v) min = { v: v, t: k.t < b ? b : k.t }; });
     var d = document.createElement("div"); d.className = "kv kIl";
     d.innerHTML = '<div><small>30 gün sonra (plana göre)</small><b>' + sayi(v) + " $</b><small>" + (v >= K.T.kul ? "+" : "−") + sayi(Math.abs(v - K.T.kul)) + ' $</small></div><div><small>En düşük nokta</small><b style="' + (min.v < 0 ? "color:#fecaca" : "") + '">' + sayi(min.v) + " $</b><small>" + tarih(min.t) + (min.v < 0 ? " · nakit eksiye düşüyor" : "") + "</small></div>";
-    var ref = hero.querySelector(".kv"); if (ref) hero.insertBefore(d, ref); else hero.appendChild(d); }).catch(function () {});
+    var ref = hero.querySelector(".kv"); if (ref) hero.insertBefore(d, ref); else hero.appendChild(d);
+    if (yt("ortak")) Promise.all([liste("personel", "", "ad"), liste("fin_ayarlar", "anahtar = 'personel_ayar'").catch(function () { return []; })]).then(function (P) { if (!P[0].length) return;
+      var o = prsOzet(P[0], prsAyar(P[1][0] ? { personel_ayar: P[1][0].deger } : {})), e = document.createElement("div");
+      e.innerHTML = '<small>Personel tazminat yükü (bugün)</small><b>' + sayi(o.top / KU.usd) + ' $</b><small>' + sayi(o.top) + " ₺" + (o.son ? " · kıdemsiz son fesih " + tarih(o.son.t) : "") + "</small>"; e.style.cursor = "pointer"; e.onclick = function () { location.hash = "#finans/personel"; }; d.appendChild(e); }).catch(function () {}); }).catch(function () {});
 }
 
 /* ---------- v46 GES: Bugün · Performans · İşler · Kira · Ay kapanışı · Veri & ayarlar ---------- */

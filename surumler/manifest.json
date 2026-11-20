@@ -1,7 +1,7 @@
 {
- "surum": 54,
- "paket": "surumler/dsolar-54.zip",
- "sha256": "9f890520018f4e950e9553702219c0ff1ef311907a6e33608e03e509501bccaf",
- "imza": "DBiTcLo9IFeUsJHGx9FLr/76kKYaP24jxCx6KcSVxDm2emF3jDoktSGEeTRy6895YpSUqFxldXBGb/w4cp5C/7UfPToVoIlASsGR5I/QX5XkqjrlXqvngpfJe74AER6nxpm3oyVe4zRYcAqEhsZR5O+aQpMI3rayYVa9xgGnpWbzO0i2+UjhAkdCSD2TODYjtJNzFhraiUs+J6l0I3fbMPlFFU8Pb1Ijs0paviKmzNjE5KOdTBTgM/rvBYmfwZ1Ho2h0oMAfJwtwOYzRdnrqGbE4ACap6wLtuybKtUIzVt70fBSR5xxodUIY5Fjm0X2heWpe5gldt/ZtvlfhzkZA9WvZLltRNqGGy5S5ItXrultRAxa84Qzm1m0zMcuYYv0Q/PNTGlSGeQzBOJl40AFMpykX/SZ9o1NRZ5Xbk+Gyha/B0HncsMG9MCsZUMf42lHNeIy2D1LJhqOmCWy+mEj48Bd3xm/HrcoOb+VfceiB0/ZyYfGhv7a4d/p4GqKUjVUu",
- "not": "Finans: 5 yıllık nakit akışı senaryosu (krediler, personel azaltma, varlık satışları, KDV/kurumlar vergisi, Orhan payı, ortak girişi 60/40, 3 senaryo, erken kapama, çıkış, PDF)"
+ "surum": 55,
+ "paket": "surumler/dsolar-55.zip",
+ "sha256": "b93e9d7f1905f6e7c4a5da99b98155a6c891d65ab852c8477227c1c5fd3a73fa",
+ "imza": "X/6DDUQmyGqO58FOx8fvTSSVyPel8EWHU92OydhE+7dfoUuoKizRw5UgPfyP+DYlQ9UnAluuZYF18KFnCnVrinLuz8W7aPArGKKW32D9iVjV0bC9tx8Cdt5SIb5gpCy6TaXx4RPPW5DiIOmYFqWIbvyeaZO5Vpl4qtaDBSvWLSlON72DfnwBABWw8WSLL+SiTwL14WW4LpJCmOAwDkVMT0nwoK8JPbCScjbo1HOkn/bB+DaGXpfoUQGwp361nfqqA7v5xzS3iMlcVDPT+7CMgT73K5QkmJmrFl328fIQ1yMKB7pzU0H+/aLzFjWcxq95lb7wyx+2rONXSYFOhoE88aGsm0PkRTn8GU+OFV+tVyyaXTEuF2wOraX9/qDIoGJK1lx4bbComJfKy9KGZnXwcdkDzgVAKgRyNKje62tQf1U//gEE5rg9OtL6RHWvTrnGVHhBbDc+2SyoxfeQHn+llX1orNy94nzsTW2Cvr3TD/jjY1ZR01ieH7+i4EECcDg5",
+ "not": "Finans: Personel bölümü (personel kartları, Excel'den yükleme, kıdem/ihbar/izin hesabı, toplu çıkış hesabı, işten çıkar → akış ve onay, izin dönemi karşılaştırması, sabit giderleri kartlardan güncelleme; senaryo ve kasada tazminat yükü)"
 }
