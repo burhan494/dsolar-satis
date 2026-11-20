@@ -1,7 +1,7 @@
 {
- "surum": 61,
- "paket": "surumler/dsolar-61.zip",
- "sha256": "8028c055d16839030e54654217fc4840e1387dcf8db977ed8e31c266d2651645",
- "imza": "mZr3jMe4agtGYaS8upAEMIfB6ZXOV2S8otCDg6LR1FeENYfc5CNENMvx5gWbi2FfMG/HMLOSqydMBpBMBsICJitm8XpQfhN+ks321DmkPF2jQWA8e9bHp9a2By8S4I8lj7os5g/XtBkbROczoqrYEFU1g0wkMBVd0B3Q75qZg98DCsUYAiP8Qa4EPElFDQp4PqF6gjljYC3pCOptnoUGdH7pL41qLHwWjZ+20wC6rV78+5w7jTcmAKLolD1lKKKoHoPdWgU4fef95r6ZAHZu/Xrx+ynBR9VJjptXiyiAK9kLCOejEfhwQbrJPY7qhZy5BbyQXWd2feckUV8QwcAR7Ww7hGCZOzH6crWY3zZkG3xvhVfgXdA9vo4zDaVIsK1HWHFCztutpGW2kDISp+gi+SqosIe5xoDx8JG+3GtRnjp0Wt7UMKvylKqYZXBqiQiNq7kMZGT4ypek2EloT7K+Y5VJCEyEJ7DpE7qnuHh+mv6+3QShYX8veOsRdxpc+wqY",
- "not": "Param: alacaklar, gelecek paralar, sigorta ve birikimler, yenileme hatırlatıcıları, finans koçu ve abonelik radarı"
+ "surum": 62,
+ "paket": "surumler/dsolar-62.zip",
+ "sha256": "3bd743dfee20e983f1a1f27063f6fb415fb102c14a97b81c92927a0a87b67190",
+ "imza": "NcJZPpf+0XaOedvjripFmEf4GHywvIj5gPqvTEd3OhkC1pPsyd76PHCgxA0+RJaKZQVH1guWULi+ugUrDKi2czBYPtpZ+Cdtx74dVt8ZkJ/Ge8sIXy/sjx7fD9eP+2bK66CDIgyt4nGbIm86NgOXzWIE6bKNQbqGkoM/Ga4yoZ268K7OqmRfb56wJMsRXFqXBGZrSEetzQJATBWP5rDoGqcrWyNjkaYpuXJfghloCaJ7yP//X+8pZmsD3Y8CBJpAS5zZYF4/Hcr/8DjnagihJ5ksraUbpHY2z1oAN9Lsrz4hwYkdY9cLMYKSOM5avtCJFpZuRBXCgj/ndyrmONVgub3tte87nRU6TF2xVIB0hjWQNfmILMzK41cJC7YY0aJS7UlaQeqQbogxZTM10MUP1sS2KkKlDRSdQBazK5aWZ+oN+MpGS56UqRp5Bg3e/XCWBThKi3PsUBMb9Hl8Dab/2TKPyatsRZl3J7Y2TqrjETvPpUiwWkb0csQgm3rQdgnp",
+ "not": "Param: sabit ödemeler bankada isimle eşleşir (kısmi ödeme gösterir), Şirket adına kategorisi"
 }
