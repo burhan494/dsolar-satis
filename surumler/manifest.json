@@ -1,7 +1,7 @@
 {
- "surum": 57,
- "paket": "surumler/dsolar-57.zip",
- "sha256": "d55b7465a16f38f2e020add431addcc059733228a736cecd3326d23c83f5ee3e",
- "imza": "LMRaO9Zv+uZ66NNAQ0TSCYk709OPufMnKTkOaziFQXY21elr862CkLVK1ZOI3iumJkijQX7f5jBgCU/oRy6OdtiHQ7Xa2VumNIH9UiQWMW1BftDcJgW792ayJp0qQyBWlU5ZjRtQHFh66cAKgbqf3tvMIiVys7sxXVLCWN5kLrver8EN7v9T7M7hvWmuzfImJTj5RM1cS4qHRVuj4qsTybguixsDRowXSRkFroYlZIowcRTH7khfPS/7ulItbDn9u+Nm8kOiihOJjdfUNIpv3TynSHM/G3S7rvHot7QGlhMHDd3yqgm835b1pGODkLY3PTHF5RYdDxS/XiLeOnWh/UKA82shLNvUqWKigNPsFLEwPOoaug4YJOzEI0mUqo4SfDL+uiQSSPzcGJUjfduvQws4oFiVKD+WGkdNhbUruhZkzLh+Dgdy3qlEcT3ZbsVcZ9d7TpbFYcWSXXrB17I4IeMTqAnYYtGs8CFEDAIS+2WBzJDjJtfmoMIwCoLaVWvo",
- "not": "Param: şifreli kişisel para bölümü (yalnız sahibi görür), ekstre/döküm PDF okuma cihazda"
+ "surum": 58,
+ "paket": "surumler/dsolar-58.zip",
+ "sha256": "212d9cec4d04b9e3b087992f17f39099f6b03c35d047c13f63ad4b029240d51b",
+ "imza": "KDIQwMXsSU/m08ZPs6uHSHkWGaS0/XKDtQMpd3e+9QzbUIhgimAUfP4WMPIJUjK0aWJ1rm9kzR88TfG/AxyLclMFmL9G+Lj8yRr8pfhrZvbPaPzpliglFY4/1gCibP9/3qFAbFJHtTUIfklS0zcL+jI3jmDRtehKL1Hq8TrziI3/sFr3TIJwSU6PI/yRF1XaDlwd6bXmIzeP9TDoqoioW/TmQl41xwUxKNC7rZtY1ac4XEuXUBbSRtYH/tTOQxWY11PCpbzASLWUfm4+fNmoTIWx3APJ41k6fGDUQy3PpIEKhUT54p1Gk5j6+nPY2xJeATGVNRyXaKSs4UfDIrGydSPEIcVEqH6JyTLI4VvHc5OGSLQ0vb+agvbX3gWBZHC++q2uEorJ27DIL54qIG6DZcArVltjJcc80lhiJUWY09u2UBTsKsfbP4jwl766tYE0uJzrQu+i2bCjqY+dG64vakFsjypmktxInvBC7lH6vod5M+c0QRjQessbYEi5WGZo",
+ "not": "Param: Halkbank ekstresinde faiz satırları ve sayfa geçişindeki işlem düzeltildi"
 }

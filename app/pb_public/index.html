@@ -3880,16 +3880,22 @@ function p3ParseHalkCard(text){
   const limit = num(/Toplam Kredi Limiti\s*:\s*([\d,]+\.\d\d)/) || 0, last = (val(/Kart Numarası\s*:\s*[\d#-]+\s*[#-]*(\d{4})/) || (text.match(/####-(\d{4})/) || [])[1] || "");
   const rate = val(/Alışveriş Faiz Oranı\s*%\s*([\d.]+)/), nk = text.replace(/\n/g, " ").match(/Bir Sonraki\s+Hesap\s+Kesim\s+Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/), nd = text.replace(/\n/g, " ").match(/Bir Sonraki\s+Son Ödeme\s+Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/);
   // the transaction table: everything between the column header and the closing "Bir Sonraki", footers removed
-  const body = text.split("\n").filter(l => !/Türkiye Halk Bankası|Büyük Mükellefler|Ticaret Sicil|Mersis|Platin Line|parafly\.com|^--- sayfa|^İşlem$|^Tarihi$|^Açıklama|^KALAN$|^BORÇ|^TAKSİT$|^ParafPara$|^KART NO|^####|^GÖKDEMİR$|BURHAN$/.test(l.trim())).join(" ");
+  const FOOT = /Türkiye Halk Bankası|Büyük Mükellefler|Ticaret Sicil|Mersis|Platin Line|parafly\.com|^--- sayfa|^İşlem$|^Tarihi$|^Açıklama|^KALAN$|^BORÇ|^TAKSİT$|^ParafPara$|^KART NO|^####|^GÖKDEMİR$|BURHAN$/;
+  const body = (() => { const R = text.split("\n"), out = []; let carry = "";
+    for (let i = 0; i < R.length; i++) { const l = R[i].trim();
+      if (!carry && i + 1 < R.length && /Türkiye Halk Bankası/.test(R[i + 1]) && l && !/\d\d\/\d\d\/\d{4}/.test(l) && !/[\d,]+\.\d\d/.test(l) && !FOOT.test(l)) { carry = l; continue; }
+      if (FOOT.test(l)) continue; out.push(l);
+      if (carry && /^\d\d\/\d\d\/\d{4}$/.test(l)) { out.push(carry); carry = ""; } }
+    if (carry) out.push(carry); return out.join(" "); })();
   const tx = [], re = /(\d\d\/\d\d\/\d{4})\s+(.+?)\s+(\+\s*)?(-?[\d,]+\.\d\d)\s+(?:(\d+\/\d+)\s+)?(-?[\d,]+\.\d\d)(?=\s+\d\d\/\d\d\/\d{4}|\s+Bir Sonraki|\s*$)/g;
   const start = body.search(/Ekstre Borcu\s+[\d,]+\.\d\d/); let b2 = start >= 0 ? body.slice(start).replace(/^Ekstre Borcu\s+[\d,]+\.\d\d/, "") : body; const stop = b2.search(/Bir Sonraki\s+Hesap/); if (stop > 0) b2 = b2.slice(0, stop); let m;
   while ((m = re.exec(b2))) { const desc = p3Clean(m[2].replace(/\s-\s*$/, "")), a = p3US(m[4]), cr = !!m[3];
     if (/Puan Kullanım/i.test(desc) && !a) continue;
     if (cr) tx.push({d: p3DateNum(m[1]), desc, amt: -a, type: /Hesaptan Ödeme|Ödeme - Teşekkür|ÖDEMENİZ/i.test(desc) ? "payment" : "refund", cat: ""});
-    else tx.push({d: p3DateNum(m[1]), desc, amt: a, type: /FAİZ|KKDF|BSMV|ÜCRET/i.test(desc) ? "fee" : "spend", cat: "", inst: m[5] ? {n: +m[5].split("/")[0], N: +m[5].split("/")[1]} : null}); }
+    else tx.push({d: p3DateNum(m[1]), desc, amt: a, type: /FA[İI]Z|faiz|KKDF|BSMV|[ÜU]CRET|ücret/i.test(desc) ? "fee" : "spend", cat: "", inst: m[5] ? {n: +m[5].split("/")[0], N: +m[5].split("/")[1]} : null}); }
   const purch = tx.filter(t => t.type === "spend").reduce((a, t) => a + t.amt, 0), credits = tx.filter(t => t.amt < 0).reduce((a, t) => a - t.amt, 0), fees = tx.filter(t => t.type === "fee").reduce((a, t) => a + t.amt, 0);
   const chk = {purch: Math.round(purch * 100) / 100, pays: Math.round(credits * 100) / 100, fees: Math.round(fees * 100) / 100};
-  const ok = sum.purch != null && Math.abs(chk.purch + chk.fees - sum.purch - (sum.fees || 0) * 0) < 0.05 && Math.abs(chk.pays - sum.pays) < 0.05 && Math.abs(sum.prev + sum.purch + (sum.fees || 0) - sum.pays - sum.debt) < 0.05;
+  const ok = sum.purch != null && (Math.abs(chk.purch + chk.fees - sum.purch - (sum.fees || 0)) < 0.05 || Math.abs(chk.purch + chk.fees - sum.purch) < 0.05) && Math.abs(chk.pays - sum.pays) < 0.05 && Math.abs(sum.prev + sum.purch + (sum.fees || 0) - sum.pays - sum.debt) < 0.05;
   // Halkbank shows refunds inside "Dönemsel Alacak": split them back out so "pays" means real payments only
   const realPay = tx.filter(t => t.type === "payment").reduce((a, t) => a - t.amt, 0), refunds = credits - realPay;
   const pp = text.replace(/\n/g, " ").match(/Toplam ParafPara\s*:\s*([\d,]+\.\d\d)/), pts = pp ? [{k: "paraf", bal: p3US(pp[1])}] : [];
