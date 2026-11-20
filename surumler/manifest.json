@@ -1,7 +1,7 @@
 {
- "surum": 56,
- "paket": "surumler/dsolar-56.zip",
- "sha256": "70296cd61d4b0c0e33f6ebb0b68d263166510ca528fd520d52e860101cd89d57",
- "imza": "AMikN2GcXE7ddcJIg5dkm7WRZEvQcwaQm6Ilgf0Rg5zeDp0+V7LRZn7ONJ0l8uNgzxtB+QRzz3Ib4N/1gq2nVmW4F7Grv0NMMPd5Rs1NIYvDSDITHjmYbIdeEHE/27fjmpNy0SlaM+CSqoppgDzp9XxAVm4zzrmG/ABeuaBLi9Vsbx4QsZpxtUGK60R644G3HPtKiBw8kKX+j6J0w4+PRs5DL3uBcYsNJbD1nkOOxm0lnHygtaQ8Y9Znd0RiLH1zsz7o21pW92SlOmlM3r0Qx7U9+zuEle1qD9COzDL/qG0lf+9Q3ZfvxcbZVI0xevglYMaeRIhAc2Q0URTe2ha7ZpfKmREbO61ulIhywktdDZgi97hAcgTaArhGwpnopchNuWBiiaBpVRDDVvcD0VGry1f9RzVUI+7K6tiJtpIWfgCvnXq+EFOtUjx5wZGE2NSxtDzAssP6VbKkMNmUN9JOxfyQlPVrDKruqmlzWt1lany7ocmQIXnCGaysD6G+LS4I",
- "not": "Sabit giderler (maaş, yemek/yol, SGK, muhtasar) personel kartlarına bağlandı"
+ "surum": 57,
+ "paket": "surumler/dsolar-57.zip",
+ "sha256": "d55b7465a16f38f2e020add431addcc059733228a736cecd3326d23c83f5ee3e",
+ "imza": "LMRaO9Zv+uZ66NNAQ0TSCYk709OPufMnKTkOaziFQXY21elr862CkLVK1ZOI3iumJkijQX7f5jBgCU/oRy6OdtiHQ7Xa2VumNIH9UiQWMW1BftDcJgW792ayJp0qQyBWlU5ZjRtQHFh66cAKgbqf3tvMIiVys7sxXVLCWN5kLrver8EN7v9T7M7hvWmuzfImJTj5RM1cS4qHRVuj4qsTybguixsDRowXSRkFroYlZIowcRTH7khfPS/7ulItbDn9u+Nm8kOiihOJjdfUNIpv3TynSHM/G3S7rvHot7QGlhMHDd3yqgm835b1pGODkLY3PTHF5RYdDxS/XiLeOnWh/UKA82shLNvUqWKigNPsFLEwPOoaug4YJOzEI0mUqo4SfDL+uiQSSPzcGJUjfduvQws4oFiVKD+WGkdNhbUruhZkzLh+Dgdy3qlEcT3ZbsVcZ9d7TpbFYcWSXXrB17I4IeMTqAnYYtGs8CFEDAIS+2WBzJDjJtfmoMIwCoLaVWvo",
+ "not": "Param: şifreli kişisel para bölümü (yalnız sahibi görür), ekstre/döküm PDF okuma cihazda"
 }

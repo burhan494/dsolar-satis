@@ -3541,6 +3541,409 @@ function prsSabitHazirla() { PRS_SB = { on: false, k: {}, c: {}, L: [], A: null 
     T.forEach(function (t) { var s = R[2].filter(function (x) { return x.yon !== "Giriş" && t[1].test(x.ad) && (!x.bit || x.bit >= ay) && !PRS_SB.k[x.id]; })[0]; if (s) PRS_SB.k[s.id] = t[0]; });
     PRS_SB.L = R[0]; PRS_SB.A = A; PRS_SB.on = Object.keys(PRS_SB.k).length > 0; }).catch(function () { PRS_SB.on = false; }); }
 
+/* v57: Param — kişisel para bölümü. Yalnız sahibi görür; veri tarayıcıda parolayla (PBKDF2 + AES-GCM) şifrelenir,
+   sunucuda/yedeklerde yalnız şifreli metin durur. Ekstre ve hesap dökümü PDF'leri bu cihazda okunur (Beacon'ın okuyucuları). */
+var PRM = { k: null, rec: null, D: null, ym: null, giz: false, tm: null, cari: null, KU: null, kayit: null, acik: {} };
+var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Eğitim & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kendi hesabım", "Diğer"];
+var PRM_HARIC = { "Kendi hesabım": 1 };
+function prmIkon() { if (typeof ICO !== "undefined" && !ICO.kilit) ICO.kilit = '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'; if (typeof NAV_IK !== "undefined" && !NAV_IK.param) NAV_IK.param = ["kilit", "#ed7d31"]; }
+function prmSahibiMi() { return rol() === "yonetici"; }
+
+/* ---------- şifreleme ---------- */
+function prmB(b) { var s = "", a = new Uint8Array(b); for (var i = 0; i < a.length; i += 8192) s += String.fromCharCode.apply(null, a.subarray(i, i + 8192)); return btoa(s); }
+function prmU(s) { var b = atob(s), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+function prmAnahtar(p, salt) { return crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveKey"]).then(function (b) {
+  return crypto.subtle.deriveKey({ name: "PBKDF2", salt: prmU(salt), iterations: 600000, hash: "SHA-256" }, b, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]); }); }
+function prmSifrele(k, o) { var iv = crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, k, new TextEncoder().encode(JSON.stringify(o))).then(function (c) { return { iv: prmB(iv), veri: prmB(c) }; }); }
+function prmCoz(k, r) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: prmU(r.iv) }, k, prmU(r.veri)).then(function (p) { return JSON.parse(new TextDecoder().decode(p)); }); }
+function prmBos() { return { v: 1, kasa: { tl: 0, usd: 0, eur: 0, altin: 0, altinFiyat: 0, t: "" }, acil: 0, gelirGun: 2, kalemler: [], odendi: {}, ev: { hedef: 0, birikim: 0, aylik: 0 },
+  borc: { aylik: 0, gun: 1 }, varliklar: [], hesaplar: {}, belgeler: [], tx: [], nakit: [], katElle: {} }; }
+function prmTamamla(D) { var B = prmBos(); Object.keys(B).forEach(function (k) { if (D[k] == null) D[k] = B[k]; }); return D; }
+function prmKilitle(sessiz) { PRM.k = null; PRM.D = null; clearTimeout(PRM.tm); if (!sessiz && /^#param/.test(location.hash)) sParam(); }
+function prmDokun() { clearTimeout(PRM.tm); if (PRM.k) PRM.tm = setTimeout(function () { prmKilitle(); toast("Param kilitlendi"); }, 15 * 60000); }
+["click", "keydown", "touchstart"].forEach(function (e) { document.addEventListener(e, function () { if (PRM.k) prmDokun(); }, { passive: true }); });
+function prmKaydet(mesaj) {
+  clearTimeout(PRM.kayit); var sv = $("prmKay"); if (sv) sv.textContent = "kaydediliyor…";
+  PRM.kayit = setTimeout(function () { var k = PRM.k, D = PRM.D, r = PRM.rec; if (!k || !D || !r) return;
+    api("/api/collections/kisisel/records/" + r.id).then(function (g) {
+      if ((+g.surum || 0) !== (+r.surum || 0)) throw new Error("Param başka bir cihazda değiştirilmiş. Üzerine yazmamak için kaydetmedim; sayfayı yenileyip tekrar dene.");
+      return prmSifrele(k, D); }).then(function (s) { return api("/api/collections/kisisel/records/" + r.id, { method: "PATCH", body: { iv: s.iv, veri: s.veri, surum: (+r.surum || 0) + 1 } }); })
+      .then(function (n) { PRM.rec = n; var sv2 = $("prmKay"); if (sv2) sv2.textContent = "kaydedildi ✓"; if (mesaj) toast(mesaj); }).catch(hata); }, 500); }
+
+/* ---------- hesap yardımcıları ---------- */
+function prmTl(v, pb) { var K = PRM.KU || { usd: 0, eur: 0 }; v = +v || 0; return pb === "USD" ? v * K.usd : pb === "EUR" ? v * K.eur : v; }
+function prmM(s) { return PRM.giz ? "•••••" : s; }
+function prmP(v, pb) { return prmM((v < 0 ? "−" : "") + sayi(Math.abs(Math.round(v))) + " " + (pb === "USD" ? "$" : pb === "EUR" ? "€" : "₺")); }
+function prmId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function prmAktif(k, ym) { if (k.bas && ym < k.bas) return false; if (k.bit && ym > k.bit) return false; return k.periyot === "yillik" ? +ym.slice(5, 7) === (+k.ay || 1) : true; }
+function prmKasaTop(D) { var K = D.kasa; return (+K.tl || 0) + prmTl(K.usd, "USD") + prmTl(K.eur, "EUR") + (+K.altin || 0) * (+K.altinFiyat || 0); }
+function prmOdemeler(D, ym) { var L = [], pad = function (n) { return String(n).padStart(2, "0"); };
+  D.kalemler.forEach(function (k) { if (k.tur !== "gider" || !prmAktif(k, ym)) return; var g = Math.min(+k.gun || 1, gunSay(ym));
+    L.push({ key: k.id + "|" + ym, ad: k.ad, tl: prmTl(k.tutar, k.pb), pb: k.pb, ham: +k.tutar || 0, gun: ym + "-" + pad(g), drk: k.odeyen === "DRK", yillik: k.periyot === "yillik", kalem: k }); });
+  D.belgeler.forEach(function (b) { if (b.kind !== "card" || !b.due || b.due.slice(0, 7) !== ym || !b.sum) return; var h = D.hesaplar[b.acct] || {};
+    L.push({ key: "k:" + b.id, ad: (h.bank || "Kart") + " kartı" + (h.last ? " •" + h.last : ""), tl: +b.sum.debt || 0, pb: "TRY", ham: +b.sum.debt || 0, gun: b.due, not: "Ekstre · asgari " + sayi(+b.sum.min || 0) + " ₺", kart: true }); });
+  if (+D.borc.aylik > 0) L.push({ key: "b|" + ym, ad: "Şirkete borç taksiti", tl: prmTl(D.borc.aylik, "USD"), pb: "USD", ham: +D.borc.aylik, gun: ym + "-" + pad(Math.min(+D.borc.gun || 1, gunSay(ym))), borc: true, not: "Ödenince ortak cariye işlenir" });
+  if (+D.ev.aylik > 0) L.push({ key: "e|" + ym, ad: "Ev birikimine ayır", tl: +D.ev.aylik, pb: "TRY", ham: +D.ev.aylik, gun: ym + "-" + pad(Math.min(+D.gelirGun || 1, gunSay(ym))), ev: true });
+  return L.sort(function (a, b) { return a.gun < b.gun ? -1 : 1; }); }
+function prmKat(D, t) { if (D.katElle[t.id]) return D.katElle[t.id]; if (t.type === "fee") return "Banka masrafı"; if (t.cat2) return t.cat2;
+  var U = String(t.desc || "").toLocaleUpperCase("tr-TR"), U2 = U.replace(/İ/g, "I"), kw = PRM_KW.filter(function (x) { return x[1].test(U) || x[1].test(U2); })[0];
+  if (t.bcat && PRM_BANKCAT[t.bcat]) return kw && ["Abonelik & dijital", "Seyahat", "Tekne", "Sigorta"].indexOf(kw[0]) >= 0 ? kw[0] : PRM_BANKCAT[t.bcat];
+  if (kw) return kw[0]; if (t.acctKind === "bank") return /HAVALE|EFT|FAST|TRANSFER/i.test(U) ? "Gönderilen para" : /ATM|NAKİT|NAKIT/i.test(U) ? "Nakit" : "Diğer"; return "Diğer"; }
+/* harcama tutarı: taksitli alım alındığı ayda tam sayılır; sonraki taksitler sayılmaz */
+function prmHarcamaTutar(t) { if (t.inst) { if (+t.inst.n !== 1) return 0; return +t.inst.total || (+t.amt || 0) * (+t.inst.N || 1); } return +t.amt || 0; }
+function prmHarcamalar(D, ym) { var L = [];
+  D.tx.forEach(function (t) { if (String(t.d || "").slice(0, 7) !== ym) return;
+    if (t.acctKind === "bank") { if (t.amt >= 0 || /KART ÖDEME|KREDİ KARTI|KREDI KARTI/i.test(t.desc + " " + (t.label || "")) || t.label === "Kart Ödemesi") return; L.push({ t: t, tutar: -t.amt, kat: prmKat(D, t) }); return; }
+    if (t.type !== "spend" && t.type !== "fee") return; var a = prmHarcamaTutar(t); if (!a) return; L.push({ t: t, tutar: a, kat: prmKat(D, t) }); });
+  D.nakit.forEach(function (n) { if ((n.d || "").slice(0, 7) === ym) L.push({ t: { id: n.id, d: n.d, desc: n.desc, nakit: true }, tutar: +n.tutar || 0, kat: n.kat || "Nakit" }); });
+  return L.filter(function (x) { return !PRM_HARIC[x.kat]; }); }
+function prmCari() { var C = PRM.cari || [], ben = ((BEN && BEN.name) || "").split(" ")[0], pay = ben === "Batur" ? 0.4 : 0.6, S = {}; if (!C.length) return null;
+  C.forEach(function (c) { S[c.ortak] = S[c.ortak] || { a: 0, k: 0 }; S[c.ortak][c.yon === "Koydu" ? "k" : "a"] += +c.tutarUsd || 0; });
+  var T = 0; Object.keys(S).forEach(function (o) { T += S[o].a - S[o].k; }); var n = S[ben] ? S[ben].a - S[ben].k : 0;
+  return { ben: ben, borc: Math.max(0, n - pay * T), ay: function (ym) { return C.filter(function (c) { return c.ortak === ben && c.yon === "Aldı" && (c.tarih || "").slice(0, 7) === ym; }).reduce(function (s, c) { return s + (+c.tutarUsd || 0); }, 0); } }; }
+
+/* ---------- sayfa ---------- */
+function sParam() {
+  prmIkon(); var m = $("m"); if (!m) return;
+  if (!prmSahibiMi()) { location.hash = "#bugun"; return; }
+  if (!window.crypto || !crypto.subtle) { m.innerHTML = '<div class="card"><h3>Param</h3><p style="padding:0 18px 16px">Bu tarayıcı şifrelemeyi desteklemiyor. Güncel bir tarayıcıyla, güvenli bağlantıdan (https) açın.</p></div>'; return; }
+  if (PRM.k && PRM.D) { prmCiz(); return; }
+  m.innerHTML = '<div class="bos">Yükleniyor…</div>';
+  liste("kisisel", "sahip = '" + BEN.id + "'").then(function (L) { PRM.rec = L[0] || null; prmGiris(); }).catch(hata);
+}
+function prmGiris() {
+  var m = $("m"), yeni = !PRM.rec, kilit = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ed7d31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>';
+  m.innerHTML = '<div class="card" style="max-width:460px;margin:24px auto"><div style="padding:22px 22px 6px;display:flex;gap:12px;align-items:center">' + kilit + '<div><h3 style="margin:0">Param</h3><small style="color:var(--muted)">' + (yeni ? "Kişisel para bölümünü kur" : "Kilitli · yalnız sen açabilirsin") + "</small></div></div>" +
+    '<div class="f" style="padding:10px 22px 22px">' + (yeni ? '<div class="bilgi" style="margin:0">Verilerin bu parolayla <b>senin cihazında şifrelenir</b>. Sunucuda, yedeklerde ve veritabanında yalnız okunamayan şifreli hali durur; BT veya yöneticiler dahil kimse okuyamaz.</div>' : "") +
+    '<label>Parola<input id="prmP1" type="password" autocomplete="' + (yeni ? "new-password" : "current-password") + '"></label>' + (yeni ? '<label>Parola (tekrar)<input id="prmP2" type="password" autocomplete="new-password"></label><label style="display:flex;gap:8px;align-items:flex-start;font-weight:500"><input type="checkbox" id="prmOk" style="width:auto;min-height:0;margin-top:3px"> Parolayı unutursam verilerimin kimse tarafından kurtarılamayacağını biliyorum.</label>' : "") +
+    '<button class="btn pri" id="prmGo">' + (yeni ? "Kur ve aç" : "Aç") + '</button><small id="prmMsg" style="color:var(--bad)"></small></div></div>';
+  var go = function () { var p = $("prmP1").value, msg = $("prmMsg"), b = $("prmGo"); msg.textContent = "";
+    if (yeni) { if (p.length < 10) { msg.textContent = "Parola en az 10 karakter olmalı."; return; } if (p !== $("prmP2").value) { msg.textContent = "Parolalar aynı değil."; return; } if (!$("prmOk").checked) { msg.textContent = "Kutucuğu işaretleyin."; return; } }
+    b.disabled = true; b.textContent = "Açılıyor…";
+    if (yeni) { var salt = prmB(crypto.getRandomValues(new Uint8Array(16))), D = prmBos();
+      prmAnahtar(p, salt).then(function (k) { PRM.k = k; return prmSifrele(k, D); }).then(function (s) { return api("/api/collections/kisisel/records", { method: "POST", body: { sahip: BEN.id, salt: salt, iv: s.iv, veri: s.veri, surum: 1 } }); })
+        .then(function (r) { PRM.rec = r; PRM.D = D; prmDokun(); prmCiz(); toast("Param kuruldu"); }).catch(function (e) { b.disabled = false; b.textContent = "Kur ve aç"; hata(e); }); return; }
+    prmAnahtar(p, PRM.rec.salt).then(function (k) { return prmCoz(k, PRM.rec).then(function (D) { PRM.k = k; PRM.D = prmTamamla(D); prmDokun(); prmCiz(); }); })
+      .catch(function () { b.disabled = false; b.textContent = "Aç"; msg.textContent = "Parola yanlış."; }); };
+  $("prmGo").onclick = go; ["prmP1", "prmP2"].forEach(function (i) { if ($(i)) $(i).onkeydown = function (e) { if (e.key === "Enter") go(); }; }); $("prmP1").focus();
+}
+function prmCiz() {
+  var D = PRM.D, m = $("m"); if (!PRM.ym) PRM.ym = bugun().slice(0, 7); var ym = PRM.ym, buAy = ym === bugun().slice(0, 7);
+  Promise.all([kurKartiGetir(), yt("ortak") ? liste("ortak_cari", "", "tarih").catch(function () { return []; }) : Promise.resolve([])]).then(function (R) {
+    PRM.KU = R[0]; PRM.cari = R[1]; var KU = R[0], C = prmCari(), O = prmOdemeler(D, ym), od = D.odendi;
+    var acik = O.filter(function (o) { return !o.drk && !od[o.key]; }), acikTop = acik.reduce(function (s, o) { return s + o.tl; }, 0), topO = O.filter(function (o) { return !o.drk; }).reduce(function (s, o) { return s + o.tl; }, 0);
+    var kalan = (+D.kasa.tl || 0) - acikTop - (+D.acil || 0), gg = +D.gelirGun || 1, bd = +bugun().slice(8), gun = bd < gg ? gg - bd : gunSay(ym) - bd + gg, gunluk = gun > 0 ? Math.max(0, kalan) / gun : 0;
+    var gel = D.kalemler.filter(function (k) { return k.tur === "gelir" && prmAktif(k, ym); }), H = prmHarcamalar(D, ym), KT = {};
+    H.forEach(function (h) { KT[h.kat] = (KT[h.kat] || 0) + h.tutar; }); var katL = Object.keys(KT).sort(function (a, b) { return KT[b] - KT[a]; }), hTop = H.reduce(function (s, h) { return s + h.tutar; }, 0), hMax = katL.length ? KT[katL[0]] : 1;
+    var yil = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot === "yillik" && (!k.bit || k.bit >= ym); }), yilPay = yil.filter(function (k) { return k.odeyen !== "DRK"; }).reduce(function (s, k) { return s + prmTl(k.tutar, k.pb) / 12; }, 0);
+    var V = D.varliklar.filter(function (v) { return !v.satildi; }), vTop = V.reduce(function (s, v) { return s + prmTl(v.deger, v.pb); }, 0), borcTl = C ? prmTl(C.borc, "USD") : 0, net = prmKasaTop(D) + vTop - borcTl;
+    var kart = function (ad, deger, alt, koyu, renk) { return '<div class="card" style="margin:0;padding:16px 18px;' + (koyu ? "background:var(--navy);color:#fff;border-color:var(--navy)" : "") + '"><small style="font-size:12.5px;color:' + (koyu ? "#c3d0e0" : "var(--muted)") + '">' + ad + '</small><div style="font-size:24px;font-weight:800;margin-top:4px;' + (renk ? "color:" + renk : "") + '">' + deger + "</div>" + (alt ? '<small style="font-size:12px;color:' + (koyu ? "#c3d0e0" : "var(--muted)") + '">' + alt + "</small>" : "") + "</div>"; };
+    var ayAd = AYLAR[+ym.slice(5, 7) - 1] + " " + ym.slice(0, 4);
+    var html = '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px"><div style="flex:1 1 240px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h2 style="margin:0;font-size:24px">Param</h2><span class="pill" style="background:var(--okbg);color:var(--ok)">🔒 Şifreli · anahtar sadece sende</span></div><small style="color:var(--muted)" id="prmKay">yalnız sen görürsün</small></div>' +
+      '<div style="display:flex;align-items:center;gap:2px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px"><button class="btn sm" id="prmOnc" aria-label="Önceki ay">‹</button><b style="padding:0 8px;font-size:14.5px">' + ayAd + '</b><button class="btn sm" id="prmSon" aria-label="Sonraki ay">›</button></div>' +
+      '<button class="btn" id="prmGiz">' + (PRM.giz ? "Rakamları göster" : "Rakamları gizle") + '</button><button class="btn" id="prmAyar">Ayarlar</button><button class="btn" id="prmKil">Kilitle</button>' +
+      '<label class="btn pri" for="prmPdf" style="cursor:pointer">Ekstre / döküm yükle</label><input type="file" id="prmPdf" accept="application/pdf,.pdf" multiple style="display:none"></div>' +
+      '<div id="prmPdfO">' + (PRM.mesaj || "") + "</div>"; PRM.mesaj = "";
+    html += '<div class="izgara kpi4">' + kart("Şu an elimde (toplam)", prmP(prmKasaTop(D)), "TL " + prmP(D.kasa.tl) + " · " + prmP(D.kasa.usd, "USD") + " · " + prmP(D.kasa.eur, "EUR") + " · altın " + (PRM.giz ? "••" : sayi(+D.kasa.altin || 0)) + " gr", true) +
+      kart(buAy ? "Gelire kadar kalacak (" + gun + " gün)" : "Bu ayın ödemeleri", buAy ? prmP(kalan) : prmP(topO), buAy ? "TL kasadan ödenmemişler ve acil durum payı düşüldü" : "", false, buAy ? (kalan < 0 ? "var(--bad)" : "var(--ok)") : "") +
+      kart("Günde en fazla", buAy ? prmP(gunluk) : "—", buAy ? "gelir gününe kadar" : "") + kart("Acil durum payı", prmP(D.acil), "kasada hep kalsın") + "</div>";
+    // ödemeler
+    html += '<div class="izgara" style="align-items:start"><div class="card" style="margin:0"><h3 style="display:flex;align-items:center;gap:8px">Bu ayın ödemeleri <small style="margin-left:auto;color:var(--muted);font-weight:500">' + prmP(topO) + " · " + O.filter(function (o) { return od[o.key]; }).length + " / " + O.length + " ödendi</small></h3>" +
+      (O.length ? O.map(function (o) { var ok = !!od[o.key], gec = !ok && buAy && o.gun < bugun(), notlar = ok ? "✓ ödendi " + tarih(od[o.key]) : (o.not ? o.not + " · " : "") + "son gün " + tarih(o.gun) + (gec ? " · gecikti" : "") + (o.drk ? " · DRK öder" : "") + (o.yillik ? " · yıllık" : "");
+        return '<div class="row" style="gap:12px"><div style="flex:1;min-width:0"><b style="font-size:14.5px">' + esc(o.ad) + '</b><div style="font-size:12.5px;color:' + (ok ? "var(--ok)" : gec ? "var(--bad)" : "var(--muted)") + '">' + esc(notlar) + "</div></div><b style=\"white-space:nowrap\">" + prmP(o.pb === "TRY" ? o.tl : o.ham, o.pb) + '</b><button class="btn sm" data-prmod="' + esc(o.key) + '" aria-label="' + esc(o.ad) + (ok ? " ödendi, geri al" : " ödendi olarak işaretle") + '" style="width:44px;height:44px;border-radius:50%;padding:0;' + (ok ? "background:var(--ok);color:#fff;border-color:var(--ok)" : "") + '">' + (ok ? "✓" : "") + "</button>" +
+          (o.kalem ? '<button class="btn sm" data-prmkd="' + o.kalem.id + '" aria-label="Düzenle" style="padding:0 10px">✎</button>' : "") + "</div>"; }).join("") : '<div class="row" style="color:var(--muted)">Bu ay için ödeme yok. Sabit giderlerini ekle ya da ekstre yükle.</div>') +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;padding:10px 18px 14px"><button class="btn sm" id="prmKalY">+ Sabit gider / gelir</button><button class="btn sm" id="prmNakY">+ Nakit / havale harcaması</button></div></div>';
+    // sağ sütun: ev planı + şirket
+    var evO = +D.ev.hedef ? Math.min(100, (+D.ev.birikim || 0) / D.ev.hedef * 100) : 0, evAy = +D.ev.aylik > 0 && +D.ev.hedef > +D.ev.birikim ? Math.ceil((D.ev.hedef - D.ev.birikim) / D.ev.aylik) : null;
+    html += '<div style="display:grid;gap:12px"><div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Ev planı <small style="margin-left:auto;color:var(--muted);font-weight:500">hedef ' + prmP(D.ev.hedef) + '</small></h3><div style="padding:0 18px 16px"><div style="font-size:24px;font-weight:800">' + prmP(D.ev.birikim) + '</div><div style="height:10px;background:#e3e9f1;border-radius:99px;overflow:hidden;margin-top:8px"><div style="width:' + evO + '%;height:10px;background:var(--orange)"></div></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:8px"><span>Aylık ' + prmP(D.ev.aylik) + '</span><span>' + (evAy != null ? "Bu hızla hedefe: " + AYLAR[+ayEkle(bugun(), evAy).slice(5, 7) - 1] + " " + ayEkle(bugun(), evAy).slice(0, 4) : +D.ev.hedef ? "aylık birikim girilmedi" : "hedef girilmedi") + "</span></div></div></div>" +
+      '<div class="card" style="margin:0;background:var(--infobg);border-color:#cfe3fa"><h3>Şirketle bağlantım <small style="color:var(--muted);font-weight:500">ortak cariden otomatik</small></h3>' +
+      gel.map(function (k) { return '<div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>' + esc(k.ad) + ' <small style="color:var(--muted)">her ayın ' + (+k.gun || 1) + ". günü</small></span><b>" + prmP(k.tutar, k.pb) + "</b></div>"; }).join("") +
+      (C ? '<div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>Bu ay ortak cariden çektiğim</span><b>' + prmP(C.ay(ym), "USD") + '</b></div><div class="row" style="justify-content:space-between;border-color:#cfe3fa"><span>Şirkete borcum <small style="color:var(--muted)">(60/40 dengesine göre)</small></span><b style="color:var(--bad)">' + prmP(C.borc, "USD") + "</b></div>" +
+        '<div class="row" style="border-color:#cfe3fa;font-size:12.5px;color:#3d5a80">' + (+D.borc.aylik ? "Ödeme planı: ayda " + prmP(D.borc.aylik, "USD") + " · yaklaşık " + Math.ceil(C.borc / D.borc.aylik) + " ay" : "Ödeme planı girilmedi (Ayarlar)") + "</div>" : '<div class="row" style="color:var(--muted)">Ortak cari görülemiyor.</div>') + "</div></div></div>";
+    // varlıklar
+    html += '<div class="card"><h3 style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">Varlıklarım <small style="margin-left:auto;color:var(--muted);font-weight:500">net varlık (borç düşülmüş) <b style="color:var(--text);font-size:15px">' + prmP(net) + '</b></small></h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;padding:0 18px 12px">' +
+      '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px"><small style="color:var(--muted)">Nakit · TL / döviz / altın</small><div style="font-weight:700">Banka + kasa</div><div style="font-size:18px;font-weight:800">' + prmP(prmKasaTop(D)) + "</div></div>" +
+      V.map(function (v) { return '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:2px"><small style="color:var(--muted)">' + esc(v.tur) + (v.sahip === "DRK" ? " · DRK üzerine kayıtlı" : "") + '</small><div style="font-weight:700">' + esc(v.ad || v.tur) + '</div><div style="font-size:18px;font-weight:800">' + prmP(v.deger, v.pb) + "</div>" + (v.not ? '<small style="color:var(--muted)">' + esc(v.not) + "</small>" : "") +
+        '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn sm" data-prmvd="' + v.id + '" style="flex:1">Düzenle</button><button class="btn sm" data-prmvs="' + v.id + '" style="flex:1;color:var(--warn)">Sattım</button></div></div>'; }).join("") +
+      (C ? '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px"><small style="color:var(--muted)">Borç</small><div style="font-weight:700">Şirkete borcum</div><div style="font-size:18px;font-weight:800;color:var(--bad)">−' + prmP(C.borc, "USD") + "</div></div>" : "") +
+      '</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:0 18px 14px"><button class="btn sm" id="prmVarY">+ Varlık ekle</button>' + (D.varliklar.some(function (v) { return v.satildi; }) ? '<button class="btn sm" id="prmSatL">Satılanlar (' + D.varliklar.filter(function (v) { return v.satildi; }).length + ")</button>" : "") + "</div></div>";
+    // harcamalar + yıllık
+    html += '<div class="izgara" style="align-items:start"><div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Harcamalar <small style="margin-left:auto;color:var(--muted);font-weight:500">' + prmP(hTop) + ' · taksitli alım alındığı ayda tam sayılır</small></h3>' +
+      (katL.length ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;padding:0 18px 10px">' + katL.map(function (k) { return '<button class="btn" data-prmkat="' + esc(k) + '" style="display:block;text-align:left;height:auto;padding:10px 12px;border-radius:12px"><small style="color:var(--muted)">' + esc(k) + '</small><div style="font-size:17px;font-weight:800">' + prmP(KT[k]) + '</div><div style="height:6px;background:#e3e9f1;border-radius:99px;overflow:hidden;margin-top:6px"><div style="width:' + Math.round(KT[k] / hMax * 100) + '%;height:6px;background:var(--blue)"></div></div></button>'; }).join("") + "</div>" : '<div class="row" style="color:var(--muted)">Bu ay harcama yok. Kart ekstresi veya hesap dökümü PDF\'i yükle.</div>') +
+      '<div id="prmKatO"></div></div>' +
+      '<div class="card" style="margin:0"><h3 style="display:flex;align-items:baseline;gap:8px">Yıllık giderler <small style="margin-left:auto;color:var(--muted);font-weight:500">bu aya düşen pay ' + prmP(yilPay) + "</small></h3>" +
+      (yil.length ? yil.map(function (k) { return '<div class="row" style="justify-content:space-between"><span><b>' + esc(k.ad) + '</b><br><small style="color:var(--muted)">' + AYLAR[(+k.ay || 1) - 1] + " · ayda " + prmP(prmTl(k.tutar, k.pb) / 12) + (k.odeyen === "DRK" ? " · DRK öder" : "") + "</small></span><b>" + prmP(k.tutar, k.pb) + "</b></div>"; }).join("") : '<div class="row" style="color:var(--muted)">Yıllık gider yok (okul, marina, kasko, MTV…). "+ Sabit gider" ile "yıllık" seçerek ekle.</div>') + "</div></div>";
+    html += '<div class="card"><h3>Yüklenen belgeler <small style="color:var(--muted);font-weight:500">' + D.belgeler.length + " belge · " + D.tx.length + " işlem</small></h3>" + (D.belgeler.slice().reverse().slice(0, 12).map(function (b) { var h = D.hesaplar[b.acct] || {};
+      return '<div class="row" style="justify-content:space-between"><span>' + esc((h.bank || "") + " " + (b.kind === "card" ? "kart •" : "hesap •") + (h.last || "")) + ' <small style="color:var(--muted)">' + (b.kind === "card" ? "kesim " + tarih(b.kesim) + " · son ödeme " + tarih(b.due) : tarih(b.from) + " – " + tarih(b.to)) + "</small></span>" + (b.ok ? '<span class="pill" style="background:var(--okbg);color:var(--ok)">tutarlar tuttu</span>' : '<span class="pill" style="background:var(--warnbg);color:var(--warn)">kontrol et</span>') + "</div>"; }).join("") || '<div class="row" style="color:var(--muted)">Henüz belge yok.</div>') + "</div>";
+    m.innerHTML = html; prmBagla(O, H);
+  }).catch(hata);
+}
+function prmBagla(O, H) {
+  var D = PRM.D;
+  $("prmOnc").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", -1); prmCiz(); }; $("prmSon").onclick = function () { PRM.ym = ayEkle(PRM.ym + "-01", 1); prmCiz(); };
+  $("prmGiz").onclick = function () { PRM.giz = !PRM.giz; prmCiz(); }; $("prmKil").onclick = function () { prmKilitle(); };
+  $("prmAyar").onclick = prmAyarlar; $("prmKalY").onclick = function () { prmKalemForm(null); }; $("prmNakY").onclick = prmNakitForm; $("prmVarY").onclick = function () { prmVarlikForm(null); };
+  if ($("prmSatL")) $("prmSatL").onclick = prmSatilanlar;
+  $("prmPdf").onchange = function () { var F = Array.prototype.slice.call(this.files || []); this.value = ""; if (F.length) prmBelgeYukle(F); };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmod]"), function (b) { b.onclick = function () { prmOdendi(b.dataset.prmod, O); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmkd]"), function (b) { b.onclick = function () { prmKalemForm(D.kalemler.filter(function (k) { return k.id === b.dataset.prmkd; })[0]); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmvd]"), function (b) { b.onclick = function () { prmVarlikForm(D.varliklar.filter(function (v) { return v.id === b.dataset.prmvd; })[0]); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmvs]"), function (b) { b.onclick = function () { prmSatis(D.varliklar.filter(function (v) { return v.id === b.dataset.prmvs; })[0]); }; });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmkat]"), function (b) { b.onclick = function () { prmKatDetay(b.dataset.prmkat, H); }; });
+}
+function prmOdendi(key, O) {
+  var D = PRM.D, o = O.filter(function (x) { return x.key === key; })[0]; if (!o) return; var ok = !!D.odendi[key];
+  if (ok) { delete D.odendi[key]; if (o.ev) D.ev.birikim = Math.max(0, (+D.ev.birikim || 0) - o.ham); if (o.borc) toast("Ortak cari kaydını gerekirse Finans → Ortak cari'den silebilirsin"); prmKaydet(); prmCiz(); return; }
+  D.odendi[key] = bugun(); if (o.ev) D.ev.birikim = (+D.ev.birikim || 0) + o.ham;
+  if (o.borc && yd("ortak")) { var ben = ((BEN && BEN.name) || "").split(" ")[0];
+    if (confirm("Ortak cariye \"" + ben + " koydu " + sayi(o.ham) + " $\" kaydı eklensin mi?")) api("/api/collections/ortak_cari/records", { method: "POST", body: { tarih: bugun() + " 12:00:00.000Z", ortak: ben, yon: "Koydu", tutar: o.ham, pb: "USD", kur: 1, tutarUsd: o.ham, sirket: "D Solar", aciklama: "Ortak cari borç ödemesi (Param)", kaynak: "Param" } }).then(function () { toast("Ortak cariye işlendi"); prmCiz(); }).catch(hata); }
+  prmKaydet(); prmCiz(); }
+/* ---------- formlar ---------- */
+function prmPnl(baslik, govde) { return panelAc('<div class="pnlB"><b>' + baslik + '</b><button class="btn sm" onclick="panelKapat()">Kapat</button></div><div class="f">' + govde + "</div>", "sag"); }
+function prmSayiIn(id, lab, v) { return "<label>" + lab + '<input id="' + id + '" inputmode="decimal" value="' + (v != null && v !== "" ? String(v).replace(".", ",") : "") + '"></label>'; }
+function prmKalemForm(k) {
+  var D = PRM.D, y = !k; k = k || { tur: "gider", pb: "TRY", gun: 1, periyot: "aylik", ay: +bugun().slice(5, 7), odeyen: "ben", bas: PRM.ym };
+  prmPnl(y ? "Sabit gider / gelir" : "Kalemi düzenle", '<div class="f2"><label>Tür<select id="kTur">' + sec([["gider", "Gider"], ["gelir", "Gelir (maaş vb.)"]], k.tur) + '</select></label><label>Ad<input id="kAd" value="' + esc(k.ad || "") + '" placeholder="ör. Nafaka, Okul, Maaş"></label></div>' +
+    '<div class="f2">' + prmSayiIn("kTu", "Tutar", k.tutar) + '<label>Para birimi<select id="kPb">' + sec(["TRY", "USD", "EUR"], k.pb) + "</select></label></div>" +
+    '<div class="f2"><label>Sıklık<select id="kPe">' + sec([["aylik", "Her ay"], ["yillik", "Yılda bir"]], k.periyot) + '</select></label><label>Ay (yıllıksa)<select id="kAy">' + sec(AYLAR.map(function (a, i) { return [String(i + 1), a]; }), String(k.ay || 1)) + "</select></label></div>" +
+    '<div class="f2"><label>Ayın günü<input id="kGu" type="number" min="1" max="31" value="' + (+k.gun || 1) + '"></label><label>Kim öder<select id="kOd">' + sec([["ben", "Ben"], ["DRK", "DRK (bütçeme girmez)"]], k.odeyen) + "</select></label></div>" +
+    '<div class="f2"><label>Başlangıç ayı<input id="kBa" type="month" value="' + esc(k.bas || "") + '"></label><label>Bitiş ayı (boş: süresiz)<input id="kBi" type="month" value="' + esc(k.bit || "") + '"></label></div>' +
+    '<button class="btn pri" id="kKay">Kaydet</button>' + (y ? "" : '<button class="btn" id="kSil" style="color:var(--bad)">Sil</button>'));
+  $("kKay").onclick = function () { var ad = $("kAd").value.trim(); if (!ad) { toast("Ad girin"); return; }
+    Object.assign(k, { tur: $("kTur").value, ad: ad, tutar: num($("kTu").value) || 0, pb: $("kPb").value, periyot: $("kPe").value, ay: +$("kAy").value, gun: Math.max(1, Math.min(31, +$("kGu").value || 1)), odeyen: $("kOd").value, bas: $("kBa").value, bit: $("kBi").value });
+    if (y) { k.id = prmId(); D.kalemler.push(k); } panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); };
+  if ($("kSil")) $("kSil").onclick = function () { if (!confirm(k.ad + " silinsin mi?")) return; D.kalemler = D.kalemler.filter(function (x) { return x !== k; }); panelKapat(); prmKaydet("Silindi"); prmCiz(); };
+}
+function prmNakitForm() {
+  var D = PRM.D; prmPnl("Nakit / havale harcaması", '<div class="f2"><label>Tarih<input type="date" id="nT" value="' + bugun() + '"></label>' + prmSayiIn("nTu", "Tutar (₺)", "") + '</div><label>Açıklama<input id="nA" placeholder="ör. pazar, usta, bahşiş"></label><label>Kategori<select id="nK">' + sec(PRM_KAT, "Nakit") + '</select></label><button class="btn pri" id="nKay">Kaydet</button>');
+  $("nKay").onclick = function () { var t = num($("nTu").value); if (!t) { toast("Tutar girin"); return; } D.nakit.push({ id: prmId(), d: $("nT").value, tutar: t, desc: $("nA").value.trim() || "Nakit harcama", kat: $("nK").value }); panelKapat(); prmKaydet("Eklendi"); prmCiz(); };
+}
+function prmVarlikForm(v) {
+  var D = PRM.D, y = !v; v = v || { tur: "Araba", pb: "TRY", sahip: "Ben" };
+  prmPnl(y ? "Varlık ekle" : "Varlığı düzenle", '<div class="f2"><label>Tür<select id="vTu">' + sec(["Araba", "Tekne", "Ev / arsa", "Altın / mücevher", "Hisse / fon", "Diğer"], v.tur) + '</select></label><label>Ad<input id="vAd" value="' + esc(v.ad || "") + '" placeholder="ör. Araba"></label></div>' +
+    '<div class="f2">' + prmSayiIn("vDe", "Yaklaşık değer", v.deger) + '<label>Para birimi<select id="vPb">' + sec(["TRY", "USD", "EUR"], v.pb) + "</select></label></div>" +
+    '<label>Kimin üzerine<select id="vSa">' + sec([["Ben", "Benim üzerime"], ["DRK", "DRK üzerine (%100 benim)"]], v.sahip) + '</select></label><label>Not<input id="vNo" value="' + esc(v.not || "") + '" placeholder="ör. marka/model, son değer tarihi"></label>' +
+    '<button class="btn pri" id="vKay">Kaydet</button>' + (y ? "" : '<button class="btn" id="vSil" style="color:var(--bad)">Sil</button>'));
+  $("vKay").onclick = function () { Object.assign(v, { tur: $("vTu").value, ad: $("vAd").value.trim() || $("vTu").value, deger: num($("vDe").value) || 0, pb: $("vPb").value, sahip: $("vSa").value, not: $("vNo").value.trim(), t: bugun() });
+    if (y) { v.id = prmId(); D.varliklar.push(v); } panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); };
+  if ($("vSil")) $("vSil").onclick = function () { if (!confirm((v.ad || v.tur) + " silinsin mi? (Satış için \"Sattım\"ı kullan.)")) return; D.varliklar = D.varliklar.filter(function (x) { return x !== v; }); panelKapat(); prmKaydet("Silindi"); prmCiz(); };
+}
+function prmSatis(v) {
+  if (!v) return; var D = PRM.D;
+  prmPnl((v.ad || v.tur) + " · sattım", '<div class="f2"><label>Satış tarihi<input type="date" id="sT" value="' + bugun() + '"></label>' + prmSayiIn("sB", "Satış bedeli", v.deger) + '</div><label>Para birimi<select id="sPb">' + sec(["TRY", "USD", "EUR"], v.pb) + "</select></label>" +
+    (v.sahip === "DRK" ? '<div class="bilgi" style="margin:0">Bu varlık DRK üzerine kayıtlı: satış bedeli önce DRK\'ye girer. Kişisel kasana yalnız DRK\'den çektiğin kadarı eklenir.</div><label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" id="sKas" style="width:auto;min-height:0"> Bedeli kişisel kasama da ekle</label>' : '<label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" id="sKas" checked style="width:auto;min-height:0"> Bedeli kasama ekle</label>') +
+    '<small style="color:var(--muted)">Bu varlığa bağlı yıllık giderleri (marina, kasko…) satış ayından sonra durdurmak için o kalemlere bitiş ayı yaz.</small><button class="btn pri" id="sKay">Kaydet</button>');
+  $("sKay").onclick = function () { var b = num($("sB").value) || 0, pb = $("sPb").value; v.satildi = { t: $("sT").value, bedel: b, pb: pb };
+    if ($("sKas").checked) { if (pb === "USD") D.kasa.usd = (+D.kasa.usd || 0) + b; else if (pb === "EUR") D.kasa.eur = (+D.kasa.eur || 0) + b; else D.kasa.tl = (+D.kasa.tl || 0) + b; }
+    panelKapat(); prmKaydet("Satış kaydedildi"); prmCiz(); };
+}
+function prmSatilanlar() { var S = PRM.D.varliklar.filter(function (v) { return v.satildi; });
+  prmPnl("Satılan varlıklar", S.map(function (v) { return '<div class="row" style="justify-content:space-between;padding-left:0;padding-right:0"><span><b>' + esc(v.ad || v.tur) + '</b><br><small style="color:var(--muted)">' + tarih(v.satildi.t) + " · son değer " + prmP(v.deger, v.pb) + "</small></span><b>" + prmP(v.satildi.bedel, v.satildi.pb) + "</b></div>"; }).join("")); }
+function prmKatDetay(kat, H) {
+  var D = PRM.D, L = H.filter(function (h) { return h.kat === kat; }).sort(function (a, b) { return a.t.d < b.t.d ? 1 : -1; }), o = $("prmKatO");
+  o.innerHTML = '<div style="padding:0 18px 6px;display:flex;justify-content:space-between;align-items:center"><b>' + esc(kat) + ' · ' + L.length + ' işlem</b><button class="btn sm" id="prmKatK">Kapat</button></div>' +
+    L.map(function (h) { return '<div class="row" style="gap:10px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + esc(h.t.desc || "") + '</div><small style="color:var(--muted)">' + tarih(h.t.d) + (h.t.inst ? " · " + h.t.inst.N + " taksit (tamamı bu ay)" : "") + (h.t.nakit ? " · elle" : "") + "</small></div><b style=\"white-space:nowrap\">" + prmP(h.tutar) + "</b>" +
+      (h.t.nakit ? "" : '<select data-prmkx="' + esc(h.t.id) + '" style="width:auto;min-height:36px;font-size:12.5px">' + sec(PRM_KAT, h.kat) + "</select>") + "</div>"; }).join("");
+  $("prmKatK").onclick = function () { o.innerHTML = ""; };
+  Array.prototype.forEach.call(o.querySelectorAll("[data-prmkx]"), function (s) { s.onchange = function () { D.katElle[s.dataset.prmkx] = s.value; prmKaydet("Kategori değişti"); prmCiz(); }; });
+}
+function prmAyarlar() {
+  var D = PRM.D, K = D.kasa;
+  prmPnl("Param ayarları", '<b>Elimdeki para</b><div class="f2">' + prmSayiIn("aTl", "TL (banka + nakit)", K.tl) + prmSayiIn("aUs", "Dolar", K.usd) + '</div><div class="f2">' + prmSayiIn("aEu", "Euro", K.eur) + prmSayiIn("aAl", "Altın (gram)", K.altin) + "</div>" + prmSayiIn("aAf", "Altın gram fiyatı (₺)", K.altinFiyat) +
+    '<div class="f2">' + prmSayiIn("aAc", "Acil durum payı (₺)", D.acil) + '<label>Gelir (maaş) günü<input id="aGg" type="number" min="1" max="31" value="' + (+D.gelirGun || 1) + '"></label></div>' +
+    '<b>Ev planı</b><div class="f2">' + prmSayiIn("aEh", "Hedef (₺)", D.ev.hedef) + prmSayiIn("aEb", "Şu an biriken (₺)", D.ev.birikim) + "</div>" + prmSayiIn("aEa", "Her ay ayrılacak (₺)", D.ev.aylik) +
+    '<b>Şirkete borç ödeme planı</b><div class="f2">' + prmSayiIn("aBa", "Aylık taksit ($)", D.borc.aylik) + '<label>Ayın günü<input id="aBg" type="number" min="1" max="31" value="' + (+D.borc.gun || 1) + '"></label></div>' +
+    '<button class="btn pri" id="aKay">Kaydet</button><hr style="border:0;border-top:1px solid var(--line);margin:6px 0">' +
+    '<b>Güvenlik ve yedek</b><button class="btn" id="aPar">Parolayı değiştir</button><button class="btn" id="aYed">Şifreli yedek indir</button>' +
+    '<label class="btn" for="aBea" style="cursor:pointer;text-align:center">Beacon verisini içe aktar (.json)</label><input type="file" id="aBea" accept=".json,application/json" style="display:none"><small style="color:var(--muted)">Beacon\'dan geçmişi almanın en kolay yolu: eski ekstre ve hesap dökümü PDF\'lerini "Ekstre / döküm yükle" ile toplu seçip yüklemek; sabit giderleri bir kez buradan girmek.</small>');
+  $("aKay").onclick = function () { var n = function (i) { return num($(i).value) || 0; };
+    Object.assign(D.kasa, { tl: n("aTl"), usd: n("aUs"), eur: n("aEu"), altin: n("aAl"), altinFiyat: n("aAf"), t: bugun() }); D.acil = n("aAc"); D.gelirGun = Math.max(1, Math.min(31, +$("aGg").value || 1));
+    Object.assign(D.ev, { hedef: n("aEh"), birikim: n("aEb"), aylik: n("aEa") }); Object.assign(D.borc, { aylik: n("aBa"), gun: Math.max(1, Math.min(31, +$("aBg").value || 1)) });
+    panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); };
+  $("aPar").onclick = prmParolaDegis;
+  $("aYed").onclick = function () { var r = PRM.rec, b = new Blob([JSON.stringify({ tur: "dsolar-param-sifreli", tarih: new Date().toISOString(), salt: r.salt, iv: r.iv, veri: r.veri })], { type: "application/json" }), a = document.createElement("a");
+    a.href = URL.createObjectURL(b); a.download = "param-yedek-" + bugun() + ".json"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500); toast("Şifreli yedek indirildi (parolan olmadan açılamaz)"); };
+  $("aBea").onchange = function () { var f = this.files && this.files[0]; this.value = ""; if (f) f.text().then(function (t) { prmBeaconAl(JSON.parse(t)); }).catch(function () { toast("Dosya okunamadı"); }); };
+}
+function prmParolaDegis() {
+  prmPnl("Parolayı değiştir", '<label>Yeni parola<input id="pY1" type="password" autocomplete="new-password"></label><label>Yeni parola (tekrar)<input id="pY2" type="password" autocomplete="new-password"></label><button class="btn pri" id="pYK">Değiştir</button><small id="pYM" style="color:var(--bad)"></small>');
+  $("pYK").onclick = function () { var p = $("pY1").value, msg = $("pYM"); if (p.length < 10) { msg.textContent = "En az 10 karakter."; return; } if (p !== $("pY2").value) { msg.textContent = "Parolalar aynı değil."; return; }
+    var salt = prmB(crypto.getRandomValues(new Uint8Array(16))), k2; $("pYK").disabled = true;
+    prmAnahtar(p, salt).then(function (k) { k2 = k; return prmSifrele(k, PRM.D); }).then(function (s) { return api("/api/collections/kisisel/records/" + PRM.rec.id, { method: "PATCH", body: { salt: salt, iv: s.iv, veri: s.veri, surum: (+PRM.rec.surum || 0) + 1 } }); })
+      .then(function (r) { PRM.rec = r; PRM.k = k2; panelKapat(); toast("Parola değişti"); }).catch(function (e) { $("pYK").disabled = false; hata(e); }); };
+}
+/* ---------- PDF ---------- */
+function prmPdfJs() { if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  return new Promise(function (res, rej) { var s = document.createElement("script"); s.src = "/pdf.min.js"; s.onload = function () { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js"; res(window.pdfjsLib); }; s.onerror = function () { rej(new Error("PDF okuyucu yüklenemedi")); }; document.head.appendChild(s); }); }
+function prmPdfMetin(file, parola) { return prmPdfJs().then(function (lib) { return file.arrayBuffer().then(function (buf) { return lib.getDocument({ data: buf, password: parola || undefined }).promise; }); }).then(function (doc) {
+  var text = "", i = 1; var sayfa = function () { if (i > Math.min(doc.numPages, 30)) return Promise.resolve(text);
+    return doc.getPage(i).then(function (pg) { return pg.getTextContent(); }).then(function (tc) { var lastY = null, line = ""; tc.items.forEach(function (it) { var y = Math.round(it.transform[5]); if (lastY !== null && Math.abs(y - lastY) > 3) { text += line.trim() + "\n"; line = ""; } line += it.str + " "; lastY = y; }); text += line.trim() + "\n--- sayfa " + i + " sonu ---\n"; i++; return sayfa(); }); };
+  return sayfa(); }); }
+function prmBelgeYukle(F) {
+  var o = $("prmPdfO"), sonuc = [], i = 0, D = PRM.D;
+  var tek = function () { if (i >= F.length) { PRM.mesaj = '<div class="' + (sonuc.some(function (s) { return !s[1]; }) ? "uyari" : "bilgi") + '" style="margin:0 0 12px">' + sonuc.map(function (s) { return "<b>" + esc(s[0]) + "</b>: " + esc(s[2]); }).join("<br>") + "</div>"; prmKaydet(); prmCiz(); return; }
+    var f = F[i]; o.innerHTML = '<div class="bilgi" style="margin:0 0 12px">' + (F.length > 1 ? (i + 1) + "/" + F.length + " · " : "") + esc(f.name) + " okunuyor… (bu cihazda)</div>";
+    var dene = function (parola) { return prmPdfMetin(f, parola).catch(function (e) { if (e && e.name === "PasswordException") { var p = prompt(f.name + " şifreli. PDF parolası:"); if (p) return dene(p); throw new Error("parola girilmedi"); } throw e; }); };
+    dene().then(function (t) { var r = p3Parse(t); if (!r) { sonuc.push([f.name, false, "tanınmadı (Garanti / Halkbank kart ekstresi veya hesap dökümü olmalı)"]); return; } sonuc.push([f.name, true, prmIceAl(D, r)]); })
+      .catch(function (e) { sonuc.push([f.name, false, "okunamadı (" + (e && e.message || e) + ")"]); }).then(function () { i++; tek(); }); };
+  tek();
+}
+function prmIceAl(D, r, kaynakDoc) {
+  var acct = r.bank + "|" + (r.last || r.name || ""), h = D.hesaplar[acct] || { bank: r.bank, last: r.last, kind: r.kind }; h.name = r.name || h.name; D.hesaplar[acct] = h;
+  if (r.kind === "card") { var eski = D.belgeler.filter(function (b) { return b.acct === acct && b.kesim === r.kesim; })[0];
+    if (eski) { D.tx = D.tx.filter(function (t) { return t.doc !== eski.id; }); D.belgeler = D.belgeler.filter(function (b) { return b !== eski; }); }
+    var doc = { id: prmId(), acct: acct, kind: "card", kesim: r.kesim, due: r.due, sum: r.sum, ok: !!r.ok, at: bugun() }; D.belgeler.push(doc);
+    (r.tx || []).forEach(function (t) { D.tx.push({ id: prmId(), doc: doc.id, acct: acct, acctKind: "card", d: t.d, desc: t.desc, amt: t.amt, type: t.type, bcat: t.cat || t.bcat || "", inst: t.inst || null }); });
+    return (r.tx || []).length + " işlem · dönem borcu " + sayi(r.sum ? r.sum.debt : 0) + " ₺ · son ödeme " + tarih(r.due) + (eski ? " (eski aynı ekstre değiştirildi)" : "") + (r.ok ? "" : " · tutarlar tutmadı, kontrol et"); }
+  var var0 = {}; D.tx.forEach(function (t) { if (t.acct === acct) var0[t.d + "|" + t.desc + "|" + t.amt + "|" + t.bal] = 1; });
+  var doc2 = { id: prmId(), acct: acct, kind: "bank", from: r.from, to: r.to, ok: !!r.ok, at: bugun() }, yeni = 0; D.belgeler.push(doc2);
+  (r.rows || []).forEach(function (x) { var k = x.d + "|" + x.desc + "|" + x.amt + "|" + x.bal; if (var0[k]) return; var0[k] = 1; yeni++; D.tx.push({ id: prmId(), doc: doc2.id, acct: acct, acctKind: "bank", d: x.d, desc: x.desc, amt: x.amt, bal: x.bal, label: x.label || "", type: x.amt < 0 ? "out" : "in" }); });
+  return yeni + " yeni hareket (" + ((r.rows || []).length - yeni) + " zaten vardı)" + (r.ok ? "" : " · bakiye kontrolü tutmadı");
+}
+/* ---------- Beacon içe aktarma (en iyi çaba) ---------- */
+function prmBeaconAl(o) {
+  var D = PRM.D, F = (o && (o.b || (o.fin && o.fin.b) || (o.FIN && o.FIN.b))) || o, nk = 0, nb = 0, nt = 0;
+  try { (F.lines || []).forEach(function (l) { if (!l || !l.name || /kart/i.test(l.name) || l.card || !(+l.amt)) return; if (!l.fixed && !l.once) return;
+      if (D.kalemler.some(function (k) { return k.ad === l.name; })) return; D.kalemler.push({ id: prmId(), ad: l.name, tur: l.kind === "gelir" ? "gelir" : "gider", tutar: +l.amt || 0, pb: "TRY", gun: +l.day || 1, periyot: l.yearly || l.once ? "yillik" : "aylik", ay: l.once ? +String(l.once).slice(5, 7) : 1, odeyen: "ben", bas: l.from || "" }); nk++; });
+    var p = F.p3 || {}; Object.keys(p.accts || {}).forEach(function (id) { var a = p.accts[id]; if (!D.hesaplar[id]) D.hesaplar[id] = { bank: a.bank, last: a.last, kind: a.kind, name: a.name }; });
+    var var0 = {}; D.belgeler.forEach(function (b) { var0[b.acct + "|" + (b.kesim || b.from) + "|" + (b.to || "")] = 1; }); var al = {};
+    (p.docs || []).forEach(function (d) { var key = d.acct + "|" + (d.kesim || d.from) + "|" + (d.to || ""); if (var0[key]) return; var0[key] = 1; al[d.id] = 1; D.belgeler.push({ id: d.id, acct: d.acct, kind: d.kind, kesim: d.kesim, due: d.due, from: d.from, to: d.to, sum: d.sum, ok: !!d.ok, at: bugun() }); nb++; });
+    (p.tx || []).forEach(function (t) { if (!al[t.doc]) return; var a = (p.accts || {})[t.acct] || {}; D.tx.push({ id: t.id || prmId(), doc: t.doc, acct: t.acct, acctKind: a.kind === "bank" ? "bank" : "card", d: t.d, desc: t.desc, amt: t.amt, bal: t.bal, label: t.label || "", type: t.type || (t.amt < 0 ? "out" : "in"), bcat: t.bcat || t.cat || "", inst: t.inst || null }); nt++; });
+  } catch (e) { hata(e); return; }
+  panelKapat(); prmKaydet(); prmCiz(); toast("Beacon'dan alındı: " + nk + " sabit kalem, " + nb + " belge, " + nt + " işlem");
+}
+
+/* v57: Beacon'ın ekstre/hesap dökümü okuyucuları (Garanti, Halkbank) — tarayıcıda çalışır, dışarı veri göndermez */
+const P3MON = {ocak: 1, şubat: 2, mart: 3, nisan: 4, mayıs: 5, haziran: 6, temmuz: 7, ağustos: 8, eylül: 9, ekim: 10, kasım: 11, aralık: 12};
+const p3pad = n => String(n).padStart(2, "0");
+const p3TR = s => { const t = String(s).replace(/\s/g, ""); return Math.round(parseFloat(t.replace(/\./g, "").replace(",", ".")) * 100) / 100; };
+const p3US = s => { const t = String(s).replace(/\s/g, ""); return Math.round(parseFloat(t.replace(/,/g, "")) * 100) / 100; };
+const p3DateTR = s => { const m = String(s).match(/(\d{1,2})\s+([A-Za-zÇĞİÖŞÜçğıöşü]+)\s+(\d{4})/); if (!m) return ""; const mo = P3MON[m[2].toLocaleLowerCase("tr-TR")]; return mo ? `${m[3]}-${p3pad(mo)}-${p3pad(m[1])}` : ""; };
+const p3DateNum = s => { const m = String(s).match(/(\d{2})[./](\d{2})[./](\d{4})/); return m ? `${m[3]}-${m[2]}-${m[1]}` : ""; };
+const p3Clean = s => String(s || "").replace(/\s+/g, " ").replace(/\bbosluk\b/g, "").trim();
+
+// Garanti credit card statement
+function p3ParseGarantiCard(text){
+  const L = text.split("\n").map(x => x.replace(/\bbosluk\b/g, "").trim()), get = re => { for (const l of L) { const m = l.match(re); if (m) return m; } return null; };
+  const name = (get(/^(.+?) Bilgileriniz\s/) || get(/^(.+?) Bilgileriniz$/) || [])[1] || "Garanti kart";
+  const cardNo = (get(/Kart Numara(?:sı|nız)\s+([\d* ]+)/) || [])[1] || "", last = (cardNo.replace(/\s/g, "").match(/(\d{3,4})$/) || [])[1] || "";
+  const kesim = p3DateTR((get(/Hesap Kesim Tarihi\s+(\d{1,2} \S+ \d{4})/) || [])[1] || ""), due = p3DateTR((get(/^Son Ödeme Tarihi\s+(\d{1,2} \S+ \d{4})/) || get(/Son Ödeme Tarihi:\s*(\d{1,2} \S+ \d{4})/) || [])[1] || "");
+  const limit = p3TR((get(/Kart Limiti(?:niz)?\s+([\d.]+,\d\d)/) || [0, "0"])[1]);
+  const S = (() => { for (let i = 0; i < L.length; i++) { const m = L[i].match(/^(-?[\d.]+,\d\d) TL\s*\+\s*(-?[\d.]+,\d\d) TL\s*\+\s*(-?[\d.]+,\d\d) TL\s*-\s*(-?[\d.]+,\d\d) TL\s*=\s*(-?[\d.]+,\d\d) TL\s+([\d.]+,\d\d) TL/); if (m) return m.slice(1).map(p3TR); } return null; })();
+  const nx = (text.match(/[Bb]ir sonraki hesap kesim(?:iniz| tarihiniz) (\d{1,2} \S+ \d{4}).*?son ödeme(?:niz| tarihiniz) (\d{1,2} \S+ \d{4})/s) || []);
+  const rate = (text.match(/Akdi faiz:\s*%([\d,]+)/) || [])[1];
+  const autoMin = /Minimum ödeme tutarınız .* hesabınızdan alınacaktır/.test(text), autoFull = /Dönem borcunuzun tamamı .* hesabınızdan alınacaktır/i.test(text);
+  const tx = [], months = Object.keys(P3MON).join("|"); let cat = "", fees = 0;
+  const reDate = new RegExp(`^(\\d{2} (?:${months.replace(/ı/g, "[ıi]")}) \\d{4})\\s+(.+)$`, "i");
+  const HEAD_SKIP = /^(İşlem Tarihi|İŞLEM TARİHİ|Ekstre No|Ekstre Sayfası|Kart Numarası|Harcanabilir|Toplam\b|---|Büyük Mükellefler|Mersis|EKSTRE ÖZETİ|Önceki Bakiye|Aylık güncel|Yıllık güncel)/i;
+  let inBody = false, ended = false;
+  for (const l of L) {
+    if (!l) continue;
+    if (/^İşlem Tarihi|^İŞLEM TARİHİ/i.test(l)) { inBody = true; continue; }
+    if (/^Toplam\s+-?[\d.,]+\s+[\d.]+,\d\d$/.test(l) || /^EKSTRE ÖZETİ/.test(l)) { ended = true; continue; }
+    if (!inBody || ended) continue;
+    let m;
+    if ((m = l.match(/^(DÖNEM FAİZİ|KKDF \+ BSMV|.*(?:FAİZİ|ÜCRETİ|KKDF|BSMV)[^\d]*?)\s+([\d.]+,\d\d)([+-]?)$/)) && !reDate.test(l)) { const a = p3TR(m[2]) * (m[3] === "+" ? -1 : 1); fees += a; tx.push({d: kesim, desc: p3Clean(m[1]), amt: a, type: "fee", cat: "Banka masrafı"}); continue; }
+    if (/^ÖNCEKİ DÖNEMDEN DEVİR/.test(l)) continue;
+    if (!(m = l.match(reDate))) { if (!HEAD_SKIP.test(l) && !/[\d.]+,\d\d/.test(l) && l.length < 60) cat = /HARCAMALARINIZ|PROGRAM ORTAKLARI/i.test(l) ? (/YURT DIŞI/i.test(l) ? "Yurt dışı" : "") : l; continue; }
+    const d = p3DateTR(m[1]); let rest = m[2].trim();
+    const am = rest.match(/(-?[\d.]+,\d\d)([+-]?)$/); if (!am) continue;
+    const sign = am[2]; let amt = p3TR(am[1]); rest = rest.slice(0, am.index).trim();
+    if (/BONUS BEDAVA|PUAN KULLAN/i.test(rest) && sign === "-") continue; // reward points used: shown in the reward column, not TL
+    let inst = null; const im = rest.match(/([\d.]+,\d\d)x(\d+)=([\d.]+,\d\d)\s+(\d+)\.Taksit/i);
+    if (im) { inst = {n: +im[4], N: +im[2], total: p3TR(im[3]), each: p3TR(im[1])}; rest = rest.replace(im[0], " "); }
+    let fx = null; const fm = rest.match(/([\d.]+,\d\d)\s+(USD|EUR|GBP|TL)\s*$/); if (fm) { if (fm[2] !== "TL") fx = {amt: p3TR(fm[1]), cur: fm[2]}; rest = rest.slice(0, fm.index).trim(); }
+    rest = rest.replace(/\s+-?\d{1,3}(?:\.\d{3})*(?:,\d\d)?\s*$/, "").trim(); // reward column (bonus / mil)
+    const desc = p3Clean(rest);
+    if (sign === "+") { tx.push({d, desc, amt: -amt, type: /ÖDEMENİZ İÇİN|TEŞEKKÜR/i.test(desc) ? "payment" : "refund", cat: cat}); continue; }
+    if (sign === "-") amt = -amt;
+    tx.push({d, desc, amt, type: "spend", cat, inst, fx});
+  }
+  const purch = tx.filter(t => t.type === "spend").reduce((a, t) => a + t.amt, 0), ref = tx.filter(t => t.type === "refund").reduce((a, t) => a - t.amt, 0), pays = tx.filter(t => t.type === "payment").reduce((a, t) => a - t.amt, 0);
+  const sum = S ? {prev: S[0], purch: S[1], fees: S[2], pays: S[3], debt: S[4], min: S[5]} : null;
+  const chk = sum ? {purch: Math.round((purch - ref) * 100) / 100, fees: Math.round(fees * 100) / 100, pays: Math.round(pays * 100) / 100} : null;
+  const ok = !!(sum && Math.abs(chk.purch - sum.purch) < 0.05 && Math.abs(chk.fees - sum.fees) < 0.05 && Math.abs(chk.pays - sum.pays) < 0.05 && Math.abs(sum.prev + sum.purch + sum.fees - sum.pays - sum.debt) < 0.05);
+  const pts = []; { const bo = text.match(/Harcanabil(?:ecek|ir) Toplam Bonus\s+(-?[\d.]+,\d\d)/), mi = text.match(/Bu Dönemki Toplam Miliniz\s+([\d.]+)/), mr = text.match(/Kullanılabilir Ödül Puanınız\s+([\d.]+,\d\d)/);
+    if (bo) pts.push({k: "bonus", bal: p3TR(bo[1])}); if (mi) pts.push({k: "miles", earned: +mi[1].replace(/\./g, "")}); if (mr) pts.push({k: "mr", bal: p3TR(mr[1])}); }
+  return {kind: "card", bank: "Garanti BBVA", pts, name: name.replace(/\s+/g, " "), last, limit, kesim, due, nextKesim: p3DateTR(nx[1] || ""), nextDue: p3DateTR(nx[2] || ""), rate: rate ? parseFloat(rate.replace(",", ".")) : null, autoMin, autoFull, sum, chk, ok, tx};
+}
+
+// Halkbank (Paraf) credit card statement
+function p3ParseHalkCard(text){
+  const flat = text.replace(/\n/g, " \n ");
+  const val = re => { const m = text.replace(/\n/g, " ").match(re); return m ? m[1] : null; };
+  const kesim = p3DateNum(val(/Hesap Kesim Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/) || ""), due = p3DateNum(val(/Son Ödeme Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/) || "");
+  const num = re => { const v = val(re); return v != null ? p3US(v) : null; };
+  const sum = {prev: num(/Bir Önceki Dönem\s+Ekstre Borcu\s*:\s*([\d,]+\.\d\d)/), purch: num(/Dönem İçi Borç Tutarı\s*:\s*([\d,]+\.\d\d)/), fees: num(/Toplam Faiz, Ücret,\s+Vergiler\s*:\s*([\d,]+\.\d\d)/), pays: num(/Dönemsel Alacak\s+Kayıtları\s*:\s*([\d,]+\.\d\d)/), debt: num(/Hesap Bakiyesi\s*:\s*([\d,]+\.\d\d)/), min: num(/Asgari Ödeme Tutarı\s*:\s*([\d,]+\.\d\d)/)};
+  const limit = num(/Toplam Kredi Limiti\s*:\s*([\d,]+\.\d\d)/) || 0, last = (val(/Kart Numarası\s*:\s*[\d#-]+\s*[#-]*(\d{4})/) || (text.match(/####-(\d{4})/) || [])[1] || "");
+  const rate = val(/Alışveriş Faiz Oranı\s*%\s*([\d.]+)/), nk = text.replace(/\n/g, " ").match(/Bir Sonraki\s+Hesap\s+Kesim\s+Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/), nd = text.replace(/\n/g, " ").match(/Bir Sonraki\s+Son Ödeme\s+Tarihi\s*:\s*(\d\d\/\d\d\/\d{4})/);
+  // the transaction table: everything between the column header and the closing "Bir Sonraki", footers removed
+  const body = text.split("\n").filter(l => !/Türkiye Halk Bankası|Büyük Mükellefler|Ticaret Sicil|Mersis|Platin Line|parafly\.com|^--- sayfa|^İşlem$|^Tarihi$|^Açıklama|^KALAN$|^BORÇ|^TAKSİT$|^ParafPara$|^KART NO|^####|^GÖKDEMİR$|BURHAN$/.test(l.trim())).join(" ");
+  const tx = [], re = /(\d\d\/\d\d\/\d{4})\s+(.+?)\s+(\+\s*)?(-?[\d,]+\.\d\d)\s+(?:(\d+\/\d+)\s+)?(-?[\d,]+\.\d\d)(?=\s+\d\d\/\d\d\/\d{4}|\s+Bir Sonraki|\s*$)/g;
+  const start = body.search(/Ekstre Borcu\s+[\d,]+\.\d\d/); let b2 = start >= 0 ? body.slice(start).replace(/^Ekstre Borcu\s+[\d,]+\.\d\d/, "") : body; const stop = b2.search(/Bir Sonraki\s+Hesap/); if (stop > 0) b2 = b2.slice(0, stop); let m;
+  while ((m = re.exec(b2))) { const desc = p3Clean(m[2].replace(/\s-\s*$/, "")), a = p3US(m[4]), cr = !!m[3];
+    if (/Puan Kullanım/i.test(desc) && !a) continue;
+    if (cr) tx.push({d: p3DateNum(m[1]), desc, amt: -a, type: /Hesaptan Ödeme|Ödeme - Teşekkür|ÖDEMENİZ/i.test(desc) ? "payment" : "refund", cat: ""});
+    else tx.push({d: p3DateNum(m[1]), desc, amt: a, type: /FAİZ|KKDF|BSMV|ÜCRET/i.test(desc) ? "fee" : "spend", cat: "", inst: m[5] ? {n: +m[5].split("/")[0], N: +m[5].split("/")[1]} : null}); }
+  const purch = tx.filter(t => t.type === "spend").reduce((a, t) => a + t.amt, 0), credits = tx.filter(t => t.amt < 0).reduce((a, t) => a - t.amt, 0), fees = tx.filter(t => t.type === "fee").reduce((a, t) => a + t.amt, 0);
+  const chk = {purch: Math.round(purch * 100) / 100, pays: Math.round(credits * 100) / 100, fees: Math.round(fees * 100) / 100};
+  const ok = sum.purch != null && Math.abs(chk.purch + chk.fees - sum.purch - (sum.fees || 0) * 0) < 0.05 && Math.abs(chk.pays - sum.pays) < 0.05 && Math.abs(sum.prev + sum.purch + (sum.fees || 0) - sum.pays - sum.debt) < 0.05;
+  // Halkbank shows refunds inside "Dönemsel Alacak": split them back out so "pays" means real payments only
+  const realPay = tx.filter(t => t.type === "payment").reduce((a, t) => a - t.amt, 0), refunds = credits - realPay;
+  const pp = text.replace(/\n/g, " ").match(/Toplam ParafPara\s*:\s*([\d,]+\.\d\d)/), pts = pp ? [{k: "paraf", bal: p3US(pp[1])}] : [];
+  return {kind: "card", bank: "Halkbank", pts, name: "Parafly", last, limit, kesim, due, nextKesim: nk ? p3DateNum(nk[1]) : "", nextDue: nd ? p3DateNum(nd[1]) : "", rate: rate ? parseFloat(rate) : null, autoMin: false, autoFull: false,
+    sum: {...sum, purch: Math.round((sum.purch - refunds) * 100) / 100, pays: Math.round(realPay * 100) / 100}, chk, ok, tx};
+}
+
+// bank account movements (Garanti "Hesap Hareketleri", Halkbank "Mevduat Hesap Cüzdanı")
+function p3ParseAccount(text, bank){
+  const flat = text.split("\n").filter(l => !/^--- sayfa|Sayfa \d+\/\d+|^\d+ \/ \d+$/.test(l.trim())).join(" ").replace(/\s+/g, " ");
+  const acct = bank === "Garanti BBVA" ? ((flat.match(/Hesap Numarası\s*:\s*([\d -]+\d)/) || [])[1] || "").replace(/\D/g, "").slice(-4) : ((flat.match(/Hesap No\s*:\s*(\d+)/) || [])[1] || "").slice(-4);
+  const re = /(\d\d\.\d\d\.\d{4})\s+(.+?)\s+([+-]?\d{1,3}(?:\.\d{3})*,\d\d)(?: TL)?\s+(-?\d{1,3}(?:\.\d{3})*,\d\d)(?: TL)?(?=\s|$)/g, rows = []; let m;
+  const from = flat.search(/Tarih Açıklama|İşlem Tarihi Açıklama/), body = from >= 0 ? flat.slice(from) : flat;
+  while ((m = re.exec(body))) { let desc = p3Clean(m[2]), label = ""; const lm = desc.match(/\s(Para Transferi|Kart Ödemesi|Diğer|Sigorta|Ulaşım|Fatura|Market|Alışveriş|Eğitim|Sağlık|Vergi|Maaş|Yatırım|Kira|Aidat)(\s+.*)?$/);
+    if (lm) { label = lm[1]; desc = p3Clean(desc.slice(0, lm.index) + " " + (lm[2] || "")); }
+    rows.push({d: p3DateNum(m[1]), desc, amt: p3TR(m[3]), bal: p3TR(m[4]), label}); }
+  // which way does the list run? check both orders against the running balance
+  const fit = arr => arr.reduce((a, r, i) => a + (i && Math.abs(arr[i - 1].bal + r.amt - r.bal) < 0.01 ? 1 : 0), 0), fwd = fit(rows), rev = fit(rows.slice().reverse());
+  const ord = rev > fwd ? rows.slice().reverse() : rows, good = Math.max(fwd, rev), ok = rows.length > 0 && good === rows.length - 1;
+  const bad = ord.map((r, i) => i && Math.abs(ord[i - 1].bal + r.amt - r.bal) >= 0.01 ? i : -1).filter(i => i > 0);
+  const open = ord.length ? Math.round((ord[0].bal - ord[0].amt) * 100) / 100 : 0, close = ord.length ? ord[ord.length - 1].bal : 0;
+  const range = flat.match(/(\d\d[./]\d\d[./]\d{4})\s*-\s*(\d\d[./]\d\d[./]\d{4})/);
+  return {kind: "bank", bank, last: acct, from: range ? p3DateNum(range[1]) : (ord[0] || {}).d || "", to: range ? p3DateNum(range[2]) : (ord[ord.length - 1] || {}).d || "", open, close, ok, bad: bad.length, rows: ord};
+}
+
+function p3Detect(text){
+  if (/Mevduat Hesap Cüzdanı/.test(text) && /HALK/i.test(text)) return "halk-acct";
+  if (/Hesap Hareketleri/.test(text) && /Garanti/i.test(text)) return "garanti-acct";
+  if (/parafly|Halk Bankası/i.test(text) && /Hesap Kesim Tarihi/.test(text)) return "halk-card";
+  if (/Dönem Borcunuz/.test(text) && /Garanti|Bonus|Miles&Smiles|American Express|Platinum/i.test(text)) return "garanti-card";
+  return "";
+}
+/* some pdf.js versions (the phone's 3.11) split the decimals off an amount: "1.513.443 ,47" / "899,576 .52" */
+const p3Glue = t => String(t || "").replace(/(\d) +([,.]\d\d)(?!\d)/g, "$1$2");
+function p3Parse(text){ text = p3Glue(text); const k = p3Detect(text);
+  return k === "garanti-card" ? p3ParseGarantiCard(text) : k === "halk-card" ? p3ParseHalkCard(text) : k === "garanti-acct" ? p3ParseAccount(text, "Garanti BBVA") : k === "halk-acct" ? p3ParseAccount(text, "Halkbank") : null; }
+
+
+
+const P3BANKCAT = {"Akaryakıt": "Akaryakıt & ulaşım", "Ulaşım": "Akaryakıt & ulaşım", "RentACar": "Seyahat", "Konaklama": "Seyahat", "Havayolu": "Seyahat", "Cafe & Restaurant": "Yemek & kafe", "Pastane": "Yemek & kafe", "Fast Food": "Yemek & kafe",
+  "Süpermarket": "Market", "Gıda": "Market", "Eczane": "Sağlık", "Sağlık": "Sağlık", "Kozmetik": "Kişisel bakım", "Güzellik Merkezi/Kuaför": "Kişisel bakım", "Spor Klüpleri": "Spor", "Spor Giyim": "Giyim", "Deri Giyim": "Giyim", "Giyim": "Giyim",
+  "Hediyelik Eşya/Cam,Porselen Ürünleri": "Ev & yaşam", "Ev Tekstil & Dekorasyon": "Ev & yaşam", "Ev Bakım & Onarım": "Ev & yaşam", "Mobilya": "Ev & yaşam", "GSM Shop": "Faturalar & iletişim", "Sigorta": "Sigorta", "Kitap Evi & Kırtasiye": "Eğitim & çocuk",
+  "Eğitim": "Eğitim & çocuk", "Bilgisayar": "Elektronik", "Elektronik": "Elektronik", "Banka masrafı": "Banka masrafı"};
+const P3SAVE = "BES / Birikim";
+const P3KW = [[P3SAVE, /G\.E\. ?\d|AGESA|EMEKL[İI]L[İI]K|BIREYSEL EMEK|HAYAT-? ?\d+ NO ?LU POL[İI][ÇC]E/], ["Abonelik & dijital", /APPLE\.COM|GOOGLE|NETFL|DISNEY|YOUTUBE|SPOTIFY|EXXEN|TABII|DİGİTÜRK|DIGITURK|MSFT|MICROSOFT|AMAZON|PLAYSTATION|ANTHROPIC|CHATGPT|OPENAI|CAPCUT|BLUTV|GAIN/],
+  ["Faturalar & iletişim", /TT NET|TURKCELL|VODAFONE|TÜRK TELEKOM|ELEKTRİK|ENERJİSA|GEDİZ|İZSU|IZSU|DOĞALGAZ|İZMİRGAZ|SU İDARE/], ["Seyahat", /UÇAK|UCAK|\bTHY\b|AJET|TKPAY|ENUYGUN|PEGASUS|OTEL|TURİZM|TURIZM|RENT ?A ?CAR|TRANSIT|HAVALİMAN|BOOKING|AIRBNB/],
+  ["Akaryakıt & ulaşım", /SHELL|OPET|PETROL|\bBP\b|TOTAL|AYTEMİZ|TAKSİ|TAKSI|HGS|OGS|OTOPARK|GARAGE|İZBAN|METRO|UBER|BİTAKSİ|MARTI/], ["Market", /MARKET|MİGROS|MIGROS|MACROCEN|CARREFOUR|\bA101\b|\bBİM\b|\bŞOK\b|KASAP|\bET\b|GIDA|MANAV|ŞARKÜTERİ|GETİR|ISTEGELSIN/],
+  ["Yemek & kafe", /RESTORAN|RESTAURANT|CAFE|KAFE|KAFETERYA|YEMEK|PİDE|PIDE|DÖNER|DONER|BİSTRO|BISTRO|FIRIN|DONDURMA|MC ?DONALD|BURGER|GRILL|STARBUCKS|\bSBX\b|LOKANTA|KÖFTE|PİZZA|PIZZA|KAHVE|COFFEE|PASTANE|BAKLAVA/],
+  ["Giyim", /BEYMEN|MASSİMO|MASSIMO|ZARA|VAKKO|MAĞAZACILIK|BOYNER|WAIKIKI|DEFACTO|MANGO|NETWORK|IPEKYOL|NIKE|ADIDAS|POLO/], ["Elektronik", /MEDIA ?MARKT|TEKNOSA|VATAN|APPLE STORE|SAMSUNG/],
+  ["Ev & yaşam", /IKEA|YAPI|KOÇTAŞ|BAUHAUS|DAYANIKLI|DEKORASYON|ENGLISH HOME|MADAME COCO|KARACA/], ["Sağlık", /ECZANE|HASTANE|KLİNİK|KLINIK|DİŞ|LABORATUVAR|WELLNESS/], ["Kişisel bakım", /KUAFÖR|BERBER|PARFÜM|PARFUM|KOZMETİK|GÜZELLİK|SEPHORA|GRATIS|WATSONS/],
+  ["Spor", /SPOR|TENİS|TENIS|FITNESS|\bGYM\b|PADEL|YÜZME/], ["Resmi işler", /NOTER|VERGİ|BELEDİYE|NÜFUS|TAPU|MAHKEME/], ["Sigorta", /SİGORTA|SIGORTA|POLİÇE|POLICE|PR[İI]M TAHS[İI]LAT/], ["Eğitim & çocuk", /OKUL|KOLEJ|KİTAP|KITAP|KIRTASİYE|EĞİTİM|KURS/], ["Tekne", /MARINA|\bYAT\b|YACHT|TEKNE|DENIZCILIK|BAĞLAMA|BAGLAMA|\bMARIN\b/]];
+
+var PRM_BANKCAT = P3BANKCAT, PRM_KW = P3KW;
+
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
 ICO.ara = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';
 ICO.zil = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>';
@@ -3557,6 +3960,7 @@ function anaMenu() {
   if (rol() === "ortak") return [["ortak", "Müşterilerim"]];
   var M = [["bugun", "Bugün"], ["mesajlar", "Mesajlar"]], sa = satisAlt(); if (sa.length) M.push(["satis", "Satış", "#" + sa[0][0]]);
   if (finansci()) M.push(["finans", "Finans"]); if (yt("ges")) M.push(["ges", "GES"]); if (yt("ekip")) M.push(["ekip", "Ekip"]);
+  if (typeof prmSahibiMi === "function" && prmSahibiMi()) { prmIkon(); M.push(["param", "Param"]); }
   return M;
 }
 function hizliListe() {
@@ -3577,6 +3981,7 @@ function ciz() {
   var navA = function (m) { var on = m[0] === ak; return '<a href="' + (m[2] || "#" + m[0]) + '" class="' + (on ? "on" : "") + '" data-nv="' + m[0] + '"><i>' + ikon((NAV_IK[m[0]] || ["menu"])[0], (NAV_IK[m[0]] || [0, "#475569"])[1], on ? "dolu" : "") + '</i><span>' + m[1] + '</span><u class="rz" data-rz="' + m[0] + '"></u></a>'; };
   var altH = alt.map(navA); if (HZ.length) altH.splice(Math.min(2, altH.length), 0, '<a href="#" class="fab" id="hzB" aria-label="Hızlı ekle"><b>＋</b></a>');
   var yanH = '<div class="yLogo">D <i>Solar</i></div>' + M.map(function (m) {
+    if (m[0] === "param") return '<div class="yGrp">Kişisel</div>' + navA(m);
     if (m[0] !== "satis") return navA(m);
     return '<div class="yGrp">Satış</div>' + satisAlt().map(function (s) { var on = s[0] === sayfa || (s[0] === "adaylar" && (sayfa === "aday" || sayfa === "yeni")) || (s[0] === "teklifler" && (sayfa === "teklif" || sayfa === "tpdf"));
       return '<a href="#' + s[0] + '" class="' + (on ? "on" : "") + '"><i>' + ikon((NAV_IK[s[0]] || ["menu"])[0], (NAV_IK[s[0]] || [0, "#475569"])[1], on ? "dolu" : "") + "</i><span>" + s[1] + '</span><u class="rz" data-rz="' + s[0] + '"></u></a>'; }).join("") + '<div class="yGrp">Şirket</div>'; }).join("") +
@@ -3597,7 +4002,7 @@ function ciz() {
   if ($("hHz")) $("hHz").onclick = function () { hizliAc(); };
   var sm = sayfaMod(sayfa, h[1]); document.body.classList.toggle("salt", !!sm && yt(sm) === "g");
   if (sm && yt(sm) === "g") { var mm = $("m"); if (mm) mm.insertAdjacentHTML("beforebegin", '<div class="saltB">Bu bölümde yalnız <b>görme</b> yetkiniz var; değişiklik yapılamaz.</div>'); }
-  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri, mesajlar: sMesajlar, reklamlar: sReklamlar };
+  var S = { profil: sProfil, bugun: sBugun, adaylar: sAdaylar, aday: sAday, yeni: sYeni, teklifler: sTeklifler, ekip: sEkip, ortak: sOrtak, finans: sFinans, ges: sGes, teklif: sTeklif, tpdf: sTeklifPdf, projeler: sProjeler, katalog: sKatalog, gesrapor: sGesRapor, isemri: sIsEmri, mesajlar: sMesajlar, reklamlar: sReklamlar, param: sParam };
   (S[sayfa] || sBugun)(h[1]);
   rozetCiz(); rozetGuncelle();
 }
