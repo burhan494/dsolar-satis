@@ -1,7 +1,7 @@
 {
- "surum": 60,
- "paket": "surumler/dsolar-60.zip",
- "sha256": "e539c889d1244f2f4f4e99c96638e2472121689d48bb7d1384f46a5f1bc8ec82",
- "imza": "e9ZfYmzJK+ZI6sPhj98P76/Qd0e+hhkKnjry7cCk5tvY7jZ1PylNMdb/bffmFVVdGW8rwwkwg7GZ6cip0jbt/pqiNZPL0+duYmgSNSGU1y72HPf4zZrbIRjnI0+/Ve0UAe1mvOD8PgDFeQNGbjcLlO9kBI9xrAJhFXQF6hTtpMx2kK3HuzYr5Oq7l6h2ObNE926J+ObHbKB4Azw2Np9ckTwAsCTrO7En7axP94LYVHfWwxIi0vCWxPQSuxg3pMb8V5zBOQB5Q+Zcb2WqtUNlvBLnxR8dDZGZArZztOPqj4C0o8u9oxPcQNcZuD25wZRSEKiYrKsjtA3icGRvVMV2+yi4iFL2J97fK4RUShjFbXxJcyN4vjgqZNT2UolVQpA8VbUGJifB73Q7TpB0rU7uzIDITdfdo5P90P+YxKPX67gDB1R+1YnaDXee1Jea9a7KcCNW9/00TBDAPd3YaffRbVlP4PuJUvcU/w1h5b++MzvQdaxWkUpLZxHQ1npq4e0F",
- "not": "Param yeni düzen: Özet, Kartlar, Ödemeler, Harcama, Varlık sekmeleri; düzenli ödeme bulma, banka bakiyeleri, tahmini kart ödemeleri"
+ "surum": 61,
+ "paket": "surumler/dsolar-61.zip",
+ "sha256": "8028c055d16839030e54654217fc4840e1387dcf8db977ed8e31c266d2651645",
+ "imza": "mZr3jMe4agtGYaS8upAEMIfB6ZXOV2S8otCDg6LR1FeENYfc5CNENMvx5gWbi2FfMG/HMLOSqydMBpBMBsICJitm8XpQfhN+ks321DmkPF2jQWA8e9bHp9a2By8S4I8lj7os5g/XtBkbROczoqrYEFU1g0wkMBVd0B3Q75qZg98DCsUYAiP8Qa4EPElFDQp4PqF6gjljYC3pCOptnoUGdH7pL41qLHwWjZ+20wC6rV78+5w7jTcmAKLolD1lKKKoHoPdWgU4fef95r6ZAHZu/Xrx+ynBR9VJjptXiyiAK9kLCOejEfhwQbrJPY7qhZy5BbyQXWd2feckUV8QwcAR7Ww7hGCZOzH6crWY3zZkG3xvhVfgXdA9vo4zDaVIsK1HWHFCztutpGW2kDISp+gi+SqosIe5xoDx8JG+3GtRnjp0Wt7UMKvylKqYZXBqiQiNq7kMZGT4ypek2EloT7K+Y5VJCEyEJ7DpE7qnuHh+mv6+3QShYX8veOsRdxpc+wqY",
+ "not": "Param: alacaklar, gelecek paralar, sigorta ve birikimler, yenileme hatırlatıcıları, finans koçu ve abonelik radarı"
 }
