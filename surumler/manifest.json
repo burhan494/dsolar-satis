@@ -1,7 +1,7 @@
 {
- "surum": 67,
- "paket": "surumler/dsolar-67.zip",
- "sha256": "5d83d5ac702dcb56374e2c44c1300ce1e195f9ac00b3a6edf2bb30b6e50d397b",
- "imza": "G9IHUHti2e8TXr+J6inlFEdqlbAH8HGFVDWaB8+mUhBnkjiS4WICPyRKKTPxhuOkwYl6LimevaSfJqzkTMkLsgTt8Tcd7W+AujjIkakNYendB6R2x7mOJGTVM61JcRMReNw4H91KltognDOcpqzPKsKbm6jvnMQTsS7STiY2PmxbHCtLObqusx/Fqh5b0jnb8MfvByq/Xh17pVoJuzoEHVVvDqL90LEV39CCZheddrCyHclUW+I/WeC57z8Xb2vJnkrZd6Qy80XkK4bySoXJUDSEMfiBOeXG50DC7Cjut/J4BE+q0hBwep/abjsyi8uL00MmR2vj5rmK0m4R192/ckih9whdXTsm4Lg/Xez+4RGYPNGFx0UviqCvmgTE3l0oFGqZkQ/WX8W0G7v0abbjfxq/mrhLoQuHTMGwGcsT9G7wGi1FZzDKtnCfN/HYjGWmYnRPxbABKecKr6PpwfFJE8qdc5Ei9COLR7sgecQ5BAIZCxDYLnFvvgmFzbSdN55K",
- "not": "Param: eski (40 günden eski) kapalı kart uyarısı gösterilmez"
+ "surum": 68,
+ "paket": "surumler/dsolar-68.zip",
+ "sha256": "ee8cc889abad55c35c49615c31e0ffef50d0313d5c922dbc89636d5a579a90ed",
+ "imza": "YDoB5tpJdDake0QpNrYeRRHIrAtKJ64MuaCsI0MIiFt8drXg5w8Xczk6C6Rb4dzqpocbnnhZM0E3VuHoqfIaOrqbQauTlQY36U84iWN9wtYMYb3JmhBYKoAETvCy94Lp8ZT5Ry9DGmGRhBZA0/so0pNm6H581tOfz82x/YpBkTKlcDhc8gWoPStkTJzwzgVWYj/wK3wiFpQMepSaSnwlfDqi6UBf5muFKKjhXUt7OPAoQUdt2153B3BrEEteyM09DvJc6W2BWxOJEYru1RTWowPXoIBYqWpXKzfOs8vifA6FmJnEaJdUZUV0rMTiAURLyoe7jBuDMd41qyPM4hK45SheDZwaDXCXMYpEWTgeKe9+HlXxE0SuOqnqIwv3aZlfuDMqOupLCl4sh1Q8hZhWp57za9h9hy5Fk13ym5/AHzHAUz1w46PTlzV9Mx6sRCrchA2IMldTx0t0XVznmSGzdvR9Y70Y3Ua8n/umrH7WYX5gB15AGqmrQSMXPyc5S69J",
+ "not": "Param: sade ekranlar, bugün hangi kart, aylık bütçe, 12 aylık plan, ay sonu karnesi, ekstre tekrar yüklenince ödendi korunur"
 }
