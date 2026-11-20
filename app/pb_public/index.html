@@ -3650,7 +3650,7 @@ function prmOdemeler(D, ym) { var L = [], pad = function (n) { return String(n).
   D.belgeler.forEach(function (b) { if (b.kind !== "card" || !b.due || b.due.slice(0, 7) !== ym || !b.sum) return; var h = D.hesaplar[b.acct] || {};
     L.push({ key: "k:" + b.id, ad: (h.name || ((h.bank || "Kart") + " kartı")) + (h.last ? " •" + h.last : ""), tl: +b.sum.debt || 0, pb: "TRY", ham: +b.sum.debt || 0, gun: b.due, not: "Ekstre · asgari " + sayi(+b.sum.min || 0) + " ₺", kart: true }); });
   prmKartlar(D).forEach(function (k) { if (!k.yeni || k.tahminDue.slice(0, 7) !== ym) return;
-    L.push({ key: "kt:" + k.acct + "|" + ym, ad: k.ad + (k.last ? " •" + k.last : ""), tl: k.tahminTutar, pb: "TRY", ham: k.tahminTutar, gun: k.tahminDue, not: "Tahmini · ekstreyi yükle", kart: true, tahmini: true }); });
+    L.push({ key: "kt:" + k.acct + "|" + ym, ad: k.ad + (k.last ? " •" + k.last : ""), tl: k.tahminTutar, pb: "TRY", ham: k.tahminTutar, gun: k.tahminDue, not: k.guncel ? "Bankadaki güncel borç (" + tarih(k.h.donemIci.t).slice(0, 5) + ")" : "Tahmini · ekstreyi yükle", kart: true, tahmini: !k.guncel }); });
   if (+D.borc.aylik > 0) L.push({ key: "b|" + ym, ad: "Şirkete borç taksiti", tl: prmTl(D.borc.aylik, "USD"), pb: "USD", ham: +D.borc.aylik, gun: ym + "-" + pad(Math.min(+D.borc.gun || 1, gunSay(ym))), borc: true, not: "Ödenince ortak cariye işlenir" });
   if (+D.ev.aylik > 0) L.push({ key: "e|" + ym, ad: "Ev birikimine ayır", tl: +D.ev.aylik, pb: "TRY", ham: +D.ev.aylik, gun: ym + "-" + pad(Math.min(+D.gelirGun || 1, gunSay(ym))), ev: true });
   return L.sort(function (a, b) { return a.gun < b.gun ? -1 : 1; }); }
@@ -3717,7 +3717,7 @@ function prmKartlar(D) { var bg = bugun();
     var sonrakiKesim = son ? prmGunEkle(son.kesim, 1) : "", yeni = !!(son && !h.kapali && sonrakiKesim <= bg), od = son ? D.odendi["k:" + son.id] : null;
     var durum, dRenk; if (h.kapali) { durum = "Kapandı"; dRenk = "gri"; } else if (yeni) { durum = "Ekstre kesildi · yükle"; dRenk = "tur"; } else if (!son) { durum = "Ekstre yok"; dRenk = "gri"; }
     else if (od) { durum = "✓ Ödendi"; dRenk = "yesil"; } else if (son.due && son.due < bg) { durum = "Gecikti"; dRenk = "kirmizi"; } else { durum = "Son gün " + tarih(son.due).slice(0, 5); dRenk = "tur"; }
-    return { acct: a, h: h, ad: h.name || (h.bank || "Kart"), banka: h.bank || "", last: h.last || "", docs: docs, son: son, yeni: yeni, tahminDue: son ? prmGunEkle(son.due || son.kesim, 1) : "", tahminTutar: son && son.sum ? +son.sum.debt || 0 : 0, durum: durum, dRenk: dRenk, kapali: !!h.kapali }; })
+    return { acct: a, h: h, ad: h.name || (h.bank || "Kart"), banka: h.bank || "", last: h.last || "", docs: docs, son: son, yeni: yeni, tahminDue: h.donemIci && son && h.donemIci.t >= son.kesim && h.donemIci.due ? h.donemIci.due : son ? prmGunEkle(son.due || son.kesim, 1) : "", tahminTutar: h.donemIci && son && h.donemIci.t >= son.kesim ? +h.donemIci.tutar || 0 : son && son.sum ? +son.sum.debt || 0 : 0, guncel: !!(h.donemIci && son && h.donemIci.t >= son.kesim), durum: durum, dRenk: dRenk, kapali: !!h.kapali }; })
     .sort(function (x, y) { return (x.kapali ? 1 : 0) - (y.kapali ? 1 : 0); }); }
 function prmKartRenk(k) { var s = (k.banka + " " + k.ad).toUpperCase(); if (k.kapali) return "#6b7a8c"; if (/HALK/.test(s)) return "#0b4a8b"; if (/PLAT/.test(s)) return "#3a4656"; if (/BONUS/.test(s)) return "#1f6f3d"; if (/GARANT/.test(s)) return "#0e4f45"; if (/YAP[Iİ]|WORLD/.test(s)) return "#4b2a7a"; if (/[İI][SŞ]|MAXIMUM/.test(s)) return "#123a6b"; if (/AKBANK|AXESS/.test(s)) return "#8a1c12"; return "#1d3557"; }
 /* bankadan çıkan bir hareketin "kime" anahtarı: kural kategorisi, yoksa açıklamadaki isim */
@@ -3799,13 +3799,13 @@ function prmSKartlar(D) {
   var KR = prmKartlar(D), ac = PRM.kartAcik, h = '<div class="prmBas"><h3>Kredi kartlarım</h3><small>' + KR.filter(function (k) { return !k.kapali; }).length + " aktif" + (KR.some(function (k) { return k.kapali; }) ? " · " + KR.filter(function (k) { return k.kapali; }).length + " kapalı" : "") + "</small></div>";
   if (!KR.length) h += '<section class="prmK"><div class="prmS" style="color:var(--muted)">Henüz kart yok. Kart ekstresi PDF\'ini "Yükle" ile ekle.</div></section>';
   KR.forEach(function (k) { var s = k.son, acik = ac === k.acct, bor = k.yeni ? "Yeni ekstre bekleniyor · son " + prmP(k.tahminTutar) : s && s.sum ? prmP(s.sum.debt) : "—";
-    var eti = k.yeni ? AYLAR[+k.tahminDue.slice(5, 7) - 1] + " ödemesi (tahmini ~" + prmP(k.tahminTutar) + ")" : s ? AYLAR[+(s.due || s.kesim).slice(5, 7) - 1] + " ekstresi" : "";
+    var eti = k.yeni ? AYLAR[+k.tahminDue.slice(5, 7) - 1] + " ödemesi " + (k.guncel ? "(bankadaki güncel borç)" : "(tahmini, geçen ay kadar)") : s ? AYLAR[+(s.due || s.kesim).slice(5, 7) - 1] + " ekstresi" : "";
     h += '<div class="prmKart' + (k.kapali ? " kapali" : "") + '"><button class="prmKartY" data-prmkart="' + esc(k.acct) + '" aria-expanded="' + acik + '" style="background:' + prmKartRenk(k) + '"><span class="r1"><span>' + esc(k.banka) + '</span><span class="prmChip" style="' + prmChip(k.dRenk) + '">' + esc(k.durum) + '</span></span><span class="r2">' + esc(k.ad) + (k.last ? " <i>•" + esc(k.last) + "</i>" : "") + "</span>" +
-      '<span class="r3"><span><small>' + esc(eti) + "</small><b>" + (k.yeni ? "~" + prmP(k.tahminTutar) : s && s.sum ? prmP(s.sum.debt) : "—") + '</b></span><span class="sag">' + (s ? "Kesim: ayın " + +s.kesim.slice(8, 10) + ". günü<br>Son ödeme " + (k.yeni ? "~" + tarih(k.tahminDue).slice(0, 5) : tarih(s.due).slice(0, 5)) : "") + "</span></span></button>";
+      '<span class="r3"><span><small>' + esc(eti) + "</small><b>" + (k.yeni ? (k.guncel ? "" : "~") + prmP(k.tahminTutar) : s && s.sum ? prmP(s.sum.debt) : "—") + '</b></span><span class="sag">' + (s ? "Kesim: ayın " + +s.kesim.slice(8, 10) + ". günü<br>Son ödeme " + (k.yeni ? (k.guncel ? "" : "~") + tarih(k.tahminDue).slice(0, 5) : tarih(s.due).slice(0, 5)) : "") + "</span></span></button>";
     if (acik) { h += '<div class="prmKartA"><small class="prmEt">EKSTRE GEÇMİŞİ</small>' + k.docs.slice(0, 6).map(function (b) { var od = D.odendi["k:" + b.id], f = b.sum && +b.sum.fees > 0 ? " · faiz/masraf " + prmP(b.sum.fees) : "";
         return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + AYLAR[+(b.due || b.kesim).slice(5, 7) - 1] + " " + (b.due || b.kesim).slice(0, 4) + '</b><small style="color:' + (od ? "var(--ok)" : "var(--muted)") + '">' + (od ? "ödendi " + tarih(od).slice(0, 5) : "son gün " + tarih(b.due).slice(0, 5)) + esc(f) + (b.ok ? "" : " · tutarlar tutmadı") + '</small></div><b class="prmT">' + prmP(b.sum ? b.sum.debt : 0) + '</b><button class="prmOk' + (od ? " on" : "") + '" data-prmod="k:' + b.id + '" aria-label="' + (od ? "ödendi, geri al" : "ödendi olarak işaretle") + '">' + (od ? "✓" : "") + "</button></div>"; }).join("") +
         '<div class="prmBtn2"><button class="btn" data-prmisl="' + esc(k.acct) + '">İşlemleri gör</button>' + (k.kapali ? '<button class="btn" data-prmkap="' + esc(k.acct) + '">Tekrar aktif yap</button>' : '<label class="btn pri prmLb" for="prmPdf">Ekstre yükle</label>') + "</div>" +
-        (k.kapali ? "" : '<button class="btn sm" data-prmkap="' + esc(k.acct) + '" style="margin:8px 0 2px;color:var(--muted)">Kart kapandı olarak işaretle</button>') + "</div>"; }
+        (k.kapali || !k.yeni ? "" : '<button class="btn sm" data-prmgb="' + esc(k.acct) + '" style="margin:8px 0 0 16px">Bankadaki güncel borcu yaz</button>') + (k.kapali ? "" : '<button class="btn sm" data-prmkap="' + esc(k.acct) + '" style="margin:8px 0 2px;color:var(--muted)">Kart kapandı olarak işaretle</button>') + "</div>"; }
     h += "</div>"; });
   var BK = prmBankalar(D); h += '<div class="prmBas" style="margin-top:6px"><h3>Banka hesaplarım</h3><small>' + prmP(prmBankaTop(D)) + "</small></div>";
   h += '<section class="prmK">' + (BK.length ? BK.map(function (b) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(b.ad) + '</b><small style="color:var(--muted)">' + (b.t ? (b.kaynak === "elle" ? "elle girildi " : "dökümden ") + tarih(b.t) : "bakiye yok") + '</small></div><b class="prmT">' + prmP(b.tutar) + '</b><button class="btn sm" data-prmbak="' + esc(b.acct) + '">Güncelle</button></div>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Hesap dökümü yüklenince burada görünür.</div>') + "</section>";
@@ -3871,6 +3871,7 @@ function prmBagla(B) {
   hepsi("[data-prmkart]", function (b) { b.onclick = function () { PRM.kartAcik = PRM.kartAcik === b.dataset.prmkart ? null : b.dataset.prmkart; prmCiz(); }; });
   hepsi("[data-prmkap]", function (b) { b.onclick = function () { var h = D.hesaplar[b.dataset.prmkap]; h.kapali = !h.kapali; prmKaydet(h.kapali ? "Kart kapandı olarak işaretlendi" : "Kart tekrar aktif"); prmCiz(); }; });
   hepsi("[data-prmisl]", function (b) { b.onclick = function () { prmIslemler(b.dataset.prmisl); }; });
+  hepsi("[data-prmgb]", function (b) { b.onclick = function () { prmGuncelBorc(b.dataset.prmgb); }; });
   hepsi("[data-prmbak]", function (b) { b.onclick = function () { prmBakiyeForm(b.dataset.prmbak); }; });
   hepsi("[data-prmdz]", function (b) { b.onclick = function () { var g = prmDuzenli(D).filter(function (x) { return x.anah === b.dataset.prmdz; })[0]; if (!g) return;
     D.kalemler.push({ id: prmId(), ad: g.ad, tur: "gider", tutar: Math.round(g.son), pb: "TRY", gun: g.gun || 1, periyot: "aylik", ay: 1, odeyen: "ben", bas: "", esles: g.anah }); prmKaydet(g.ad + " sabit ödemelere eklendi"); prmCiz(); }; });
@@ -3881,6 +3882,9 @@ function prmBagla(B) {
   if ($("prmNakY")) $("prmNakY").onclick = prmNakitForm; if ($("prmVarY")) $("prmVarY").onclick = function () { prmVarlikForm(null); };
   prmEkBagla(); if ($("prmSatL")) $("prmSatL").onclick = prmSatilanlar; if ($("prmKasaD")) $("prmKasaD").onclick = prmAyarlar; if ($("prmEvD")) $("prmEvD").onclick = prmAyarlar;
 }
+function prmGuncelBorc(acct) { var D = PRM.D, h = D.hesaplar[acct], k = prmKartlar(D).filter(function (x) { return x.acct === acct; })[0]; if (!h || !k) return; var g = h.donemIci || {};
+  prmPnl(esc(k.ad) + " · güncel borç", '<small style="color:var(--muted)">Bankanın uygulamasında "Dönem içi" ya da "Güncel borç" kısmındaki tutarı yaz. Ekstre PDF\'i gelince onun yerine geçer.</small>' + prmSayiIn("gbT", "Güncel borç (₺)", g.tutar) + '<label>Son ödeme tarihi<input id="gbD" type="date" value="' + esc(g.due || k.tahminDue || "") + '"></label><button class="btn pri" id="gbK">Kaydet</button>');
+  $("gbK").onclick = function () { h.donemIci = { tutar: num($("gbT").value) || 0, t: bugun(), due: $("gbD").value }; panelKapat(); prmKaydet("Güncel borç kaydedildi"); prmCiz(); }; }
 function prmBakiyeForm(acct) { var D = PRM.D, b = prmBankalar(D).filter(function (x) { return x.acct === acct; })[0]; if (!b) return;
   prmPnl(esc(b.ad) + " bakiyesi", '<small style="color:var(--muted)">Bankanın uygulamasında gördüğün bugünkü bakiyeyi yaz. Sonra yeni döküm yüklersen yeni olan geçerli olur.</small>' + prmSayiIn("bkT", "Bugünkü bakiye (₺)", Math.round(b.tutar * 100) / 100) + '<button class="btn pri" id="bkK">Kaydet</button>');
   $("bkK").onclick = function () { D.hesaplar[acct].bakiye = { tutar: num($("bkT").value) || 0, t: bugun() }; panelKapat(); prmKaydet("Bakiye güncellendi"); prmCiz(); }; }
@@ -4273,12 +4277,12 @@ function prmEkBagla() { var D = PRM.D, bul = function (L, id) { return (L || [])
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 64;
+var DS_SURUM = 65;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
     try { if (sessionStorage.getItem(a)) return; sessionStorage.setItem(a, "1"); } catch (e) { return; }
-    if (typeof PRM !== "undefined" && PRM.kayit) return;
+    if (typeof PRM !== "undefined" && (PRM.kayit || PRM.k)) { if (!document.getElementById("dsYeniS")) document.body.insertAdjacentHTML("beforeend", '<button id="dsYeniS" class="btn sm pri" style="position:fixed;left:50%;transform:translateX(-50%);bottom:96px;z-index:50" onclick="location.replace(location.pathname+\'?v=' + j.surum + '\'+location.hash)">Yeni sürüm hazır · yenile</button>'); try { sessionStorage.removeItem(a); } catch (e) {} return; }
     location.replace(location.pathname + "?v=" + j.surum + location.hash);
   }).catch(function () {});
 }

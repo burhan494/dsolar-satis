@@ -1,7 +1,7 @@
 {
- "surum": 64,
- "paket": "surumler/dsolar-64.zip",
- "sha256": "901c591c820764024853052232a97a0f3fe8255a9f46390af91f392c9f21f482",
- "imza": "j+DBIYAc3zYmSOJ+P5ysk/XotkSmiassTRmqPAKV8d4mSYBMRcmLSaUgNuiNVcYZHi8TTADVJGWQAV0zXg73TnEhDrxhSQq6uUiTbczXXlPK64iu17i40KlogXdP887WmZr5FO3yjiA2xjGv9ztBVMSgTBm3zt+lKD/r6jMNjeNcD1eWNEDPRaAWU6zU61dhCl6qh54gA9MBEYmdVkn20A8et5SEpa/hKPQZevIhbxXs3NkRg3ga1CVl178ku11HL+G/KsGNjP1Z64MHhC/mMey92/1Sqddnz+rJ6xpHVYz3DXSZCkkolgO3rTWgHsOGjDKOcacH77axc54qrMDcMS2oKAULRPuRHd0VS5pFZqgrCSm9ltmPxP2w6Ah75f+JYNc509KH7tpBmi60I65PWCtJDlY5bVvRfX3a6scuMo1rfEeRzBltzaLbbu3zEHxvSE/eD2FkDc8s9bL+v5u0LeEc6OWuQFAJq1iWGBIjAlE+JDE3jMT0Uoh77ETbEJVf",
- "not": "Param: sabit ödemelerde hangi aylarda olduğu seçilebilir (mevsimlik kurslar)"
+ "surum": 65,
+ "paket": "surumler/dsolar-65.zip",
+ "sha256": "16c7a7efadccc0512dec0d0a65b91219c0e5b23cb138f4dedbade6acb2b0eaea",
+ "imza": "PQzH7gwgUKNn2vDhG5CSodVdP0AzcQ0qiPsoMXe4SQOfAfpF9ftpo7zdat5BwbKb9fubKwoetIm7Omq8l8jBNoe/dEqSZJYCgVC7nLcSzVedXdf/LjEnRyEBucIxLF959T85KW4ldbMVe+4/XnGPj0jUobZObFD/OpUpkrqCQzREiYcCpJ7P+lbeWsEKrlEeYHkzWE7MC2+HbOM2M6wEgpl10lyhNP5QcWB7SciG1TKd+lzPV4Ep3m+gO68sWWwn5XrLlE2Gu0m/HyhPN+YmXYkCOyHXR7dFGCAXihvKv26FroaOiBIPf7v61afmu9mPwUKcba81jhFZC9/eMsMZVoTZnPsxruSJ0XVS7zRl9rqX1Msa9U3Q1Z4DNaw0cM32AoBgQJLjdQNsFDSkziA4OQLV89Lj/GsDVbpEqCtg7hKFxY9HK1R0D/68afolWjmJygIDPS2RwGMbWTMvCRRvn+Sbpa8887T4SMkuz2S/yAMIu4fZieUK+rzrJee2Xve8",
+ "not": "Param: kartın bankadaki güncel borcu girilebilir; açık Param'da sayfa kendiliğinden yenilenmez"
 }
