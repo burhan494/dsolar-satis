@@ -1,7 +1,7 @@
 {
- "surum": 62,
- "paket": "surumler/dsolar-62.zip",
- "sha256": "3bd743dfee20e983f1a1f27063f6fb415fb102c14a97b81c92927a0a87b67190",
- "imza": "NcJZPpf+0XaOedvjripFmEf4GHywvIj5gPqvTEd3OhkC1pPsyd76PHCgxA0+RJaKZQVH1guWULi+ugUrDKi2czBYPtpZ+Cdtx74dVt8ZkJ/Ge8sIXy/sjx7fD9eP+2bK66CDIgyt4nGbIm86NgOXzWIE6bKNQbqGkoM/Ga4yoZ268K7OqmRfb56wJMsRXFqXBGZrSEetzQJATBWP5rDoGqcrWyNjkaYpuXJfghloCaJ7yP//X+8pZmsD3Y8CBJpAS5zZYF4/Hcr/8DjnagihJ5ksraUbpHY2z1oAN9Lsrz4hwYkdY9cLMYKSOM5avtCJFpZuRBXCgj/ndyrmONVgub3tte87nRU6TF2xVIB0hjWQNfmILMzK41cJC7YY0aJS7UlaQeqQbogxZTM10MUP1sS2KkKlDRSdQBazK5aWZ+oN+MpGS56UqRp5Bg3e/XCWBThKi3PsUBMb9Hl8Dab/2TKPyatsRZl3J7Y2TqrjETvPpUiwWkb0csQgm3rQdgnp",
- "not": "Param: sabit ödemeler bankada isimle eşleşir (kısmi ödeme gösterir), Şirket adına kategorisi"
+ "surum": 63,
+ "paket": "surumler/dsolar-63.zip",
+ "sha256": "8eb53fc5b7cb62120b7d276a561190955e07617564a92f8c42dc92624f1325d0",
+ "imza": "LNK0he3FwOWwHm7D+T9w5YZcaAclbVibkJ+kgAe9/ee/o7gcC4j9FbAJ5C0Xctzj4vK4H1RbQRSDwq1lp7fSFN7Ad12+084KXhbHDAh5uwNXqH7iXV64cYdLCqDGInWHxZVc2iRW53yPpIXD+uzP7w5j+J0tZ28rnMy8qqP9Sh5b6r2dJnOIijBXVeBWShw88qSnqAdHnFj+RCV+StIaQYatW2URGjzWztIYvEoExCBKApnGuP4t4i2YzMmFz99DUtBsxb0N6LIYsJFVJ4XX7FBomPJcVhFo/hTgnrDe/llWNZQBq9wK97lzFdZZgM+ENXmG0+krV6jexjPWkkdUJWgMMKohG8CSP5TP3E4CCJ2SR7R1PD51/lj2GHxv399wLaPjpz1HP/7L9zQSzEDFab8yjIE6KNx8cPjHBg8I+y4eYRdaF7Iz7vTheh7zcVRlgiF7t9zDKtIWE8BFaQ0sOmkD7lUJyXpL7rj1CSaP0b5O/mpfMI0OAc1oEThuooY8",
+ "not": "Param: nafakanın fazlası çocuk masrafı olarak ayrılır"
 }
