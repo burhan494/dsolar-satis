@@ -1,7 +1,7 @@
 {
- "surum": 69,
- "paket": "surumler/dsolar-69.zip",
- "sha256": "851fdc6e331fd12ddbc78f3123b2e70754144b4d590b8aabb77acd718b92025e",
- "imza": "kemObcuEUgsk92ez6y7alhWTXdR9jOnKlBHGbyc4Z2tRO7WmQkypz1yf7zLir+cqf7lkUz34ATQs4NjVJ/ljdWYHuwNpKZDsffXrN7A0lCSpVg7ctXYnCnc0D2TWNqJtV63PjhGfKKfixZQ8Ti7SI3xpJttglIoa5GOv+ExHc037MQDxKf602DfsWz3mYBYwbJkuw/drhG9S7p2G2VqSoKeVMJ0PCGW4KsJqpCA6yT9UE4QM8JwwQDZ5SWuo8uZoypbVOFIaGD+8KM6qlmSz8UAx36OiMGOI6JomqLCLsIdjGT/rV8y/NBPijehCe/vfC7eTaN+SzLcFn1YkEZFF0JhRy/SCevMiwhSY56s8LKblh9WxIQtBt2CGKiXmKyRegMSLrC8Xs0XnmkxhkmvQ1s5/AKPMRrfaKpQck88Api/acGgHHvbg/X2pSG3tKkH3ku7/l9UokIBigv+MKnhW7guNMKL8rpiiiTHKVqWvwxKSkZqi9w7F1SOE4jRj96O9",
- "not": "Param: 'gelirin girilmedi' uyarısı kaldırıldı"
+ "surum": 70,
+ "paket": "surumler/dsolar-70.zip",
+ "sha256": "bfa706ee2d841e3659d6020f75248725b29d381ee2bc8f2bc837eb6e0ce43054",
+ "imza": "JRC+UupVop+soR7QlP0FLRNapdqosdDLrpV7qd/twfUTt+sFQaM+WlMkX7u1m9m7CPFmiaIZmphIAtZeu2GeWvym8/PPAXgIt8M9RJZCHhtJGK8x6qrLlC1lUBRO+ZyhBBdii45w+y/OgJL4J0QaeFFaXHkey5wN5qGryyf5XSmWIFfXT4Z57VUq350jF8lKgjPGqgKN8cG3CQH+DQIwz+ZraIi/91JKYx7uhLay/iMwgeeYZjK7E2tvW+k/TJgC3Ll3FXjHUdFjrFe8/xyIYZd0mDH+8uZqbpYJCOLEtC79dOFrpKHRTdbdrHO4Ev0RVILFpoCPMQa0g0VP3Oa1CBaWVv8J6TG3yfHsQL/aY1OVdDNalQbomjPoIrR2Zg+djZDKPFsILeqmwyJpNpSuVNVy4BsrbsHAzu9VN8YrcunfLStjPkxFJ8/HsCUQZgjBSnjzjDhHPbgVmZA+P7458ECA+XlhtsV9x9/AQVbKUbBGJGwugzzXfSW3itnu2KqI",
+ "not": "Param: alacak aylık ödeme planı, 'ay sonuna kadar', acil payı, Kişisel/sosyal + Sayma kategorileri, eski aylarda 'gecikti' yok, kartla ödenen sabitler, plan banka çıkışları"
 }
