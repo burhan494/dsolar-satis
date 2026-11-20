@@ -3642,7 +3642,7 @@ function prmTl(v, pb) { var K = PRM.KU || { usd: 0, eur: 0 }; v = +v || 0; retur
 function prmM(s) { return PRM.giz ? "•••••" : s; }
 function prmP(v, pb) { return prmM((v < 0 ? "−" : "") + sayi(Math.abs(Math.round(v))) + " " + (pb === "USD" ? "$" : pb === "EUR" ? "€" : "₺")); }
 function prmId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-function prmAktif(k, ym) { if (k.bas && ym < k.bas) return false; if (k.bit && ym > k.bit) return false; return k.periyot === "yillik" ? +ym.slice(5, 7) === (+k.ay || 1) : true; }
+function prmAktif(k, ym) { if (k.aylar && k.aylar.length && k.aylar.indexOf(+ym.slice(5, 7)) < 0) return false; if (k.bas && ym < k.bas) return false; if (k.bit && ym > k.bit) return false; return k.periyot === "yillik" ? +ym.slice(5, 7) === (+k.ay || 1) : true; }
 function prmKasaTop(D) { var K = D.kasa; return (+K.tl || 0) + prmBankaTop(D) + prmTl(K.usd, "USD") + prmTl(K.eur, "EUR") + (+K.altin || 0) * (+K.altinFiyat || 0); }
 function prmOdemeler(D, ym) { var L = [], pad = function (n) { return String(n).padStart(2, "0"); };
   D.kalemler.forEach(function (k) { if (k.tur !== "gider" || !prmAktif(k, ym)) return; var g = Math.min(+k.gun || 1, gunSay(ym));
@@ -3820,7 +3820,7 @@ function prmSOdeme(D) {
     return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(g.ad) + '</b><small style="color:#3d5470">' + g.aySay + " aydır · ayın " + (g.gunMin === g.gunMax ? g.gunMin : g.gunMin + "–" + g.gunMax) + ". günü · " + (Math.round(g.min) === Math.round(g.max) ? prmP(g.max) : prmP(g.min) + " – " + prmP(g.max)) + '</small></div><button class="btn sm pri" data-prmdz="' + esc(g.anah) + '">Onayla</button><button class="btn sm" data-prmdzr="' + esc(g.anah) + '" aria-label="' + esc(g.ad) + ' önerisini gizle">✕</button></div>'; }).join(""), "background:var(--infobg);border-color:#cfe3fa");
   var yil = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot === "yillik" && (!k.bit || k.bit >= ym); });
   var sab = D.kalemler.filter(function (k) { return k.tur === "gider" && k.periyot !== "yillik"; });
-  h += prmBolum("Sabit ödemelerim", '<button class="btn sm" id="prmKalY">+ Ekle</button>', (sab.concat(yil).length ? sab.concat(yil).map(function (k) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(k.ad) + '</b><small style="color:var(--muted)">' + (k.periyot === "yillik" ? "yılda bir · " + AYLAR[(+k.ay || 1) - 1] : "ayın " + (+k.gun || 1) + ". günü") + (k.esles || k.kelime ? " · bankadan otomatik" : "") + (k.odeyen === "DRK" ? " · şirket karşılıyor" : "") + '</small></div><b class="prmT">' + prmP(k.tutar, k.pb) + '</b><button class="btn sm" data-prmkd="' + k.id + '" aria-label="' + esc(k.ad) + ' düzenle">Düzenle</button></div>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Henüz sabit ödeme yok. Yukarıdan onayla ya da "+ Ekle" ile gir (aidat, sigorta, okul…).</div>'));
+  h += prmBolum("Sabit ödemelerim", '<button class="btn sm" id="prmKalY">+ Ekle</button>', (sab.concat(yil).length ? sab.concat(yil).map(function (k) { return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(k.ad) + '</b><small style="color:var(--muted)">' + (k.periyot === "yillik" ? "yılda bir · " + AYLAR[(+k.ay || 1) - 1] : "ayın " + (+k.gun || 1) + ". günü" + (k.aylar && k.aylar.length ? " · " + k.aylar.map(function (m) { return AYLAR[m - 1].slice(0, 3); }).join(", ") : "")) + (k.esles || k.kelime ? " · bankadan otomatik" : "") + (k.odeyen === "DRK" ? " · şirket karşılıyor" : "") + '</small></div><b class="prmT">' + prmP(k.tutar, k.pb) + '</b><button class="btn sm" data-prmkd="' + k.id + '" aria-label="' + esc(k.ad) + ' düzenle">Düzenle</button></div>'; }).join("") : '<div class="prmS" style="color:var(--muted)">Henüz sabit ödeme yok. Yukarıdan onayla ya da "+ Ekle" ile gir (aidat, sigorta, okul…).</div>'));
   return { html: h, O: O };
 }
 function prmSHarcama(D) {
@@ -3906,10 +3906,12 @@ function prmKalemForm(k) {
     '<div class="f2">' + prmSayiIn("kTu", "Tutar", k.tutar) + '<label>Para birimi<select id="kPb">' + sec(["TRY", "USD", "EUR"], k.pb) + "</select></label></div>" +
     '<div class="f2"><label>Sıklık<select id="kPe">' + sec([["aylik", "Her ay"], ["yillik", "Yılda bir"]], k.periyot) + '</select></label><label>Ay (yıllıksa)<select id="kAy">' + sec(AYLAR.map(function (a, i) { return [String(i + 1), a]; }), String(k.ay || 1)) + "</select></label></div>" +
     '<div class="f2"><label>Ayın günü<input id="kGu" type="number" min="1" max="31" value="' + (+k.gun || 1) + '"></label><label>Kim öder<select id="kOd">' + sec([["ben", "Ben"], ["DRK", "Şirket karşılıyor (bütçeme girmez)"]], k.odeyen) + "</select></label></div>" +
+    '<label>Hangi aylarda <small style="color:var(--muted)">(mevsimlik kurs, yaz okulu… hepsi seçiliyse her ay)</small></label><div style="display:flex;flex-wrap:wrap;gap:6px">' + AYLAR.map(function (a, i) { var on = !k.aylar || !k.aylar.length || k.aylar.indexOf(i + 1) >= 0; return '<label style="display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;font-weight:600;font-size:13px"><input type="checkbox" data-kay="' + (i + 1) + '"' + (on ? " checked" : "") + ' style="width:auto;min-height:0">' + a.slice(0, 3) + "</label>"; }).join("") + "</div>" +
     '<div class="f2"><label>Başlangıç ayı<input id="kBa" type="month" value="' + esc(k.bas || "") + '"></label><label>Bitiş ayı (boş: süresiz)<input id="kBi" type="month" value="' + esc(k.bit || "") + '"></label></div>' +
     '<button class="btn pri" id="kKay">Kaydet</button>' + (y ? "" : '<button class="btn" id="kSil" style="color:var(--bad)">Sil</button>'));
   $("kKay").onclick = function () { var ad = $("kAd").value.trim(); if (!ad) { toast("Ad girin"); return; }
     Object.assign(k, { tur: $("kTur").value, ad: ad, tutar: num($("kTu").value) || 0, pb: $("kPb").value, periyot: $("kPe").value, ay: +$("kAy").value, gun: Math.max(1, Math.min(31, +$("kGu").value || 1)), odeyen: $("kOd").value, bas: $("kBa").value, bit: $("kBi").value, kelime: $("kKe").value.trim() });
+    var ay = Array.prototype.filter.call(document.querySelectorAll("[data-kay]"), function (c) { return c.checked; }).map(function (c) { return +c.dataset.kay; }); k.aylar = ay.length === 12 || !ay.length ? [] : ay;
     if (y) { k.id = prmId(); D.kalemler.push(k); } panelKapat(); prmKaydet("Kaydedildi"); prmCiz(); };
   if ($("kSil")) $("kSil").onclick = function () { if (!confirm(k.ad + " silinsin mi?")) return; D.kalemler = D.kalemler.filter(function (x) { return x !== k; }); panelKapat(); prmKaydet("Silindi"); prmCiz(); };
 }
@@ -4271,7 +4273,7 @@ function prmEkBagla() { var D = PRM.D, bul = function (L, id) { return (L || [])
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 63;
+var DS_SURUM = 64;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;

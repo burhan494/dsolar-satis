@@ -1,7 +1,7 @@
 {
- "surum": 63,
- "paket": "surumler/dsolar-63.zip",
- "sha256": "8eb53fc5b7cb62120b7d276a561190955e07617564a92f8c42dc92624f1325d0",
- "imza": "LNK0he3FwOWwHm7D+T9w5YZcaAclbVibkJ+kgAe9/ee/o7gcC4j9FbAJ5C0Xctzj4vK4H1RbQRSDwq1lp7fSFN7Ad12+084KXhbHDAh5uwNXqH7iXV64cYdLCqDGInWHxZVc2iRW53yPpIXD+uzP7w5j+J0tZ28rnMy8qqP9Sh5b6r2dJnOIijBXVeBWShw88qSnqAdHnFj+RCV+StIaQYatW2URGjzWztIYvEoExCBKApnGuP4t4i2YzMmFz99DUtBsxb0N6LIYsJFVJ4XX7FBomPJcVhFo/hTgnrDe/llWNZQBq9wK97lzFdZZgM+ENXmG0+krV6jexjPWkkdUJWgMMKohG8CSP5TP3E4CCJ2SR7R1PD51/lj2GHxv399wLaPjpz1HP/7L9zQSzEDFab8yjIE6KNx8cPjHBg8I+y4eYRdaF7Iz7vTheh7zcVRlgiF7t9zDKtIWE8BFaQ0sOmkD7lUJyXpL7rj1CSaP0b5O/mpfMI0OAc1oEThuooY8",
- "not": "Param: nafakanın fazlası çocuk masrafı olarak ayrılır"
+ "surum": 64,
+ "paket": "surumler/dsolar-64.zip",
+ "sha256": "901c591c820764024853052232a97a0f3fe8255a9f46390af91f392c9f21f482",
+ "imza": "j+DBIYAc3zYmSOJ+P5ysk/XotkSmiassTRmqPAKV8d4mSYBMRcmLSaUgNuiNVcYZHi8TTADVJGWQAV0zXg73TnEhDrxhSQq6uUiTbczXXlPK64iu17i40KlogXdP887WmZr5FO3yjiA2xjGv9ztBVMSgTBm3zt+lKD/r6jMNjeNcD1eWNEDPRaAWU6zU61dhCl6qh54gA9MBEYmdVkn20A8et5SEpa/hKPQZevIhbxXs3NkRg3ga1CVl178ku11HL+G/KsGNjP1Z64MHhC/mMey92/1Sqddnz+rJ6xpHVYz3DXSZCkkolgO3rTWgHsOGjDKOcacH77axc54qrMDcMS2oKAULRPuRHd0VS5pFZqgrCSm9ltmPxP2w6Ah75f+JYNc509KH7tpBmi60I65PWCtJDlY5bVvRfX3a6scuMo1rfEeRzBltzaLbbu3zEHxvSE/eD2FkDc8s9bL+v5u0LeEc6OWuQFAJq1iWGBIjAlE+JDE3jMT0Uoh77ETbEJVf",
+ "not": "Param: sabit ödemelerde hangi aylarda olduğu seçilebilir (mevsimlik kurslar)"
 }
