@@ -4205,7 +4205,7 @@ function prmKoc(D) { var L = [], KR = prmKartlar(D);
   if (AB.length) L.push({ r: "#1565c0", b: "Abonelik ve dijital: ayda ~" + prmP(abT), n: AB.length + " ayrı hizmet · en büyükleri " + AB.slice(0, 3).map(function (a) { return a.ad; }).join(", "), git: "harcama" });
   AB.filter(function (a) { return a.cokCekim >= 5; }).forEach(function (a) { L.push({ r: "#ed7d31", b: a.ad + ": bir ayda " + a.cokCekim + " ayrı çekim", n: "Çoğu oyun/uygulama içi alım olabilir · aylık ~" + prmP(a.aylik) + " · " + a.kart }); });
   AB.filter(function (a) { return a.zam; }).forEach(function (a) { L.push({ r: "#ed7d31", b: a.ad + " zamlandı", n: prmP(a.onc) + " → " + prmP(a.son) }); });
-  prmBirikimler(D).filter(function (b) { return b.kapali; }).forEach(function (b) { L.push({ r: "#b42318", b: b.ad + " kapalı karttan çekiliyor", n: b.nereden + " kapandı · ödeme aksamasın, poliçede kartı değiştir" }); });
+  prmBirikimler(D).filter(function (b) { return b.kapali && (Date.parse(bugun()) - Date.parse(b.son)) / 864e5 <= 40; }).forEach(function (b) { L.push({ r: "#b42318", b: b.ad + " kapalı karttan çekiliyor", n: b.nereden + " kapandı · ödeme aksamasın, poliçede kartı değiştir" }); });
   KR.forEach(function (k) { var s = k.son; if (!s || k.kapali) return;
     if (s.sum && +s.sum.fees > 1000) L.push({ r: "#b42318", b: k.ad + ": " + prmP(s.sum.fees) + " faiz / masraf", n: "Ekstrenin tamamını son günde öde; asgari ya da geç ödeme faiz doğurur" });
     if (/PLAT|METAL|PRIV/i.test(k.ad) && s.sum && +s.sum.purch < 25000) L.push({ r: "#6b8bb3", b: k.ad + " az kullanılıyor", n: "Son ekstrede harcama " + prmP(s.sum.purch) + " · bu kartların yıllık ücreti yüksek; ya harcamayı burada topla ya da kartı gözden geçir" });
@@ -4228,7 +4228,7 @@ function prmGelecekHtml(D) { var L = (D.gelecek || []).slice().sort(function (a,
 function prmSigortaHtml(D) { var P = D.policeler || [], B = prmBirikimler(D), bg = bugun();
   var h = P.map(function (p) { var T = prmPoliceTaksit(p), sonr = T.filter(function (x) { return x.t >= bg; })[0], kalan = T.filter(function (x) { return x.t >= bg; }).length, bitY = p.bit && p.bit >= bg && (Date.parse(p.bit) - Date.parse(bg)) / 864e5 <= 45;
     return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(p.ad) + '</b><small style="color:' + (bitY ? "var(--bad)" : "var(--muted)") + '">' + esc([p.tur, p.sirket].filter(Boolean).join(" · ")) + (p.bit ? " · bitiş " + tarih(p.bit) : "") + (sonr ? " · sıradaki taksit " + tarih(sonr.t).slice(0, 5) + " (" + kalan + " kaldı)" : "") + (p.kart ? " · " + esc(p.kart) : "") + '</small></div><b class="prmT">' + (sonr ? prmP(sonr.tutar) : prmP(p.prim)) + '</b><button class="btn sm" data-prmpo="' + p.id + '">Düzenle</button></div>'; }).join("");
-  h += B.filter(function (b) { return !P.some(function (p) { return p.eslesId === b.id; }); }).map(function (b) {
+  h += B.filter(function (b) { return !P.some(function (p) { return p.eslesId === b.id; }) && !(b.kapali && (Date.parse(bg) - Date.parse(b.son)) / 864e5 > 40); }).map(function (b) {
     return '<div class="prmS"><div style="flex:1;min-width:0"><b class="prmAd">' + esc(b.ad) + '</b><small style="color:' + (b.kapali ? "var(--bad)" : "var(--muted)") + '">' + esc(b.kat) + " · " + b.aySay + " aydır · son " + tarih(b.son).slice(0, 5) + " · " + esc(b.nereden) + (b.kapali ? " · ⚠ kart kapandı" : "") + '</small></div><b class="prmT">' + prmP(b.sonTutar) + "</b></div>"; }).join("");
   return prmBolum("Sigorta ve birikimlerim", '<button class="btn sm" id="prmPoY">+ Poliçe</button>', h || '<div class="prmS" style="color:var(--muted)">BES, hayat, sağlık, kasko… Ekstrelerden bulduklarım burada görünür; poliçeyi elle de ekleyebilirsin.</div>'); }
 function prmHatirlatHtml(D) { var L = (D.hatirlat || []).slice().sort(function (a, b) { return a.tarih < b.tarih ? -1 : 1; }), bg = bugun();
@@ -4277,7 +4277,7 @@ function prmEkBagla() { var D = PRM.D, bul = function (L, id) { return (L || [])
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 66;
+var DS_SURUM = 67;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
