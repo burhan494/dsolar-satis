@@ -1,7 +1,7 @@
 {
- "surum": 55,
- "paket": "surumler/dsolar-55.zip",
- "sha256": "b93e9d7f1905f6e7c4a5da99b98155a6c891d65ab852c8477227c1c5fd3a73fa",
- "imza": "X/6DDUQmyGqO58FOx8fvTSSVyPel8EWHU92OydhE+7dfoUuoKizRw5UgPfyP+DYlQ9UnAluuZYF18KFnCnVrinLuz8W7aPArGKKW32D9iVjV0bC9tx8Cdt5SIb5gpCy6TaXx4RPPW5DiIOmYFqWIbvyeaZO5Vpl4qtaDBSvWLSlON72DfnwBABWw8WSLL+SiTwL14WW4LpJCmOAwDkVMT0nwoK8JPbCScjbo1HOkn/bB+DaGXpfoUQGwp361nfqqA7v5xzS3iMlcVDPT+7CMgT73K5QkmJmrFl328fIQ1yMKB7pzU0H+/aLzFjWcxq95lb7wyx+2rONXSYFOhoE88aGsm0PkRTn8GU+OFV+tVyyaXTEuF2wOraX9/qDIoGJK1lx4bbComJfKy9KGZnXwcdkDzgVAKgRyNKje62tQf1U//gEE5rg9OtL6RHWvTrnGVHhBbDc+2SyoxfeQHn+llX1orNy94nzsTW2Cvr3TD/jjY1ZR01ieH7+i4EECcDg5",
- "not": "Finans: Personel bölümü (personel kartları, Excel'den yükleme, kıdem/ihbar/izin hesabı, toplu çıkış hesabı, işten çıkar → akış ve onay, izin dönemi karşılaştırması, sabit giderleri kartlardan güncelleme; senaryo ve kasada tazminat yükü)"
+ "surum": 56,
+ "paket": "surumler/dsolar-56.zip",
+ "sha256": "70296cd61d4b0c0e33f6ebb0b68d263166510ca528fd520d52e860101cd89d57",
+ "imza": "AMikN2GcXE7ddcJIg5dkm7WRZEvQcwaQm6Ilgf0Rg5zeDp0+V7LRZn7ONJ0l8uNgzxtB+QRzz3Ib4N/1gq2nVmW4F7Grv0NMMPd5Rs1NIYvDSDITHjmYbIdeEHE/27fjmpNy0SlaM+CSqoppgDzp9XxAVm4zzrmG/ABeuaBLi9Vsbx4QsZpxtUGK60R644G3HPtKiBw8kKX+j6J0w4+PRs5DL3uBcYsNJbD1nkOOxm0lnHygtaQ8Y9Znd0RiLH1zsz7o21pW92SlOmlM3r0Qx7U9+zuEle1qD9COzDL/qG0lf+9Q3ZfvxcbZVI0xevglYMaeRIhAc2Q0URTe2ha7ZpfKmREbO61ulIhywktdDZgi97hAcgTaArhGwpnopchNuWBiiaBpVRDDVvcD0VGry1f9RzVUI+7K6tiJtpIWfgCvnXq+EFOtUjx5wZGE2NSxtDzAssP6VbKkMNmUN9JOxfyQlPVrDKruqmlzWt1lany7ocmQIXnCGaysD6G+LS4I",
+ "not": "Sabit giderler (maaş, yemek/yol, SGK, muhtasar) personel kartlarına bağlandı"
 }

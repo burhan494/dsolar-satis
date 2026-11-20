@@ -694,9 +694,9 @@ function sirali(L, f) { return L.reduce(function (p, x) { return p.then(function
 function fSabit() {
   liste("fin_sabitler", "", "ad").then(function (S) {
     var ay = bugun().slice(0, 7), bu = S.filter(function (s) { return sabitAyda(s, ay) && s.yon === "Çıkış"; }), top = {};
-    bu.forEach(function (s) { top[s.pb || "TRY"] = (top[s.pb || "TRY"] || 0) + (+s.tutar || 0); });
+    bu.forEach(function (s) { top[s.pb || "TRY"] = (top[s.pb || "TRY"] || 0) + sabitTutar(s, ay); });
     $("fm").innerHTML = '<div class="card"><h3>Bu ayın sabit giderleri</h3><div class="kv">' + (Object.keys(top).map(function (p) { return "<div><small>" + PB_AD[p] + "</small><b>" + para(top[p], p) + "</b></div>"; }).join("") || "<div><small>—</small><b>0</b></div>") + "</div></div>" +
-      '<div class="card"><h3>Sabit kalemler</h3>' + (S.map(function (s) { var aktif = sabitAyda(s, ay); return '<div class="row" data-ed="fin_sabitler|' + s.id + '"><div class="t"><b class="w"' + (aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(s.ad) + "</b><small>" + esc([s.kategori, "her ay " + (s.gun || 1) + ". gün", (s.bas ? ayAd(s.bas) : "") + (s.bit ? " – " + ayAd(s.bit) : s.bas ? "den itibaren" : ""), s.artis ? "artış: " + s.artis : "", s.not].filter(Boolean).join(" · ")) + "</small></div>" +
+      '<div class="card"><h3>Sabit kalemler</h3>' + (S.map(function (s) { var aktif = sabitAyda(s, ay); return '<div class="row" data-ed="fin_sabitler|' + s.id + '"><div class="t"><b class="w"' + (aktif ? "" : ' style="color:var(--muted)"') + ">" + esc(s.ad) + (prsBagli(s) ? ' <span class="pill" style="background:#e0f2fe;color:#075985">personel kartlarından · bu ay ' + sayi(sabitTutar(s, ay)) + " ₺</span>" : "") + "</b><small>" + esc([s.kategori, "her ay " + (s.gun || 1) + ". gün", (s.bas ? ayAd(s.bas) : "") + (s.bit ? " – " + ayAd(s.bit) : s.bas ? "den itibaren" : ""), s.artis ? "artış: " + s.artis : "", s.not].filter(Boolean).join(" · ")) + "</small></div>" +
         '<b style="white-space:nowrap;color:' + (s.yon === "Giriş" ? "var(--ok)" : "var(--bad)") + '">' + (s.yon === "Giriş" ? "+" : "−") + para(s.tutar, s.pb || "TRY") + "</b>" + (yd("fin") ? '<button class="btn sm" data-sx="' + s.id + '">✕</button>' : "") + "</div>"; }).join("") || '<div class="bos">Sabit kalem yok.</div>') + yeniBtn("fin_sabitler", "Sabit kalem ekle") + "</div>";
     edBagla(S, fSabit);
     bagT("[data-sx]", function (e) { if (confirm("Sabit kalem silinsin mi?")) api("/api/collections/fin_sabitler/records/" + e.dataset.sx, { method: "DELETE" }).then(fSabit).catch(hata); });
@@ -1453,8 +1453,8 @@ function nakitAkis(D, KU, ayN) {
   D.M.forEach(function (m) { if (m.durum === "Gerçekleşti" || m.onay === "Reddedildi" || /hesaplar arası/i.test(m.kategori || "")) return; var ma = m.tarih.slice(0, 7); if (ma < ay0) ma = ay0; var g = grupOf(m);
     if (g === "GES geliri") amcorAy[ma] = true;
     ekle(ma, m.yon, g, usdKarsilik(+m.tutar || 0, m.pb || "TRY", KU), { t: m.tarih.slice(0, 10), ad: [m.karsiTaraf, m.aciklama].filter(Boolean).join(" · ") || m.kategori, tutar: +m.tutar, pb: m.pb || "TRY", id: m.id, gec: m.tarih.slice(0, 10) < b, onay: m.onay || "" }); });
-  D.S.forEach(function (s) { aylar.forEach(function (a) { if (!sabitAyda(s, a) || sIz[s.id + ":" + a] || (a === ay0 && (s.gun || 1) < gun0)) return;
-    ekle(a, s.yon, s.yon === "Giriş" ? "Cari alacak" : "Sabit giderler", usdKarsilik(+s.tutar || 0, s.pb || "TRY", KU), { t: a + "-" + String(s.gun || 1).padStart(2, "0"), ad: s.ad + " (sabit)", tutar: +s.tutar, pb: s.pb || "TRY", sabit: true, sid: s.id, sAy: a, sKat: s.kategori || "Sabit gider", sOnc: s.oncelik || "" }); }); });
+  D.S.forEach(function (s) { aylar.forEach(function (a) { if (!sabitAyda(s, a) || sIz[s.id + ":" + a] || (prsBagli(s) && !sabitTutar(s, a)) || (a === ay0 && (s.gun || 1) < gun0)) return;
+    ekle(a, s.yon, s.yon === "Giriş" ? "Cari alacak" : "Sabit giderler", usdKarsilik(sabitTutar(s, a), s.pb || "TRY", KU), { t: a + "-" + String(s.gun || 1).padStart(2, "0"), ad: s.ad + (prsBagli(s) ? " (personel kartlarından)" : " (sabit)"), tutar: sabitTutar(s, a), pb: s.pb || "TRY", sabit: true, sid: s.id, sAy: a, sKat: s.kategori || "Sabit gider", sOnc: s.oncelik || "" }); }); });
   if (D.BG && D.BG.kira) { var GP = gesParam(D.BG), GO = gesOranSec(D.G || []), amcorHer = {};
     var reaHar = {}; D.M.forEach(function (m) { if (/reaktif/i.test((m.kategori || "") + " " + (m.aciklama || ""))) reaHar[m.tarih.slice(0, 7)] = true; });
     aylar.forEach(function (a) { if (reaHar[a]) return; var r = reaktifTahmin(a, D.G || [], D.RA); if (!r) return;
@@ -2069,9 +2069,9 @@ function odemeAdaylari(M, S, bas, bit) {
   var L = M.filter(function (m) { return m.yon === "Çıkış" && m.durum !== "Gerçekleşti" && m.onay !== "Reddedildi" && m.onay !== "Onaylandı" && !m.odemeListesi && !/hesaplar arası/i.test(m.kategori || "") && m.tarih.slice(0, 10) <= bit; })
     .map(function (m) { return { id: m.id, m: m, t: m.tarih.slice(0, 10), ad: m.karsiTaraf || m.kategori || "", ac: [m.kategori, m.aciklama].filter(Boolean).join(" · "), tutar: +m.tutar || 0, pb: m.pb || "TRY", gec: m.tarih.slice(0, 10) < bugun() }; });
   var iz = sabitIz(M);
-  S.forEach(function (s) { if (s.yon === "Giriş") return; for (var a = bas.slice(0, 7); a <= bit.slice(0, 7); a = ayEkle(a + "-01", 1)) { if (!sabitAyda(s, a) || iz[s.id + ":" + a]) continue;
+  S.forEach(function (s) { if (s.yon === "Giriş") return; for (var a = bas.slice(0, 7); a <= bit.slice(0, 7); a = ayEkle(a + "-01", 1)) { if (!sabitAyda(s, a) || iz[s.id + ":" + a] || (prsBagli(s) && !sabitTutar(s, a))) continue;
     var t = a + "-" + String(Math.min(s.gun || 1, new Date(+a.slice(0, 4), +a.slice(5, 7), 0).getDate())).padStart(2, "0"); if (t < bas || t > bit) continue;
-    L.push({ sabit: s, ay: a, t: t, ad: s.ad, ac: [s.kategori || "Sabit gider", "her ay"].join(" · "), tutar: +s.tutar || 0, pb: s.pb || "TRY" }); } });
+    L.push({ sabit: s, ay: a, t: t, ad: s.ad, ac: [s.kategori || "Sabit gider", prsBagli(s) ? "personel kartlarından" : "her ay"].join(" · "), tutar: sabitTutar(s, a), pb: s.pb || "TRY" }); } });
   return L.sort(function (x, y) { return x.t < y.t ? -1 : 1; });
 }
 function listeDurum(L, M) { var K = M.filter(function (m) { return m.odemeListesi === L.id; }); if (!K.length) return L.durum;
@@ -3378,7 +3378,7 @@ function prsOzet(L, A) { var b = bugun(), top = 0, son = null;
   return { top: top, son: son }; }
 function fPersonel() {
   if (!yt("ortak")) { location.hash = "#finans"; return; }
-  Promise.all([liste("personel", "", "ad"), liste("fin_ayarlar", "anahtar = 'personel_ayar'").catch(function () { return []; }), liste("fin_sabitler", "", "ad").catch(function () { return []; }), kurKartiGetir()]).then(function (R) {
+  prsSabitHazirla().then(function () { return Promise.all([liste("personel", "", "ad"), liste("fin_ayarlar", "anahtar = 'personel_ayar'").catch(function () { return []; }), liste("fin_sabitler", "", "ad").catch(function () { return []; }), kurKartiGetir()]); }).then(function (R) {
     var L = R[0], ayK = R[1][0], A = prsAyar(ayK ? { personel_ayar: ayK.deger } : {}), S = R[2], KU = R[3], b = bugun(), PM = {}; L.forEach(function (p) { PM[p.id] = p; });
     var ak = prsAktif(L), hs = ak.map(function (p) { return { p: p, r: prsHesap(p, b, "Ödenecek", A) }; }), top = hs.reduce(function (s, x) { return s + x.r.isveren; }, 0), ay = hs.reduce(function (s, x) { return s + x.r.aylik; }, 0);
     var yak = hs.filter(function (x) { return x.r.birYil > b; }).sort(function (x, y) { return x.r.sonCikisOde < y.r.sonCikisOde ? -1 : 1; })[0];
@@ -3401,11 +3401,13 @@ function fPersonel() {
         var izn = (p.izinler || []).filter(function (z) { return z.bit >= b; })[0];
         return '<div class="row prR" data-pr="' + p.id + '" style="cursor:pointer;flex-wrap:wrap"><div class="t"><b class="w">' + esc(p.ad) + " " + rozet + (izn ? ' <span class="pill" style="background:#e0e7ff;color:#3730a3">' + esc(izn.tur) + " " + tarih(izn.bas) + "–" + tarih(izn.bit) + "</span>" : "") + (p.sigortasiz ? ' <span class="pill" style="background:#fde8e8;color:var(--bad)">sigortasız</span>' : "") + "</b><small>" +
           esc([p.gorev, p.yer, p.giris ? "giriş " + tarih(p.giris) : "", "net " + prsTl(prsMaas(p, b).net), p.sigortasiz ? "" : "brüt ≈ " + prsTl(r.brut)].filter(Boolean).join(" · ")) + '</small></div><div style="text-align:right"><small style="color:var(--muted)">bugün çıkarsak</small><br><b>' + (p.durum === "Ayrıldı" ? "—" : prsTl(r.isveren)) + "</b></div>" + (ac ? '<div class="prDet" style="flex-basis:100%" onclick="event.stopPropagation()">' + prsDetay(p, A, KU) + "</div>" : "") + "</div>"; }).join("") : '<div class="bos">Henüz personel yok. Finansın doldurduğu personel bilgi formunu "Excel\'den yükle" ile alın.</div>') + "</div>";
-    // sabit giderler
-    var sb = prsSabit(ak, A, b), es = function (re) { return S.filter(function (s) { return s.yon !== "Giriş" && re.test(s.ad); })[0]; }, eM = es(/maaş/i), eY = es(/yemek/i), eS = es(/sgk/i), eG = es(/muhtasar|stopaj/i);
-    html += '<details class="card"><summary><h3 style="display:inline">Sabit giderleri kartlardan güncelle</h3></summary><div class="ntk"><table class="nt2" style="min-width:480px"><thead><tr><th class="ilk">Kalem</th><th>Şu an (sabit)</th><th>Kartlardan</th></tr></thead><tbody>' +
-      [["Maaş (net ödemeler)", eM, sb.net], ["Yemek / yol / diğer", eY, sb.yan], ["SGK primi (işçi + işveren)", eS, sb.sgk], ["Muhtasar (gelir + damga vergisi)", eG, sb.gv]].map(function (x) { return "<tr><td class=\"ilk\">" + x[0] + (x[1] ? "<small>" + esc(x[1].ad) + "</small>" : '<small style="color:var(--bad)">sabit kalem bulunamadı</small>') + "</td><td>" + (x[1] ? prsTl(x[1].tutar) : "—") + '</td><td class="k">' + prsTl(x[2]) + "</td></tr>"; }).join("") +
-      '</tbody></table></div><div class="not"><small>Aktif personelin bu ayki net maaşları, yan ödemeleri ve bordrodan doğan SGK/vergi tutarları (asgari ücret istisnası dahil, yaklaşık). Sigortasız çalışan için yalnız net ödeme. "Güncelle" bulunan sabit kalemlerin tutarını değiştirir; nakit akışı buna göre yenilenir.</small></div><div style="padding:0 14px 12px"><button class="btn" id="prSb">Sabit giderleri güncelle</button></div></details>';
+    // sabit giderler (kartlara bağlı ya da tek seferlik güncelleme)
+    var sb = prsSabit(ak, A, b), es = function (re) { return S.filter(function (s) { return s.yon !== "Giriş" && re.test(s.ad) && (!s.bit || s.bit >= b.slice(0, 7)); })[0]; }, eM = es(/maaş/i), eY = es(/yemek|yol/i), eS = es(/sgk/i), eG = es(/muhtasar|stopaj/i), bag = A.bagli !== false;
+    var ay1 = b.slice(0, 7), ay2 = ayEkle(ay1 + "-01", 1);
+    html += '<details class="card"' + (bag ? "" : "") + '><summary><h3 style="display:inline">' + (bag ? "Sabit giderler personel kartlarına bağlı ✓" : "Sabit giderleri kartlardan güncelle") + '</h3></summary><div class="ntk"><table class="nt2" style="min-width:520px"><thead><tr><th class="ilk">Kalem</th><th>Elle girilen</th>' + (bag ? "<th>Akışta · " + AYLAR[+ay1.slice(5, 7) - 1] + "</th><th>Akışta · " + AYLAR[+ay2.slice(5, 7) - 1] + "</th>" : "<th>Kartlardan</th>") + "</tr></thead><tbody>" +
+      [["Maaş (net ödemeler)", eM, sb.net], ["Yemek / yol / diğer", eY, sb.yan], ["SGK primi (işçi + işveren)", eS, sb.sgk], ["Muhtasar (gelir + damga vergisi)", eG, sb.gv]].map(function (x) { return "<tr><td class=\"ilk\">" + x[0] + (x[1] ? "<small>" + esc(x[1].ad) + "</small>" : '<small style="color:var(--bad)">sabit kalem bulunamadı</small>') + "</td><td>" + (x[1] ? prsTl(x[1].tutar) : "—") + "</td>" +
+        (bag ? '<td class="k">' + (x[1] ? prsTl(sabitTutar(x[1], ay1)) : "—") + '</td><td class="k">' + (x[1] ? prsTl(sabitTutar(x[1], ay2)) : "—") + "</td>" : '<td class="k">' + prsTl(x[2]) + "</td>") + "</tr>"; }).join("") +
+      "</tbody></table></div><div class=\"not\"><small>" + (bag ? "Nakit akışı, ödeme listeleri ve 5 yıllık senaryo bu dört kalemi her ay personel kartlarından hesaplar: ayın 2'sindeki maaş ve o ayki SGK/muhtasar, bir önceki ayın çalışması içindir. Zam, yeni giriş, çıkış ve doğum/ücretsiz izin kendiliğinden yansır; çıkan kişinin maaşı çıkış ayından sonra düşer. Sabit giderler sayfasındaki elle tutarlar kullanılmaz (yalnız bağlantı kapatılırsa)." : "Aktif personelin bu ayki tutarları. \"Bir kez güncelle\" sabit kalemlerin tutarını değiştirir; \"Kartlara bağla\" her ay otomatik hesaplatır.") + '</small></div><div style="padding:0 14px 12px;display:flex;gap:6px;flex-wrap:wrap">' + (bag ? '<button class="btn" id="prBg">Bağlantıyı kapat</button>' : '<button class="btn pri" id="prBg">Kartlara bağla</button><button class="btn" id="prSb">Bir kez güncelle</button>') + "</div></details>";
     // ayarlar
     html += '<details class="card"><summary><h3 style="display:inline">Hesap ayarları</h3></summary><div class="f">' +
       '<label>Kıdem tavanı dönemleri <small>(her satır: başlangıç tarihi; tutar)</small><textarea id="paTv" rows="3">' + A.tavan.map(function (x) { return x[0] + "; " + x[1]; }).join("\n") + "</textarea></label>" +
@@ -3421,10 +3423,12 @@ function fPersonel() {
     $("prY").onclick = function () { $("prYo").innerHTML = '<div class="f" style="padding:10px 0">' + prsForm({}) + '<button class="btn pri" id="pfK">Ekle</button></div>'; $("pfK").onclick = function () { var bd = prsFormOku(); if (!bd) return; bd.durum = "Aktif"; api("/api/collections/personel/records", { method: "POST", body: bd }).then(function () { toast("Eklendi"); fPersonel(); }).catch(hata); }; };
     $("prX").onclick = function () { $("prXf").click(); };
     $("prXf").onchange = function () { var f = this.files[0]; if (f) prsExcel(f, L); };
-    $("prSb").onclick = function () { var is = []; [[eM, sb.net], [eY, sb.yan], [eS, sb.sgk], [eG, sb.gv]].forEach(function (x) { if (x[0]) is.push(api("/api/collections/fin_sabitler/records/" + x[0].id, { method: "PATCH", body: { tutar: Math.round(x[1]) } })); });
+    var ayKaydet = function (deg) { var a2 = Object.assign({}, (ayK && ayK.deger) || {}, deg); return (ayK ? api("/api/collections/fin_ayarlar/records/" + ayK.id, { method: "PATCH", body: { deger: a2 } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "personel_ayar", deger: a2 } })); };
+    $("prBg").onclick = function () { var yeni = !bag; if (!yeni && !confirm("Bağlantı kapatılsın mı? Akış yeniden Sabit giderler sayfasındaki elle girilen tutarları kullanır.")) return; ayKaydet({ bagli: yeni }).then(function () { return prsSabitHazirla(); }).then(function () { toast(yeni ? "Sabit giderler kartlara bağlandı" : "Bağlantı kapatıldı"); fPersonel(); }).catch(hata); };
+    if ($("prSb")) $("prSb").onclick = function () { var is = []; [[eM, sb.net], [eY, sb.yan], [eS, sb.sgk], [eG, sb.gv]].forEach(function (x) { if (x[0]) is.push(api("/api/collections/fin_sabitler/records/" + x[0].id, { method: "PATCH", body: { tutar: Math.round(x[1]) } })); });
       if (!is.length) { toast("Eşleşen sabit kalem yok"); return; } if (!confirm(is.length + " sabit gider kalemi kartlardan hesaplanan tutarla güncellensin mi?")) return; Promise.all(is).then(function () { toast("Sabit giderler güncellendi"); fPersonel(); }).catch(hata); };
     $("paK").onclick = function () { var sat = function (id) { return $(id).value.split("\n").map(function (s) { return s.split(";").map(function (x) { return x.trim(); }); }).filter(function (x) { return x[0] && x[1]; }); };
-      var a = { tavan: sat("paTv").map(function (x) { return [x[0], num(x[1])]; }), au: num($("paAu").value), damga: num($("paDm").value) / 1000, sgkV: num($("paSv").value) / 100, sgkVyok: num($("paSy").value) / 100, sgkI: A.sgkI, dil: sat("paGv").map(function (x) { return [num(x[0]), num(x[1]) / 100]; }) };
+      var a = { tavan: sat("paTv").map(function (x) { return [x[0], num(x[1])]; }), au: num($("paAu").value), damga: num($("paDm").value) / 1000, sgkV: num($("paSv").value) / 100, sgkVyok: num($("paSy").value) / 100, sgkI: A.sgkI, dil: sat("paGv").map(function (x) { return [num(x[0]), num(x[1]) / 100]; }), bagli: A.bagli };
       (ayK ? api("/api/collections/fin_ayarlar/records/" + ayK.id, { method: "PATCH", body: { deger: a } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "personel_ayar", deger: a } })).then(function () { toast("Kaydedildi"); fPersonel(); }).catch(hata); };
   }).catch(hata);
 }
@@ -3518,6 +3522,24 @@ function prsExcel(f, L) {
         .then(function () { toast(K.length + " personel kartı işlendi"); fPersonel(); }).catch(function (e) { bt.disabled = false; hata(e); }); };
   }).catch(hata);
 }
+
+/* v56: maaş / yemek-yol / SGK / muhtasar sabit giderleri personel kartlarından (her ay, bir önceki ayın çalışması için) */
+var PRS_SB = { on: false, k: {}, c: {}, L: [], A: null };
+function prsBagli(s) { return PRS_SB.on && !!PRS_SB.k[s.id]; }
+function prsAyMaliyet(L, w, A) { var o = { maas: 0, yan: 0, sgk: 0, gv: 0 }, gs = gunSay(w), b0 = w + "-01", b1 = w + "-" + String(gs).padStart(2, "0"), mo = +w.slice(5, 7);
+  L.forEach(function (p) { if (!p.giris || (p.durum === "Ayrıldı" && !p.cikis)) return; var bit = p.durum !== "Aktif" && p.cikis ? p.cikis.slice(0, 10) : b1, st = p.giris.slice(0, 10) > b0 ? p.giris.slice(0, 10) : b0, en = bit < b1 ? bit : b1; if (st > en) return;
+    var gun = prsGun(st, en) + 1; (p.izinler || []).forEach(function (z) { if (!/doğum|ücretsiz/i.test(z.tur || "")) return; var zs = z.bas > st ? z.bas : st, ze = z.bit < en ? z.bit : en; if (zs <= ze) gun -= prsGun(zs, ze) + 1; });
+    var f = Math.max(0, gun) / gs; if (!f) return; var m = prsMaas(p, b1); o.yan += ((+p.yemek || 0) + (+p.yol || 0) + (+p.diger || 0)) * f;
+    if (p.sigortasiz) { o.maas += m.net * f; return; }
+    var b = prsBrut(p, b1, A), n = prsNet(b, mo, A), sv = p.tesvik === false ? A.sgkVyok : A.sgkV; o.maas += n * f; o.sgk += b * (A.sgkI + sv) * f; o.gv += (b - b * A.sgkI - n) * f; });
+  return o; }
+function sabitTutar(s, a) { if (!prsBagli(s)) return +s.tutar || 0; var w = ayEkle(a + "-01", -1); if (!PRS_SB.c[w]) PRS_SB.c[w] = prsAyMaliyet(PRS_SB.L, w, PRS_SB.A); return Math.round(PRS_SB.c[w][PRS_SB.k[s.id]] || 0); }
+function prsSabitHazirla() { PRS_SB = { on: false, k: {}, c: {}, L: [], A: null }; if (!yt("ortak")) return Promise.resolve();
+  return Promise.all([liste("personel", "", "ad"), liste("fin_ayarlar", "anahtar = 'personel_ayar'").catch(function () { return []; }), liste("fin_sabitler", "", "ad")]).then(function (R) {
+    var A = prsAyar(R[1][0] ? { personel_ayar: R[1][0].deger } : {}); if (!R[0].length || A.bagli === false) return;
+    var ay = bugun().slice(0, 7), T = [["maas", /maaş/i], ["yan", /yemek|yol/i], ["sgk", /sgk/i], ["gv", /muhtasar|stopaj/i]];
+    T.forEach(function (t) { var s = R[2].filter(function (x) { return x.yon !== "Giriş" && t[1].test(x.ad) && (!x.bit || x.bit >= ay) && !PRS_SB.k[x.id]; })[0]; if (s) PRS_SB.k[s.id] = t[0]; });
+    PRS_SB.L = R[0]; PRS_SB.A = A; PRS_SB.on = Object.keys(PRS_SB.k).length > 0; }).catch(function () { PRS_SB.on = false; }); }
 
 /* ---------- v46 kabuk: menü, arama, bildirim, hızlı ekle ---------- */
 ICO.ara = '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>';
@@ -4212,7 +4234,7 @@ function sFinans(alt) {
     (alt2 ? '<div class="seg finS">' + alt2.map(function (x) { return '<button onclick="location.hash=\'#finans/' + x[0] + '\'" class="' + (x[0] === alt ? "on sg" : "") + '">' + x[1] + "</button>"; }).join("") + "</div>" : "") +
     (akt === "diger" && alt !== "diger" ? '<a href="#finans/diger" class="geriL">‹ Diğer</a>' : "") + '<div id="fm"><div class="bos">Yükleniyor…</div></div>';
   if (HIZLI.fin && alt === "plan") { FP.ekle = true; }
-  ({ kasa: fKasa, akis: fNakit, plan: fPlan, senaryo: fSenaryo, odeme: fOdeme, hareket: fHareket, hesap: fHesap, kredi: fKredi, cek: fCek, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik, personel: fPersonel, diger: fDiger, rapor: fRapor }[alt] || fKasa)();
+  prsSabitHazirla().then(function () { ({ kasa: fKasa, akis: fNakit, plan: fPlan, senaryo: fSenaryo, odeme: fOdeme, hareket: fHareket, hesap: fHesap, kredi: fKredi, cek: fCek, sabit: fSabit, soru: fSoru, ortak: fOrtak, varlik: fVarlik, personel: fPersonel, diger: fDiger, rapor: fRapor }[alt] || fKasa)(); });
   if (HIZLI.fin) { var hz = HIZLI.fin; HIZLI.fin = ""; var n = 0, iv = setInterval(function () { var s = $("pT"); if (++n > 40) clearInterval(iv); if (!s) return; clearInterval(iv);
     s.value = hz === "tahsilat" ? "Cari alacak (müşteri)" : "Cari ödeme (tedarikçi)"; s.dispatchEvent(new Event("change")); s.closest("details").open = true; s.scrollIntoView({ behavior: "smooth", block: "center" }); }, 150); }
 }
