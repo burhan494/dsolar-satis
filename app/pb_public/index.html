@@ -4485,7 +4485,7 @@ function prmV72Bagla() { var tik = function (id, f) { if ($(id)) $(id).onclick =
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 73;
+var DS_SURUM = 74;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -5361,27 +5361,24 @@ setTimeout(function () { if (typeof TOK !== "undefined" && TOK && GES_GOLGE === 
 function gesOrtanca(A) { A = A.filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; }); return A.length ? A[Math.floor(A.length / 2)] : null; }
 function invAnaliz(INV) { var A = invAnaliz0(INV); if (!A) return A; if (GES_GOLGE === null && typeof TOK !== "undefined" && TOK) gesGolgeYukle(); var GG = GES_GOLGE || {}, b = bugun(), son7 = A.gunler.slice(-7);
   A.R.forEach(function (r) { var g = GG[r.x.k]; if (!g) return;
-    var tum = gesOrtanca(A.gunler.map(function (d) { var v = r.r[d]; return v != null && v > 0.05 ? v : null; })), norm = +g.norm || tum, gecen = Math.round((new Date(b) - new Date(g.bas || b)) / 864e5);
-    r.golge = true; r.norm = norm; r.izleme = !(+g.norm); r.izlemeKalan = Math.max(0, 30 - gecen); r.normHesap = tum; r.eskiMsg = r.msg;
+    var once = A.gunler.slice(0, -7), tum = gesOrtanca((once.length >= 7 ? once : A.gunler).map(function (d) { var v = r.r[d]; return v != null && v > 0.05 ? v : null; })), norm = tum, /* kendi normali: son haftadan önceki günlerin ortancası (mevsimle birlikte yavaşça kayar) */ gecen = Math.round((new Date(b) - new Date(g.bas || b)) / 864e5);
+    r.golge = true; r.norm = norm; r.izlemeKalan = Math.max(0, 30 - gecen); r.izleme = r.izlemeKalan > 0; r.normHesap = tum; r.eskiMsg = r.msg;
     if (r.durum === "kt" || !norm) return; /* durduysa her zaman uyar */
     var rel7 = r.m7 != null ? r.m7 / norm : null, dusuk = son7.filter(function (d) { var v = r.r[d]; return v != null && v < norm * 0.6; }).length; r.rel7 = rel7;
     var not = "gölgeli konum · kendi normali akranlarının %" + Math.round(norm * 100) + "'i" + (r.izleme ? " (izleme: " + r.izlemeKalan + " gün kaldı)" : "");
-    if (rel7 != null && rel7 < 0.95) { r.durum = "uy"; r.msg = "kendi normalinin de altında: normalde %" + Math.round(norm * 100) + ", son 7 gün %" + Math.round(r.m7 * 100) + " · " + not; }
+    if (r.izleme && dusuk < 2) { r.durum = "ok"; r.msg = not; } /* izleme döneminde yalnız durma/kesinti uyarır */
+    else if (rel7 != null && rel7 < 0.92) { r.durum = "uy"; r.msg = "kendi normalinin de altında: normalde %" + Math.round(norm * 100) + ", son 7 gün %" + Math.round(r.m7 * 100) + " · " + not; }
     else if (dusuk >= 2) { r.durum = "uy"; r.msg = "son 7 günün " + dusuk + "'sinde kendi normalinin çok altında (kesinti?) · " + not; }
     else { r.durum = "ok"; r.msg = not; }
     r.kayip = r.durum === "ok" ? 0 : son7.reduce(function (t, d) { var v = (INV.gun[r.x.k] || {})[d]; return t + (v == null ? 0 : Math.max(0, A.med[d] * norm - (+v || 0))); }, 0); });
   return A; }
-/* izleme 30 günü dolanların normalini sabitle (performans sayfası açılınca) */
-function gesGolgeKilitle(A) { var GG = GES_GOLGE || {}, d = false; if (!A) return;
-  A.R.forEach(function (r) { var g = GG[r.x.k]; if (g && !(+g.norm) && r.izlemeKalan === 0 && r.normHesap) { g.norm = Math.round(r.normHesap * 1000) / 1000; d = true; } });
-  if (d && typeof rol === "function" && rol() === "yonetici") gesGolgeKaydet(GG).catch(function () {}); }
-function invKarti(IS, P, IEinv) { var h = invKarti0(IS, P, IEinv), A = invAnaliz(IS && IS.inv); if (!A) return h; gesGolgeKilitle(A); var GG = GES_GOLGE || {};
+function invKarti(IS, P, IEinv) { var h = invKarti0(IS, P, IEinv), A = invAnaliz(IS && IS.inv); if (!A) return h; var GG = GES_GOLGE || {};
   var GL = A.R.filter(function (r) { return r.golge; }), ADAY = A.R.filter(function (r) { return !r.golge && r.durum === "uy" && /sürekli düşük/.test(r.msg); }), yon = typeof rol === "function" && rol() === "yonetici";
   if (!GL.length && !ADAY.length) return h;
   var k = '<div class="card"><h3>' + ikon("gunes", "#64748b", "kucuk") + 'Gölgeli konumdaki inverterler <small style="color:var(--muted);font-weight:500;margin-left:auto">akranlarıyla değil kendi normalleriyle kıyaslanır</small></h3>' +
     GL.map(function (r) { return '<div class="row"><span class="pill" style="background:' + (r.durum === "ok" ? "#e2e8f0;color:#334155" : r.durum === "kt" ? "#fde8e8;color:var(--bad)" : "var(--warnbg);color:var(--warn)") + ';margin-right:10px">' + (r.durum === "ok" ? (r.izleme ? "izleniyor" : "normal") : r.durum === "kt" ? "durdu" : "düşük") + '</span><div class="t"><b class="w">' + esc(r.x.ad) + "</b><small>" +
-      esc("normali %" + (r.norm ? Math.round(r.norm * 100) : "?") + " · son 7 gün %" + (r.m7 != null ? Math.round(r.m7 * 100) : "—") + (r.izleme ? " · izleme dönemi, " + r.izlemeKalan + " gün sonra normal sabitlenir" : " · normal " + tarih((GG[r.x.k] || {}).bas || bugun()) + "'ten beri izlendi")) + "</small></div>" + (yon ? '<button class="btn sm" data-golge="' + esc(r.x.k) + '" data-golgeAd="' + esc(r.x.ad) + '">Çıkar</button>' : "") + "</div>"; }).join("") +
-    (ADAY.length && yon ? '<div class="row" style="flex-wrap:wrap;gap:8px"><small style="flex:1 1 100%;color:var(--muted)">Sürekli düşük çalışan ama arızası olmayan (gölge, eğim) inverterleri buraya ekle. 30 gün izlenir, sonra sadece kendi normalinin altına düşerse ya da durursa uyarır.</small>' +
+      esc("normali %" + (r.norm ? Math.round(r.norm * 100) : "?") + " · son 7 gün %" + (r.m7 != null ? Math.round(r.m7 * 100) : "—") + (r.izleme ? " · izleme dönemi: " + r.izlemeKalan + " gün daha sadece durursa uyarır" : " · kendi normalinin %8 altına düşerse ya da durursa uyarır")) + "</small></div>" + (yon ? '<button class="btn sm" data-golge="' + esc(r.x.k) + '" data-golgeAd="' + esc(r.x.ad) + '">Çıkar</button>' : "") + "</div>"; }).join("") +
+    (ADAY.length && yon ? '<div class="row" style="flex-wrap:wrap;gap:8px"><small style="flex:1 1 100%;color:var(--muted)">Sürekli düşük çalışan ama arızası olmayan (gölge, eğim) inverterleri buraya ekle. 30 gün izlenir (bu sürede sadece durursa uyarır), sonra kendi normalinin %8 altına düşerse ya da durursa uyarır.</small>' +
       ADAY.map(function (r) { return '<button class="btn sm" data-golge="' + esc(r.x.k) + '" data-golgeAd="' + esc(r.x.ad) + '">+ ' + esc(r.x.ad) + " (%" + Math.round(r.m7 * 100) + ")</button>"; }).join("") + "</div>" : "") + "</div>";
   return k + h; }
 document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-golge]"); if (!b) return; e.preventDefault(); var GG = Object.assign({}, GES_GOLGE || {}), key = b.dataset.golge;

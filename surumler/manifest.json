@@ -1,7 +1,7 @@
 {
- "surum": 73,
- "paket": "surumler/dsolar-73.zip",
- "sha256": "1371518f721d93223cdf2f5c7b168f916414a0bfae1d58acf9db80738da90e28",
- "imza": "nIJT9gJ0d1/qMnnuhIp+qq+QveWvEuw7lsUgjvkImsiDF75DTxpa9jz5nOamEVLNEsXJ7CxPcPe4FqbNYVXTFj5h7kr/RnPZyNp+EemJj7M61klqrBrZB+uAzVsGcKXBfTZVwJ2Rg3FNSRavusnMI5ZSfXRjm4nBqhaDzZ10nf4DFGXI3Gquz0e3xA3uDWPNHDiz2vBbPAGR9TZ2TvQUj2fMi3BTkeYij4gjgCOpYOeCui0POEE5x5z8oeOldD+NEytgZK8tKSNOzJosvvQIRtnvFFPDak5ut6Cz5GtJV1IaqSTcyUFR9OE30dOKjymogsgW3VAk6RJUuS3XICtOYNUk1PC+5Vx59sf29SssUjFbrUa44bBHreNoE8KxeBRK2EMXIQ7kR9g66cDSYeyIAa18iKchebOm4cz7ZmYcjPVZYKi8wcKFpDX1lNW1ilyXTv9UcwfO/yB10QtJJn513YyEjAXKpXwZoNNH7IspvD1cYgUsKgJHLZc/E7tVyAfJ",
- "not": "GES: gölgeli konumdaki inverterler kendi normaline göre izlenir (30 gün izleme), sürekli düşük uyarısı susar; durursa ya da normalinin altına düşerse yine uyarır"
+ "surum": 74,
+ "paket": "surumler/dsolar-74.zip",
+ "sha256": "ac3125e780905209b069befa60078c7b32c9be6640ee2cadf0d4727536b17e2b",
+ "imza": "XcUj9RjrBSwCXE4iMlmnG86Qe8p3qFuAjT1P0dHV+3Zuk+UIBzCiicFzQsoEbBbmlvSK3g6OJpYD+2oXSrZKKpR535/I7KAy0Eu4kJNCi0qL3OLsb0SiFaiCGcek+hr6X5QmXprcnh2ZH72csM2A38EMbR0p93oji7AXvZUYy+Ybn/LFtyGCo71rsF54kyT4x8fMKcXw6QpE/kPSUM8djlxKr6R9PQEnyyZJHBLHIVN2OKK8d+qbsDbnOHIoTvPeeyeEtTwQ4IUNgB0OqWM/+ZetMEZz5VPHL4PEAaMkdB1tv0ksIFjRYn5qUBXgXHqzJWp4pVg3bTXvRj0sBKHBhAJdTrR/N/QMnitzSoePZlvOLuPbhbVlMTJhZVgEKa8MqUyzCYy2wBUmOZGHPbQXgWxmGKD5527qNTU3KVDVZkKZTCXu1PpouZqPwfPHn894lKv3oxxSmNPnCMlLe1gfKXunlzHlrG5xm9uT5A5dKZE34blzbFC/PYY6MYLx/nXd",
+ "not": "GES gölgeli inverter: kendi normali son 3 haftaya göre, ilk 30 gün sadece durursa uyarır"
 }
