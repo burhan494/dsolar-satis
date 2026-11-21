@@ -1,7 +1,7 @@
 {
- "surum": 72,
- "paket": "surumler/dsolar-72.zip",
- "sha256": "a4c29012dad3aec25f6d989b84278b50f24a0636315e24d5dc39a23c69f4a970",
- "imza": "l5jERhWVvvtjIxOgcGwlmdc4XOXmY12CHSZ0BLz0E/vKST/gu5ciy9pQlbD8GC9Pez5mw448hypiQ/ICnXtufwLQFxkj3lbwy3awewfJ6av8AQSfR/cO4jkPxykIslEZ68D9s9QWwpeF2bnkflR6Rw2t7uz6UF6M5/p1QGYGpWv8iJap5Vik4IhKtpguT8cwU5+uN7AGuKPHVfZdF1z/mTZld5ULslajmob3QmVzIMz8bApeK7qidqEGCPs9MBSBWESkw3ZB7GWnEe4CsxEvVGEEerT36npjR0C2lsaM2Phf4E0XR8vgm4/ZB5fZdp+grTMKpjJYbGMrbDf6gAb2lswJ+X2ChNFaEptCySOW0yb+sfzRjz/qmGYafilAvz2hHph54CRhrUh2+sjIcA+yvq1l41JQgIiFsWWOhe1iq/vY6oCO0+L930AaFYdNa691LwLh/vmRIt7Ryif9Z3+ACTUDJxN/76xbGGY62UlxSSCf6atZrWNce9AUcS37rKX9",
- "not": "Param: ödemeye dokun → tamamı/kısmi/asgari/ertele, kartta bu ayın ödemesi satırı, sade Harcama + alttan detay, Tasarruf önerileri tek satır, çocuk kategorileri birleşti"
+ "surum": 73,
+ "paket": "surumler/dsolar-73.zip",
+ "sha256": "1371518f721d93223cdf2f5c7b168f916414a0bfae1d58acf9db80738da90e28",
+ "imza": "nIJT9gJ0d1/qMnnuhIp+qq+QveWvEuw7lsUgjvkImsiDF75DTxpa9jz5nOamEVLNEsXJ7CxPcPe4FqbNYVXTFj5h7kr/RnPZyNp+EemJj7M61klqrBrZB+uAzVsGcKXBfTZVwJ2Rg3FNSRavusnMI5ZSfXRjm4nBqhaDzZ10nf4DFGXI3Gquz0e3xA3uDWPNHDiz2vBbPAGR9TZ2TvQUj2fMi3BTkeYij4gjgCOpYOeCui0POEE5x5z8oeOldD+NEytgZK8tKSNOzJosvvQIRtnvFFPDak5ut6Cz5GtJV1IaqSTcyUFR9OE30dOKjymogsgW3VAk6RJUuS3XICtOYNUk1PC+5Vx59sf29SssUjFbrUa44bBHreNoE8KxeBRK2EMXIQ7kR9g66cDSYeyIAa18iKchebOm4cz7ZmYcjPVZYKi8wcKFpDX1lNW1ilyXTv9UcwfO/yB10QtJJn513YyEjAXKpXwZoNNH7IspvD1cYgUsKgJHLZc/E7tVyAfJ",
+ "not": "GES: gölgeli konumdaki inverterler kendi normaline göre izlenir (30 gün izleme), sürekli düşük uyarısı susar; durursa ya da normalinin altına düşerse yine uyarır"
 }

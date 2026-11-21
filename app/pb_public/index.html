@@ -290,6 +290,7 @@ nav.y a.fab{overflow:visible;background:none!important}
 .prIki{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;cursor:default}
 .prIki h4{font-size:14px}
 @media (max-width:800px){.prIki{grid-template-columns:1fr}}
+.gsInv .gl{background:#e2e8f0;color:#334155}
 
 /* v60: Param sekmeli düzen — telefon öncelikli */
 .prmW{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
@@ -2457,7 +2458,7 @@ function reaktifTahmin(a, G, RA) {
 }
 
 /* ---------- GES: inverter bazında analiz (iSolarCloud günlük p1) ---------- */
-function invAnaliz(INV) {
+function invAnaliz0(INV) {
   if (!INV || !INV.liste || !INV.liste.length) return null;
   var gunler = []; for (var i = 30; i >= 1; i--) gunler.push(gunSonra(-i).replace(/-/g, ""));
   var snVar = INV.liste.some(function (x) { return x.sn; }), L = INV.liste.filter(function (x) { return !/sil\s*$|silin|deleted/i.test(String(x.ad || "")) && (!snVar || x.sn); }), G = INV.gun || {}, med = {};
@@ -2476,7 +2477,7 @@ function invAnaliz(INV) {
     return { x: x, r: r, m7: m7, mo: mo, sifir: sifir, durum: durum, msg: msg, kayip: durum === "ok" ? 0 : kayip, top7: son7.reduce(function (t, d) { return t + (+g[d] || 0); }, 0) }; });
   return { R: R, gunler: gk, med: med, zaman: INV.zaman };
 }
-function invKarti(IS, P, IEinv) {
+function invKarti0(IS, P, IEinv) {
   IEinv = IEinv || {};
   var A = invAnaliz(IS && IS.inv);
   if (!A) return '<div class="card"><h3>' + ikon("alet", "#0d9488", "kucuk") + 'İnverterler</h3><div class="bos">' + (IS && IS.sonSenk ? "İnverter verisi henüz çekilmedi. \"Şimdi çek\" ile alınır (sunucu günde bir kez kendisi de çeker)." : "iSolarCloud bağlantısı kurulunca inverter bazında üretim burada görünür (Ayarlar sekmesi).") + '</div><div style="padding:0 14px 12px"><button class="btn sm" data-ginv="1">Şimdi çek</button></div></div>';
@@ -4484,7 +4485,7 @@ function prmV72Bagla() { var tik = function (id, f) { if ($(id)) $(id).onclick =
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 72;
+var DS_SURUM = 73;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -5293,10 +5294,10 @@ function gesDuzenle() {
       "<div><small>" + AYLAR[+ay0.slice(5, 7) - 1] + " (" + iscTop(g0).n + " gün)</small><b>" + sayi((U0.bilinen || iscTop(g0).t || 0) / 1000, 0) + ' MWh</b><div class="gsBar"><i style="width:' + Math.min(100, hd0 ? (U0.bilinen || 0) / hd0 * 100 : 0).toFixed(0) + '%"></i></div><small>ay hedefinin %' + sayi(hd0 ? (U0.bilinen || 0) / hd0 * 100 : 0) + "'i · tahmin " + sayi(U0.kwh / 1000, 0) + " MWh</small></div>" +
       "<div><small>Sıradaki kira</small><b>" + (sira ? sayi(sira.th / 1e6, 2) + " mn TL" : "—") + "</b><small>" + (sira ? (sira.tT < b ? "gecikti · " : "") + tarih(sira.tT) + " · " + ayAd(sira.a) + (sira.fat ? " (fatura)" : " (tahmini)") : "") + "</small></div>" +
       "<div><small>Performans (7 gün)</small><b>" + (t7 ? "%" + sayi(s7 / t7 * 100, 1) : "—") + "</b><small>" + sayi(s7 / 1000, 1) + " MWh / teorik " + sayi(t7 / 1000, 1) + "</small></div></div></div>";
-    var renk = function (r) { return r.durum === "kt" ? "kt" : r.m7 != null && r.m7 < 0.92 ? "kt" : r.m7 != null && r.m7 < 0.97 ? "dz" : "ok"; };
+    var renk = function (r) { return r.durum === "kt" ? "kt" : r.golge ? (r.durum === "ok" ? "gl" : "dz") : r.m7 != null && r.m7 < 0.92 ? "kt" : r.m7 != null && r.m7 < 0.97 ? "dz" : "ok"; };
     var invH = A ? '<div class="card"><h3>İnverterler <small style="margin-left:auto;color:var(--muted);font-weight:500">son 7 gün, akranlarına göre · dokun → detay</small></h3><div class="gsInv">' + A.R.slice().sort(function (p, r) { return String(p.x.ad).localeCompare(String(r.x.ad), "tr", { numeric: true }); }).map(function (r) {
         var nm = String(r.x.ad).replace(/^.*?(\d+)\s*$/, "$1"); return '<button class="' + renk(r) + (IEinv[r.x.k] ? " ie" : "") + '" title="' + esc(r.x.ad + (r.msg ? " · " + r.msg : "")) + '" data-gsi="1"><b>' + esc(nm.length <= 3 ? nm : r.x.ad.slice(0, 6)) + "</b>" + (r.m7 != null ? "%" + Math.round(r.m7 * 100) : "—") + "</button>"; }).join("") +
-      '</div><div class="lj"><span><i style="background:#dcfce7"></i>normal</span><span><i style="background:#fef3c7"></i>%3–8 düşük · izle</span><span><i style="background:#fecaca"></i>iş emri gerekli</span><span><i style="background:#fff;outline:2px solid #2563eb"></i>iş emri açık</span></div></div>' : "";
+      '</div><div class="lj"><span><i style="background:#dcfce7"></i>normal</span><span><i style="background:#fef3c7"></i>%3–8 düşük · izle</span><span><i style="background:#fecaca"></i>iş emri gerekli</span><span><i style="background:#e2e8f0"></i>gölgeli · kendi normalinde</span><span><i style="background:#fff;outline:2px solid #2563eb"></i>iş emri açık</span></div></div>' : "";
     var gs = gunSay(ay0), tk = '<div class="card"><h3>' + AYLAR[+ay0.slice(5, 7) - 1] + ' takvimi <small style="margin-left:auto;color:var(--muted);font-weight:500">günlük üretim / teorik</small></h3><div class="gsTk">' + ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"].map(function (x) { return '<div class="h">' + x + "</div>"; }).join("");
     var ilkG = (new Date(ay0 + "-01T12:00:00").getDay() + 6) % 7; for (var e = 0; e < ilkG; e++) tk += '<div class="h"></div>';
     var kes = {}; (g0 && g0.ypBosluk || []).forEach(function (x) { kes[+x.bas.slice(6, 8)] = 1; });
@@ -5350,6 +5351,43 @@ function gesYapilacak(k) { if (!k) return; liste("ges_olaylar", "ieNo != '' && i
   k.innerHTML = '<div class="bB"><div class="bBb" style="color:#b45309">GES iş emirleri · ' + L.length + "</div>" + L.slice(0, 5).map(function (o) { return '<a class="row bR2" href="#isemri/' + o.id + '">' + ikon("gunes", "#f59e0b", "kucuk") + '<div class="t"><b class="w">' + esc(o.ieNo + " · " + o.baslik) + "</b><small" + (ieGecik(o) ? ' style="color:var(--bad)"' : "") + ">" + esc(((o.ieDurum || "Açık") === "Açık" ? "bakımcıya gönderilmedi" : o.ieDurum === "Düzelmedi" ? "çözüldü denmişti ama düzelmedi" : o.ieDurum) + (o.sonTarih ? " · son tarih " + tarih(o.sonTarih) : "")) + "</small></div>" + iePill(o, true) + "</a>"; }).join("") + "</div>"; }).catch(function () {}); }
 function gesBugunMini(k) { if (!k) return; gesVeri().then(function (V) { var C = V.IS.canli || {}, ac = V.IE.filter(ieAcikMi);
   k.innerHTML = '<a class="card row" href="#ges" style="margin:0 0 12px">' + ikon("gunes", "#f59e0b") + '<div class="t" style="margin-left:6px"><b class="w">GES · bugün ' + (C.bugunKwh != null ? sayi(C.bugunKwh / 1000, 1) + " MWh" : "—") + "</b><small>" + (ac.length ? ac.length + " açık iş emri" : "açık iş emri yok") + '</small></div><span style="color:var(--blue2);font-weight:800">›</span></a>'; }).catch(function () {}); }
+
+/* ---------- GES: gölgeli konumdaki inverterler kendi normaline göre izlenir ---------- */
+var GES_GOLGE = null; /* { invKey: { ad, bas: "YYYY-MM-DD", norm: 0.86 | null } } — fin_ayarlar.ges_ayar.deger.golge */
+function gesGolgeYukle() { return liste("fin_ayarlar", "anahtar = 'ges_ayar'").then(function (L) { var r = L[0]; GES_GOLGE = (r && r.deger && r.deger.golge) || {}; return r; }).catch(function () { if (!GES_GOLGE) GES_GOLGE = {}; }); }
+function gesGolgeKaydet(G) { return liste("fin_ayarlar", "anahtar = 'ges_ayar'").then(function (L) { var r = L[0], d = Object.assign({}, (r && r.deger) || {}, { golge: G }); GES_GOLGE = G;
+  return r ? api("/api/collections/fin_ayarlar/records/" + r.id, { method: "PATCH", body: { deger: d } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "ges_ayar", deger: d } }); }); }
+setTimeout(function () { if (typeof TOK !== "undefined" && TOK && GES_GOLGE === null) gesGolgeYukle(); }, 0);
+function gesOrtanca(A) { A = A.filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; }); return A.length ? A[Math.floor(A.length / 2)] : null; }
+function invAnaliz(INV) { var A = invAnaliz0(INV); if (!A) return A; if (GES_GOLGE === null && typeof TOK !== "undefined" && TOK) gesGolgeYukle(); var GG = GES_GOLGE || {}, b = bugun(), son7 = A.gunler.slice(-7);
+  A.R.forEach(function (r) { var g = GG[r.x.k]; if (!g) return;
+    var tum = gesOrtanca(A.gunler.map(function (d) { var v = r.r[d]; return v != null && v > 0.05 ? v : null; })), norm = +g.norm || tum, gecen = Math.round((new Date(b) - new Date(g.bas || b)) / 864e5);
+    r.golge = true; r.norm = norm; r.izleme = !(+g.norm); r.izlemeKalan = Math.max(0, 30 - gecen); r.normHesap = tum; r.eskiMsg = r.msg;
+    if (r.durum === "kt" || !norm) return; /* durduysa her zaman uyar */
+    var rel7 = r.m7 != null ? r.m7 / norm : null, dusuk = son7.filter(function (d) { var v = r.r[d]; return v != null && v < norm * 0.6; }).length; r.rel7 = rel7;
+    var not = "gölgeli konum · kendi normali akranlarının %" + Math.round(norm * 100) + "'i" + (r.izleme ? " (izleme: " + r.izlemeKalan + " gün kaldı)" : "");
+    if (rel7 != null && rel7 < 0.95) { r.durum = "uy"; r.msg = "kendi normalinin de altında: normalde %" + Math.round(norm * 100) + ", son 7 gün %" + Math.round(r.m7 * 100) + " · " + not; }
+    else if (dusuk >= 2) { r.durum = "uy"; r.msg = "son 7 günün " + dusuk + "'sinde kendi normalinin çok altında (kesinti?) · " + not; }
+    else { r.durum = "ok"; r.msg = not; }
+    r.kayip = r.durum === "ok" ? 0 : son7.reduce(function (t, d) { var v = (INV.gun[r.x.k] || {})[d]; return t + (v == null ? 0 : Math.max(0, A.med[d] * norm - (+v || 0))); }, 0); });
+  return A; }
+/* izleme 30 günü dolanların normalini sabitle (performans sayfası açılınca) */
+function gesGolgeKilitle(A) { var GG = GES_GOLGE || {}, d = false; if (!A) return;
+  A.R.forEach(function (r) { var g = GG[r.x.k]; if (g && !(+g.norm) && r.izlemeKalan === 0 && r.normHesap) { g.norm = Math.round(r.normHesap * 1000) / 1000; d = true; } });
+  if (d && typeof rol === "function" && rol() === "yonetici") gesGolgeKaydet(GG).catch(function () {}); }
+function invKarti(IS, P, IEinv) { var h = invKarti0(IS, P, IEinv), A = invAnaliz(IS && IS.inv); if (!A) return h; gesGolgeKilitle(A); var GG = GES_GOLGE || {};
+  var GL = A.R.filter(function (r) { return r.golge; }), ADAY = A.R.filter(function (r) { return !r.golge && r.durum === "uy" && /sürekli düşük/.test(r.msg); }), yon = typeof rol === "function" && rol() === "yonetici";
+  if (!GL.length && !ADAY.length) return h;
+  var k = '<div class="card"><h3>' + ikon("gunes", "#64748b", "kucuk") + 'Gölgeli konumdaki inverterler <small style="color:var(--muted);font-weight:500;margin-left:auto">akranlarıyla değil kendi normalleriyle kıyaslanır</small></h3>' +
+    GL.map(function (r) { return '<div class="row"><span class="pill" style="background:' + (r.durum === "ok" ? "#e2e8f0;color:#334155" : r.durum === "kt" ? "#fde8e8;color:var(--bad)" : "var(--warnbg);color:var(--warn)") + ';margin-right:10px">' + (r.durum === "ok" ? (r.izleme ? "izleniyor" : "normal") : r.durum === "kt" ? "durdu" : "düşük") + '</span><div class="t"><b class="w">' + esc(r.x.ad) + "</b><small>" +
+      esc("normali %" + (r.norm ? Math.round(r.norm * 100) : "?") + " · son 7 gün %" + (r.m7 != null ? Math.round(r.m7 * 100) : "—") + (r.izleme ? " · izleme dönemi, " + r.izlemeKalan + " gün sonra normal sabitlenir" : " · normal " + tarih((GG[r.x.k] || {}).bas || bugun()) + "'ten beri izlendi")) + "</small></div>" + (yon ? '<button class="btn sm" data-golge="' + esc(r.x.k) + '" data-golgeAd="' + esc(r.x.ad) + '">Çıkar</button>' : "") + "</div>"; }).join("") +
+    (ADAY.length && yon ? '<div class="row" style="flex-wrap:wrap;gap:8px"><small style="flex:1 1 100%;color:var(--muted)">Sürekli düşük çalışan ama arızası olmayan (gölge, eğim) inverterleri buraya ekle. 30 gün izlenir, sonra sadece kendi normalinin altına düşerse ya da durursa uyarır.</small>' +
+      ADAY.map(function (r) { return '<button class="btn sm" data-golge="' + esc(r.x.k) + '" data-golgeAd="' + esc(r.x.ad) + '">+ ' + esc(r.x.ad) + " (%" + Math.round(r.m7 * 100) + ")</button>"; }).join("") + "</div>" : "") + "</div>";
+  return k + h; }
+document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-golge]"); if (!b) return; e.preventDefault(); var GG = Object.assign({}, GES_GOLGE || {}), key = b.dataset.golge;
+  if (GG[key]) { if (!confirm((GG[key].ad || key) + " gölgeli listeden çıkarılsın mı? Tekrar akranlarıyla kıyaslanır.")) return; delete GG[key]; }
+  else GG[key] = { ad: b.getAttribute("data-golgeAd") || key, bas: bugun(), norm: null };
+  b.disabled = true; gesGolgeKaydet(GG).then(function () { toast("Kaydedildi"); if (typeof gesGit === "function") gesGit("performans", "#invK"); else location.reload(); }).catch(hata); });
 
 /* ---------- v46 GES aylık performans raporu (2 sayfa A4) ---------- */
 function sGesRapor(ay) {
