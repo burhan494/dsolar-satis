@@ -1,7 +1,7 @@
 {
- "surum": 76,
- "paket": "surumler/dsolar-76.zip",
- "sha256": "13ae94a5294ad1a733af8ee8acecd6197c2c57ab2097877810da508388b3e981",
- "imza": "GaFX5vWOUtccIMESOufIUtFjHXOVgfRlZWtW6UURwtWY4CyQZm7fSrAIgffx25TrM74aHsp59L66RcFs88DXRPLQJMm6tUlVE/lV5yiGgVe5IchDJjcKjvxam3MNam215ccQefNGkvvUfEwx9ys81UdD7MIJyEU3l9xzcX55k0JoY8Xn4kuTh4yYfo+GzJOSD3JK+GYLx+jBv0c+C5rWyZdWWoTBVI+nrbqycAKs071K1CCzd9Ak4b8kGtGTiEpRqDd+EzNxoWSsUv5P1enqyOtQ+lwZctxgZjMC4XqbyETFbAjPTk/LC/O8Uw1ugGfipU+KKNMdNMF8h5pn6FFEOve9yYnfQ41vgqiZkhvEtoPpvIi1EzXplECHWEGjsiEUKuSM8WXY9Htx9EZryG8glkoJ08MDZKEJnToRyJLIkWthXxFqcgjzoCeQrA1Uxw+1QYX05RdpIO+lZvhVIUgQ1mbOPo4EyGQG5NB8rxS1LImQuiEo82S00T0H95YGc+Yv",
- "not": "Param yeni görünüm: sade profesyonel (beyaz kartlar, segment sekmeler, bütçe ilerlemesi, kategori dağılımı), ertelenenler ayrı bölüm, 'Gelecek aya at'"
+ "surum": 77,
+ "paket": "surumler/dsolar-77.zip",
+ "sha256": "ae8b3fdb271c8bcf529112e8bae22f8fb1d580403159d8a45c2673c73e89fef5",
+ "imza": "krF2y6t2IOjk7Ni88xx8AMSSJJWQ5YIOwY29RRDPdb6viq4JQ+PBOuZQJavduYaLZg2eykAl3Y3jwxNJauozIZK0YcptUt74NHg+sQzUOWwyPWKvoGWsjdDp9uXSpxqh2lidFjdjETFUt0tj1R1VcgjSAxEN0kKOTYlK5jFXp6w9l7uLeJrR1XKVMTQ9nilVuHWAcr9LPAeen075B42QtezD1/vkvuWy8FbE4lJzd2Ay2eSxqQvmB0VUlB4IXF2JJXwliC7LBHT2CZXB8yVtgaBnp4frYXO8NcQMBMX8y1wxb4GonYJMBH1TeEyY/XsYY/Pwk/243bbGHTGpQp/DfDbj9NvBQJtpr9AU8di+IJIX8TJax6NXsprQPOdVHZrHryU0VwCIB1/dRLE7s72lCgohMNOX2oTJsNORLB56jHtNTFY4z8z1l0LAjdU8YN3pYGk8/B3SLsLtpnfY4j2uXxl5oJXG3mSUM+f7chIyIvkOW6LZDc6KGfF8nd+38pKI",
+ "not": "Param: gönderen bilinmeyen gelecek para, tutar ve tarihe göre otomatik 'geldi' olur"
 }

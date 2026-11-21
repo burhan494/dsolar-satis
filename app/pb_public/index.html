@@ -4159,7 +4159,9 @@ function prmAlacakAyGelir(D, ym, ilk) { return (D.alacaklar || []).reduce(functi
   return s + P.T.filter(function (x) { return x.durum !== "ok" && (x.t.slice(0, 7) === ym || (ilk && x.t.slice(0, 7) < ym)); }).reduce(function (q, x) { return q + prmTl(x.acik, a.pb); }, 0); }, 0); }
 function prmAlacakTop(D) { return (D.alacaklar || []).filter(function (a) { return !a.bitti; }).reduce(function (s, a) { return s + prmAlacak(D, a).kalanTl; }, 0); }
 /* gelecek para: tarihinden 20 gün önce ve sonrası, anahtarı tutan ve tutarın %80'i kadar giriş görülürse "geldi" */
-function prmGeldiMi(D, x) { if (x.geldi) return x.geldi; var A = prmAnahtarlar(x.anahtar); if (!A.length || !x.tarih) return null; var bas = new Date(Date.parse(x.tarih) - 20 * 864e5).toISOString().slice(0, 10), min = prmTl(x.tutar, x.pb) * 0.8;
+function prmGeldiMi(D, x) { if (x.geldi) return x.geldi; var A = prmAnahtarlar(x.anahtar); if (!x.tarih) return null;
+  if (!A.length) { /* gönderen bilinmiyorsa: tarih civarında bankaya gelen, tutarı ±%3 tutan para */ var bk = Date.parse(x.tarih), bt = prmTl(x.tutar, x.pb);
+    var t0 = D.tx.filter(function (t) { var d = Date.parse(t.d); return t.acctKind === "bank" && t.amt > 0 && d >= bk - 7 * 864e5 && d <= bk + 45 * 864e5 && Math.abs(t.amt - bt) <= bt * 0.03 && !prmKendiTransfer(D, t); })[0]; return t0 ? t0.d : null; } var bas = new Date(Date.parse(x.tarih) - 20 * 864e5).toISOString().slice(0, 10), min = prmTl(x.tutar, x.pb) * 0.8;
   var t = D.tx.filter(function (t) { return t.acctKind === "bank" && t.amt >= min && t.d >= bas && prmEslesir(t, A); })[0]; return t ? t.d : null; }
 function prmGelecekAcik(D, sonT) { return (D.gelecek || []).filter(function (x) { return !x.senaryo && x.tarih && !prmGeldiMi(D, x) && (!sonT || x.tarih <= sonT); }); }
 /* birikim ve sigorta ödemeleri: ekstre/dökümden otomatik gruplanır */
@@ -4577,7 +4579,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 76;
+var DS_SURUM = 77;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
