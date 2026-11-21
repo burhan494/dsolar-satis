@@ -1,7 +1,7 @@
 {
- "surum": 74,
- "paket": "surumler/dsolar-74.zip",
- "sha256": "ac3125e780905209b069befa60078c7b32c9be6640ee2cadf0d4727536b17e2b",
- "imza": "XcUj9RjrBSwCXE4iMlmnG86Qe8p3qFuAjT1P0dHV+3Zuk+UIBzCiicFzQsoEbBbmlvSK3g6OJpYD+2oXSrZKKpR535/I7KAy0Eu4kJNCi0qL3OLsb0SiFaiCGcek+hr6X5QmXprcnh2ZH72csM2A38EMbR0p93oji7AXvZUYy+Ybn/LFtyGCo71rsF54kyT4x8fMKcXw6QpE/kPSUM8djlxKr6R9PQEnyyZJHBLHIVN2OKK8d+qbsDbnOHIoTvPeeyeEtTwQ4IUNgB0OqWM/+ZetMEZz5VPHL4PEAaMkdB1tv0ksIFjRYn5qUBXgXHqzJWp4pVg3bTXvRj0sBKHBhAJdTrR/N/QMnitzSoePZlvOLuPbhbVlMTJhZVgEKa8MqUyzCYy2wBUmOZGHPbQXgWxmGKD5527qNTU3KVDVZkKZTCXu1PpouZqPwfPHn894lKv3oxxSmNPnCMlLe1gfKXunlzHlrG5xm9uT5A5dKZE34blzbFC/PYY6MYLx/nXd",
- "not": "GES gölgeli inverter: kendi normali son 3 haftaya göre, ilk 30 gün sadece durursa uyarır"
+ "surum": 75,
+ "paket": "surumler/dsolar-75.zip",
+ "sha256": "5da72f2ba536a18e8ecbe0dd16a3e45c9a62d8801b5294f002e0af2a6e0f0fff",
+ "imza": "la0Y2SoExe9iJqg59OejHYqSHSqq/2xVxsZI53ZtR6+Muxcw3xTPTLhc97AbT7JuWh4AyERjwFP1xLdEotS36P9OQcqnRHWzhFMW1q8NuXCJkJW3Fg6XQcNPInsUsJeyU+iPM/W3NS/9qqTLK87nS+Wv60yAAdRoKeZdaXsGHGHsrIlheowtPCxTfuA7R32yIauFoOO4l2QnIqliJxjqKwDnzfurwboGOoAXgc8cticj9HVW0ikJgFFUsPo1IpgynxUioQXjHGoowhrUSZ+vV9YGUFFOXPEDtoQGY1MKxzQ6kNEPXxeHdYYbzeweCo/oLJoypAxh+n7eZcaf85ofi4CFrlS2mVe2qn8cXdAyq27P/s0Y12RF6dyFWQLAfzBCAefAcW28FjWLlalNDI46xvjER0bDMwFTgMElXyWc3YtEBklGHbH3fnFo7a+nW8QLNnlmaVqnSJnRe0KU4/21XUEdIU03SW336nqDCErW93uBTdfs2j8n0CUFSNfD4sJb",
+ "not": "Param: kısmi ödenmiş ödeme ertelenince yalnız kalanı yeni tarihe geçer, ödenen kısım asıl ayda kapanır"
 }
