@@ -1,7 +1,7 @@
 {
- "surum": 79,
- "paket": "surumler/dsolar-79.zip",
- "sha256": "473ca68c02aebff1b79880374c566854ca03f464de74bee927ad9398eb23aa5b",
- "imza": "aySlvANtckfW367Cad0C9DwGqB03GpwEAwa6l3XGqWWac7tmzP+aqI22cBm1IjHQ2+wKnhNE8xaXzkbFpyxkz0bhJAUFvc6Whwf9IsGkWXMgpaU5Jf9zHpg4Nj74taoK0O2ZESnOyL4AEmvoKZMvftJuclBrDFdOJi2goRtH5CvdZ/yYQDWADz9vKQyeB6CdZy3D+WQpLPUNKVUMgIA6mT0v0gRX4LtcJI1C+AYvSN0zwfky1rVXfAqsY5CXj4XJHLbkS89oJn42cSJpdKqV0VwwHOMhkNQrR5CX9ft2Goieg5kQHIGeNcFtP5DaNrN6uOFvpziEFVbdBzMmoXJ1DwO2Vk/Twk8eHY4DiWuuV34eQWd9/SMHEybeIjVRIwmu6FqgDHRsbPOV+HvaXHqI6FgBH1V7770AIJPvSgEWw08WF2aSVAK7TPXXRVACrx3LW/9tHwlh+JiGoaMeNZN6OI11XzCXBsvQiMZUe00KJ8Kp8vcpg9U/FuxOw1PTSBKj",
- "not": "Param: 'Claude / yapay zekâ' kategorisi"
+ "surum": 80,
+ "paket": "surumler/dsolar-80.zip",
+ "sha256": "2baf7bc3a5f6ff14cd1ecbf287751671e79917a2ebb43ccb3dfa52bbbd1ee38f",
+ "imza": "QAa3TUG1bpYj0SHWC4SfAd0GCu4W3bx5eJMA7q3mf2lBJBBN5xybxcDILhP3hZvK7GqE+podKNmy5tU3u64sYAekDvsDJXHSJppvYgQGIGzN+8G9rgPp/4QqykgwF1Kx8vvxOJseBGRiPTIC5/i4+VWcfbO10ucUhpkDWZvSsM1h3EBW44uLbg33miskP6HmUo1M2IBrcLxh6GCdQHX1k04ADYTpWOuaGMCQXVqIheFCxPCo0621TA++2s+BckpAt0nUZ2552nx4FzLMhS5DlUhvnsFYgPGWJVbQHD6hZeky6/ndf7khOAPsoFbo0mb5fi/CTIeMS0jUUuCGl7FCBd9CmbsDWPVBSUFRuVdhLTrBkJYWeL+6LbFn+C0tsoThECUtNdeP5Yf02KeOjheSRN7l8GrrVO9OYkc7tJJ1Mg38lAA3APzcSYKqzs8tSzYndDtG6zidGARX99+g1pRpSwmU1LkqeKS5EZshn/NIbIC1CalGWgPTcdEFLeLW9DnN",
+ "not": "Param: tüm Anthropic/Claude harcamaları otomatik 'Claude / yapay zekâ' kategorisine"
 }

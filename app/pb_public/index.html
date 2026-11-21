@@ -4447,7 +4447,7 @@ function prmSatirTik() { Array.prototype.forEach.call(document.querySelectorAll(
 /* ---------- v72: çocuk kategorileri tek, ödeme menüsü (kısmi/asgari/ertele), sade Harcama ---------- */
 var PRM_COCUK = { "Eğitim & çocuk": 1, "Çocuk masrafları": 1 };
 function prmKatBir(k) { return PRM_COCUK[k] ? "Çocuklar" : k; }
-function prmKat(D, t) { return prmKatBir(prmKat0(D, t)); }
+function prmKat(D, t) { if (!(D.katElle || {})[t.id] && /ANTHROPIC|CLAUDE\.AI/i.test(t.desc || "")) return "Claude / yapay zekâ"; return prmKatBir(prmKat0(D, t)); }
 function prmHarcamalar(D, ym) { var L = prmHarcamalar0(D, ym); L.forEach(function (x) { x.kat = prmKatBir(x.kat); }); return L; }
 function prmTamamla(D) { D = prmTamamla0(D); var B = D.butce || {};
   Object.keys(PRM_COCUK).forEach(function (k) { if (B[k]) { B.Çocuklar = (+B.Çocuklar || 0) + (+B[k] || 0); delete B[k]; } });
@@ -4579,7 +4579,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 79;
+var DS_SURUM = 80;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
