@@ -1,7 +1,7 @@
 {
- "surum": 75,
- "paket": "surumler/dsolar-75.zip",
- "sha256": "5da72f2ba536a18e8ecbe0dd16a3e45c9a62d8801b5294f002e0af2a6e0f0fff",
- "imza": "la0Y2SoExe9iJqg59OejHYqSHSqq/2xVxsZI53ZtR6+Muxcw3xTPTLhc97AbT7JuWh4AyERjwFP1xLdEotS36P9OQcqnRHWzhFMW1q8NuXCJkJW3Fg6XQcNPInsUsJeyU+iPM/W3NS/9qqTLK87nS+Wv60yAAdRoKeZdaXsGHGHsrIlheowtPCxTfuA7R32yIauFoOO4l2QnIqliJxjqKwDnzfurwboGOoAXgc8cticj9HVW0ikJgFFUsPo1IpgynxUioQXjHGoowhrUSZ+vV9YGUFFOXPEDtoQGY1MKxzQ6kNEPXxeHdYYbzeweCo/oLJoypAxh+n7eZcaf85ofi4CFrlS2mVe2qn8cXdAyq27P/s0Y12RF6dyFWQLAfzBCAefAcW28FjWLlalNDI46xvjER0bDMwFTgMElXyWc3YtEBklGHbH3fnFo7a+nW8QLNnlmaVqnSJnRe0KU4/21XUEdIU03SW336nqDCErW93uBTdfs2j8n0CUFSNfD4sJb",
- "not": "Param: kısmi ödenmiş ödeme ertelenince yalnız kalanı yeni tarihe geçer, ödenen kısım asıl ayda kapanır"
+ "surum": 76,
+ "paket": "surumler/dsolar-76.zip",
+ "sha256": "13ae94a5294ad1a733af8ee8acecd6197c2c57ab2097877810da508388b3e981",
+ "imza": "GaFX5vWOUtccIMESOufIUtFjHXOVgfRlZWtW6UURwtWY4CyQZm7fSrAIgffx25TrM74aHsp59L66RcFs88DXRPLQJMm6tUlVE/lV5yiGgVe5IchDJjcKjvxam3MNam215ccQefNGkvvUfEwx9ys81UdD7MIJyEU3l9xzcX55k0JoY8Xn4kuTh4yYfo+GzJOSD3JK+GYLx+jBv0c+C5rWyZdWWoTBVI+nrbqycAKs071K1CCzd9Ak4b8kGtGTiEpRqDd+EzNxoWSsUv5P1enqyOtQ+lwZctxgZjMC4XqbyETFbAjPTk/LC/O8Uw1ugGfipU+KKNMdNMF8h5pn6FFEOve9yYnfQ41vgqiZkhvEtoPpvIi1EzXplECHWEGjsiEUKuSM8WXY9Htx9EZryG8glkoJ08MDZKEJnToRyJLIkWthXxFqcgjzoCeQrA1Uxw+1QYX05RdpIO+lZvhVIUgQ1mbOPo4EyGQG5NB8rxS1LImQuiEo82S00T0H95YGc+Yv",
+ "not": "Param yeni görünüm: sade profesyonel (beyaz kartlar, segment sekmeler, bütçe ilerlemesi, kategori dağılımı), ertelenenler ayrı bölüm, 'Gelecek aya at'"
 }
