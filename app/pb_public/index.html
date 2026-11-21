@@ -3660,7 +3660,7 @@ function prsSabitHazirla() { PRS_SB = { on: false, k: {}, c: {}, L: [], A: null 
 /* v57: Param — kişisel para bölümü. Yalnız sahibi görür; veri tarayıcıda parolayla (PBKDF2 + AES-GCM) şifrelenir,
    sunucuda/yedeklerde yalnız şifreli metin durur. Ekstre ve hesap dökümü PDF'leri bu cihazda okunur (Beacon'ın okuyucuları). */
 var PRM = { k: null, rec: null, D: null, ym: null, giz: false, tm: null, cari: null, KU: null, kayit: null, acik: {} };
-var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Kira", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Nafaka", "Nafaka & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kişisel / sosyal", "Kendi hesabım", "Şirket adına", "Sayma (tek seferlik)", "Diğer"];
+var PRM_KAT = ["Market", "Yemek & kafe", "Akaryakıt & ulaşım", "Seyahat", "Tekne", "Giyim", "Ev & yaşam", "Kira", "Elektronik", "Abonelik & dijital", "Faturalar & iletişim", "Sağlık", "Kişisel bakım", "Spor", "Nafaka", "Nafaka & çocuk", "Çocuklar", "Sigorta", "Resmi işler", "Banka masrafı", "Nakit", "Gönderilen para", "Kişisel / sosyal", "Claude / yapay zekâ", "Kendi hesabım", "Şirket adına", "Sayma (tek seferlik)", "Diğer"];
 var PRM_HARIC = { "Kendi hesabım": 1, "Şirket adına": 1, "Sayma (tek seferlik)": 1 };
 function prmIkon() { if (typeof ICO !== "undefined" && !ICO.kilit) ICO.kilit = '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'; if (typeof NAV_IK !== "undefined" && !NAV_IK.param) NAV_IK.param = ["kilit", "#ed7d31"]; }
 function prmSahibiMi() { return rol() === "yonetici"; }
@@ -4579,7 +4579,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 78;
+var DS_SURUM = 79;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
