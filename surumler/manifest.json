@@ -1,7 +1,7 @@
 {
- "surum": 71,
- "paket": "surumler/dsolar-71.zip",
- "sha256": "f0abfdffd3b773a7cc13624dab3b50f54e6c52998d868a9ac0473c19725ee580",
- "imza": "JjI/nIDvbaL4Q8bkHt6lK1gWH+juLr8YchdXYw2QfKPUWjXqXyUZrH34+BF8EWo/MBCoSuv6mlAPGBR322TFTRd4P0HsCno+iaeWRkOg6hGVFHbvIPP/vnWQqJmEhkQQexx9aF0WTZCqPBzcxqU1P5Czdn4z4AzWzEX+0EAawXYfUEIArY+HtmOvq4XtDbLBfDgT6oUqlmc0dyyekQCHB9GEdhQ9o/8PV8UMexgweKPYKccPr8HautClsr8wP8l8uuc11fyJztX1xOJUSH2d41SH0k2vxFESpVnf+ATnOv/Hu0j2tt5YM8ftr0/s59FGu8iue+aS75BsIe7ZE8S2CeQ31dF85GpmdklQ2Q9Bgl3iTfb5i5QN7TSklttkLOIykD1t4nbxX0RpXOwYL3ekPksS9k+uogasetC7Bj++7uV3Zubc0E67ETuGtgvDV/8R7p8xjIgVjWkZKBIp5CPTEjcIXS2uhOcbJp70UIZwthy3cidQGjlPaMJDYUe1hqZ0",
- "not": "Param sadeleşti: tek satır başlık + ••• menü, 5 sekme, Plan Özet'ten açılır, satırlara dokununca düzenlenir, koç ve abonelikler kısaltıldı"
+ "surum": 72,
+ "paket": "surumler/dsolar-72.zip",
+ "sha256": "a4c29012dad3aec25f6d989b84278b50f24a0636315e24d5dc39a23c69f4a970",
+ "imza": "l5jERhWVvvtjIxOgcGwlmdc4XOXmY12CHSZ0BLz0E/vKST/gu5ciy9pQlbD8GC9Pez5mw448hypiQ/ICnXtufwLQFxkj3lbwy3awewfJ6av8AQSfR/cO4jkPxykIslEZ68D9s9QWwpeF2bnkflR6Rw2t7uz6UF6M5/p1QGYGpWv8iJap5Vik4IhKtpguT8cwU5+uN7AGuKPHVfZdF1z/mTZld5ULslajmob3QmVzIMz8bApeK7qidqEGCPs9MBSBWESkw3ZB7GWnEe4CsxEvVGEEerT36npjR0C2lsaM2Phf4E0XR8vgm4/ZB5fZdp+grTMKpjJYbGMrbDf6gAb2lswJ+X2ChNFaEptCySOW0yb+sfzRjz/qmGYafilAvz2hHph54CRhrUh2+sjIcA+yvq1l41JQgIiFsWWOhe1iq/vY6oCO0+L930AaFYdNa691LwLh/vmRIt7Ryif9Z3+ACTUDJxN/76xbGGY62UlxSSCf6atZrWNce9AUcS37rKX9",
+ "not": "Param: ödemeye dokun → tamamı/kısmi/asgari/ertele, kartta bu ayın ödemesi satırı, sade Harcama + alttan detay, Tasarruf önerileri tek satır, çocuk kategorileri birleşti"
 }
