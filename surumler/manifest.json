@@ -1,7 +1,7 @@
 {
- "surum": 81,
- "paket": "surumler/dsolar-81.zip",
- "sha256": "5ac4dd0cfc0db1e42411827939d639b38b65a5b3495bb04045e66e7b7952d3b4",
- "imza": "nMYsD6gh8moE3qdSjRJ1J3h8khfp+9CFoM0X4q07UD1wMg/MPU8hwZ4uzj8cD6y7l3xsKAm0/Y9cPJ+Qsjon/wvXXr0RBLN1ViOVSIE32PE6G08YtO1hRJsJp8D4rODajBJPJ69fJZTMii12MyXwoCs8zzQrIGFE+KzM4cT+yvfMti0MvFNWkTVT53f83/qyR1o0s8UmG+rC2h/feCXXnNONFhaToA0zCMgHlsrHu6Qa+qF9TU8gT8n6cUv4tgYV64lr6Q+MC8y2TK14M/Vt8ijNcOZbcjxOpNSO9KD8hVnoNxv3Op44F5o+r4D7FQ5pWAXHAKfNaDeEy6amCiyiYmzVzzpg62SMpajylZFkjrj4R3PsWFtJymKKYgaHDsSGLRY/oj414uDSYPyWoy7tdnHyGHS47guguzNPQYnWtxRE8KNWnvuWUaevLeNIWYZ61IEqnCMdnHNcDNpDI65wPi3ztd394n3l0YdXVy2GV8ZVYZz+cMRxNYHmeSuvY36p",
- "not": "GES profesyonel: durum kartı, PR/kullanılabilirlik/özgül verim/kayıp (ışınıma göre), kirlilik-yıkama, periyodik bakım, ilk müdahale süresi, ekipman envanteri, DSCR, sade yapılacaklar"
+ "surum": 82,
+ "paket": "surumler/dsolar-82.zip",
+ "sha256": "db0339044c5424c4078c9cc2c21a8029448cf1f1c91c514ccca4c9cc1edb44d0",
+ "imza": "YZ2fxthx/NrWMWzkgJY0MATXjQ7SvKxsZOfK51rs8yOTCxFRntMGHPQLiwB1y/uf3jQnDKb9rVdv/LhUjm4ZkoWybqopfIPEpxC1l5VNpgQxi9rAIL92cuzSRMkTF62ahvK+DoX4+mOoBDGLXgXFq3jXKmO2owO748N1+jH8LrKakNfqwSoiyrX77MR3s0Nrul9LtIoxHvS3odXedZiTFl/jFYhyJtygf+i60aaUC5LJVcSJh1rZHLcH1TM/wVXZ1fsN35gRUPnq5thY8ARcM2T9qmC16YEtlEztS9hLaCcPRvUX6KsIBU8lLGI7I4GRvdSDDWeLB4agd44ooF9kwI5064It3wnx2qM31hfVUU/SEpqfuSzpGKkI7kODRlYEAtQ5hmArsnCtsh8v6eYeO0aEktA79BiajWlz+9UXk0hTsBgK/YtPkD4jMEKqgjg411s6fhJJXatVezvkkpV+qEAxsZg9Qg/2Vrd068NiBYXUkjxnOP0VrjCjgBlU4qQA",
+ "not": "GES: aynı günlerde birlikte düşen inverterler tek uyarı (ortak hat/koruma), gölgeli inverterlerde bulutlu günler sayılmaz"
 }

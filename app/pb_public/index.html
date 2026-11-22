@@ -1013,7 +1013,7 @@ function sGes0() {
     if (invSorY.filter(function (r) { return r.durum !== "kt"; }).length) dk.push(["uy", invSorY.filter(function (r) { return r.durum !== "kt"; }).length + " inverter akranlarının altında çalışıyor, iş emri açılmadı.", "inverter"]);
     IE.filter(ieAcikMi).forEach(function (o) { var dd = o.ieDurum || "Açık", bkA = (BK.filter(function (k) { return k.id === o.bakimci; })[0] || {}).ad;
       dk.push([ieGecik(o) || dd === "Düzelmedi" ? "kt" : "uy", o.ieNo + " · " + o.baslik + ": " + (dd === "Açık" ? "bakımcıya henüz gönderilmedi" : dd === "Düzelmedi" ? "çözüldü denmişti ama düzelmedi" : dd === "Çözüldü" ? "çözüldü, doğrulama bekleniyor" : dd.toLowerCase() + (bkA ? " (" + bkA + ")" : "")) + (ieGecik(o) ? ", son tarih " + tarih(o.sonTarih) + " geçti" : "") + ".", "#isemri/" + o.id]); });
-    var bsO = gesBoslukOzet(G); if (bsO) dk.push(bsO); dk = dk.concat(gesProDk(G, RA, P));
+    var bsO = gesBoslukOzet(G); if (bsO) dk.push(bsO); dk = dk.concat(gesProDk(G, RA, P, IS));
     var dus0 = gesDusukGun(buG); if (dus0.length) dk.push(["uy", ayAd(ay0) + ": " + dus0.join(", ") + ". günlerde üretim çok düşük.", "uretim"]);
     if (onc >= P.teslim && !(oncG.osGun && Object.keys(oncG.osGun).length >= gunSay(onc) - 1)) dk.push(["uy", ayAd(onc) + " OSOS dosyası tam değil ya da yüklenmedi.", "uretim"]);
     if (reaAsim && !(RA.cozum && reaS.donem >= RA.cozum)) dk.push(["uy", "Reaktif oran sınırın üstünde (" + ayAd(reaS.donem) + ")" + (RA.cozum ? "; çözüm " + ayAd(RA.cozum) + " bekleniyor." : "."), "reaktif"]);
@@ -4584,7 +4584,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 81;
+var DS_SURUM = 82;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -5461,12 +5461,13 @@ function gesGolgeKaydet(G) { return liste("fin_ayarlar", "anahtar = 'ges_ayar'")
   return r ? api("/api/collections/fin_ayarlar/records/" + r.id, { method: "PATCH", body: { deger: d } }) : api("/api/collections/fin_ayarlar/records", { method: "POST", body: { anahtar: "ges_ayar", deger: d } }); }); }
 setTimeout(function () { if (typeof TOK !== "undefined" && TOK && GES_GOLGE === null) gesGolgeYukle(); }, 0);
 function gesOrtanca(A) { A = A.filter(function (v) { return v != null; }).sort(function (a, b) { return a - b; }); return A.length ? A[Math.floor(A.length / 2)] : null; }
-function invAnaliz(INV) { var A = invAnaliz0(INV); if (!A) return A; if (GES_GOLGE === null && typeof TOK !== "undefined" && TOK) gesGolgeYukle(); var GG = GES_GOLGE || {}, b = bugun(), son7 = A.gunler.slice(-7);
-  A.R.forEach(function (r) { var g = GG[r.x.k]; if (!g) return;
+function invAnaliz(INV) { var A = invAnaliz0(INV); if (!A) return A; if (GES_GOLGE === null && typeof TOK !== "undefined" && TOK) gesGolgeYukle(); var GG = GES_GOLGE || {}, b = bugun(), son7 = A.gunler.slice(-7), mxM = A.gunler.reduce(function (m, d) { return Math.max(m, +A.med[d] || 0); }, 0), aydin = son7.filter(function (d) { return (+A.med[d] || 0) >= mxM * 0.35; }); /* bulutlu günler sayılmaz: gölge/eğim düşük ışıkta oranı bozar */
+  A.R.forEach(function (r) { var g = GG[r.x.k];
+    if (!g) return;
     var once = A.gunler.slice(0, -7), tum = gesOrtanca((once.length >= 7 ? once : A.gunler).map(function (d) { var v = r.r[d]; return v != null && v > 0.05 ? v : null; })), norm = tum, /* kendi normali: son haftadan önceki günlerin ortancası (mevsimle birlikte yavaşça kayar) */ gecen = Math.round((new Date(b) - new Date(g.bas || b)) / 864e5);
     r.golge = true; r.norm = norm; r.izlemeKalan = Math.max(0, 30 - gecen); r.izleme = r.izlemeKalan > 0; r.normHesap = tum; r.eskiMsg = r.msg;
     if (r.durum === "kt" || !norm) return; /* durduysa her zaman uyar */
-    var rel7 = r.m7 != null ? r.m7 / norm : null, dusuk = son7.filter(function (d) { var v = r.r[d]; return v != null && v < norm * 0.6; }).length; r.rel7 = rel7;
+    var rel7 = r.m7 != null ? r.m7 / norm : null, dusuk = aydin.filter(function (d) { var v = r.r[d]; return v != null && v < norm * 0.6; }).length; r.rel7 = rel7;
     var not = "gölgeli konum · kendi normali akranlarının %" + Math.round(norm * 100) + "'i" + (r.izleme ? " (izleme: " + r.izlemeKalan + " gün kaldı)" : "");
     if (r.izleme && dusuk < 2) { r.durum = "ok"; r.msg = not; } /* izleme döneminde yalnız durma/kesinti uyarır */
     else if (rel7 != null && rel7 < 0.92) { r.durum = "uy"; r.msg = "kendi normalinin de altında: normalde %" + Math.round(norm * 100) + ", son 7 gün %" + Math.round(r.m7 * 100) + " · " + not; }
@@ -5598,7 +5599,11 @@ function gesDscrKart(V, KL, kutu) { Promise.all([liste("krediler", "", "ad"), li
     '<div><small>Kapsama oranı</small><b style="color:' + (ora == null ? "inherit" : ora >= 1.25 ? "var(--ok)" : ora >= 1 ? "var(--warn)" : "var(--bad)") + '">' + (ora == null ? "—" : sayi(ora, 2) + "×") + "</b><small>" + (ora == null ? "taksit planı girilmemiş" : ora >= 1.25 ? "bankaların aradığı 1,25× üstünde" : ora >= 1 ? "taksiti karşılıyor ama sınırda" : "kira taksiti karşılamıyor") + "</small></div></div>" +
     '<div class="not" style="margin:8px 14px 12px"><small>Kira geliri ile ' + (G.length ? "GES / yatırım kredilerinin" : "tüm açık kredilerin") + " önümüzdeki 12 aylık taksit planı karşılaştırılır. İşletme giderleri (bakım, sigorta) düşülmemiştir.</small></div></div>"; }).catch(function () { kutu.innerHTML = ""; }); }
 /* ---- Yapılacaklar için ek maddeler (bakım, garanti, sayaç farkı) ---- */
-function gesProDk(G, RA, P) { var dk = [], b = bugun();
+function gesProDk(G, RA, P, IS) { var dk = [], b = bugun();
+  /* aynı günlerde birlikte düşen inverterler: ortak neden (aynı hat, trafo bölümü, koruma açması) */
+  var A = IS && IS.inv ? invAnaliz(IS.inv) : null; if (A) { var s7 = A.gunler.slice(-7), mx = A.gunler.reduce(function (m, d) { return Math.max(m, +A.med[d] || 0); }, 0), GD = {};
+    s7.forEach(function (d) { if ((+A.med[d] || 0) < mx * 0.35) return; var L = A.R.filter(function (r) { var v = r.r[d]; return v != null && v < 0.6; }); if (L.length >= 2 && L.length < A.R.length * 0.8) { var k = L.map(function (r) { return r.x.ad; }).sort(function (x, y) { return String(x).localeCompare(String(y), "tr", { numeric: true }); }).join(", "); (GD[k] = GD[k] || []).push(+d.slice(6, 8)); } });
+    Object.keys(GD).forEach(function (k) { dk.push(["kt", k + " aynı günlerde (" + GD[k].join(", ") + " " + AYLAR[+bugun().slice(5, 7) - 1].slice(0, 3) + ") birlikte düştü; diğerleri normaldi. Ortak hat, pano/trafo bölümü ya da koruma açması kontrol edilmeli.", "inverter"]); }); }
   gesBakimListe(RA || {}).forEach(function (x) { if (x.kalan != null && x.kalan < 0) dk.push(["uy", x.ad + " " + (-x.kalan) + " gün gecikti (" + x.ay + " ayda bir).", "isler"]); });
   var INV = {}, E = (RA && RA.envanter) || {}; Object.keys(E).forEach(function (k) { var g = E[k].garanti; if (g && gunFark(b, g) <= 90) dk.push(["uy", "İnverter garantisi " + (gunFark(b, g) < 0 ? "bitti" : gunFark(b, g) + " gün içinde bitiyor") + " (" + tarih(g) + ").", "ayar"]); });
   ((RA && RA.envanterEk) || []).forEach(function (x) { if (x.garanti && gunFark(b, x.garanti) <= 90) dk.push(["uy", x.ad + " garantisi " + (gunFark(b, x.garanti) < 0 ? "bitti" : gunFark(b, x.garanti) + " gün içinde bitiyor") + ".", "ayar"]); });
