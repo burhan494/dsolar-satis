@@ -297,6 +297,22 @@ nav.y a.fab{overflow:visible;background:none!important}
 .gsKpi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 14px 10px}.gsKpi>div{background:#f6f8fb;border-radius:12px;padding:10px 12px}.gsKpi small{display:block;color:var(--muted);font-size:12px}.gsKpi b{display:block;font-size:20px;margin:2px 0}.gsKpi b span{font-size:12px;font-weight:600;color:var(--muted)}
 @media(min-width:760px){.gsKpi{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .gsKayipD{padding:0 14px 8px}.gsKayipD small{color:var(--muted)}.gsPrG{width:100%;height:auto;display:block}
+/* ===== v83: GES sade profesyonel ===== */
+#m:has(#gsT2){--pm:#6b7a90;--pl:#eef1f5}
+#m:has(#gsT2) .card{border:0;border-radius:20px;box-shadow:0 1px 2px rgba(15,27,45,.06)}
+#m:has(#gsT2) .card h3{font-size:15px;font-weight:700}
+#gsT2{background:#e8edf3;border-radius:12px;padding:3px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;overflow:visible;margin:4px 0 14px}
+#gsT2 button{border:0;background:transparent;color:var(--pm);min-height:38px;border-radius:9px;font-size:13px;font-weight:600;padding:0;justify-content:center;display:flex;align-items:center;gap:4px;box-shadow:none}
+#gsT2 button.on{background:#fff;color:#0f1b2d;box-shadow:0 1px 3px rgba(15,27,45,.12)}
+#gsT2 .fRz{position:static;margin-left:2px}
+#gsMenu{display:inline-flex;align-items:center;gap:6px}
+#m:has(#gsT2) .gsCan{background:#fff;color:#0f1b2d;padding:16px 8px 8px 16px}
+#m:has(#gsT2) .gsCan .gsGa small,#m:has(#gsT2) .gsCan .kv small{color:var(--pm)}
+#m:has(#gsT2) .gsCan svg path:first-of-type{stroke:#eef1f5}#m:has(#gsT2) .gsCan svg path+path{stroke:#ed7d31}
+#m:has(#gsT2) .gsCan svg text{fill:#0f1b2d}
+#m:has(#gsT2) .gsCan .kv div{background:#f6f8fb;border-radius:12px}#m:has(#gsT2) .gsCan .kv b{color:#0f1b2d}
+#m:has(#gsT2) .gsCan .kv div.gsBar{background:#e3e8ef}#m:has(#gsT2) .gsCan .kv div.gsBar>*{background:#ed7d31}
+#m:has(#gsT2) .row{border-color:var(--pl)}
 
 /* v60: Param sekmeli düzen — telefon öncelikli */
 .prmW{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
@@ -4584,7 +4600,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 82;
+var DS_SURUM = 83;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -5318,8 +5334,8 @@ function kasaIleri(hero) {
 }
 
 /* ---------- v46 GES: Bugün · Performans · İşler · Kira · Ay kapanışı · Veri & ayarlar ---------- */
-var GES_SEK = [["bugun", "Bugün", "ev"], ["performans", "Performans", "grafik"], ["isler", "İşler", "alet"], ["kira", "Kira", "cuzdan"], ["kapanis", "Ay kapanışı", "liste"], ["ayar", "Veri & ayarlar", "ayar"]];
-var GS_ESKI = { ozet: "bugun", uretim: "performans", inverter: "performans", reaktif: "performans", olay: "isler", kira: "kira", ayar: "ayar" };
+var GES_SEK = [["genel", "Genel"], ["uretim", "Üretim"], ["inverter", "İnverter"], ["bakim", "Bakım"], ["finans", "Finans"]];
+var GS_ESKI = { ozet: "genel", bugun: "genel", performans: "uretim", reaktif: "uretim", inverter: "inverter", isler: "bakim", olay: "bakim", kira: "finans", kapanis: "finans" };
 function gesVeri() {
   return Promise.all([liste("ges_aylik", "", "-donem"), liste("isc_ayar", "").catch(function () { return []; }), liste("fin_ayarlar", "anahtar = 'beacon_genel' || anahtar = 'ges_ayar'").catch(function () { return []; }),
     liste("fin_hareketler", "kategori = 'Amcor kira'", "tarih").catch(function () { return []; }), liste("ges_olaylar", "", "-tarih").catch(function () { return []; }), liste("ges_bakimcilar", "", "ad").catch(function () { return []; })]).then(function (R) {
@@ -5348,7 +5364,7 @@ function gesKapanis(V, ay) {
 function sGes() {
   if (!yt("ges")) { location.hash = "#bugun"; return; }
   if (GES_GOLGE === null) { gesGolgeYukle().then(sGes); return; }
-  if (GS_ESKI[GS.sek]) GS.sek = GS_ESKI[GS.sek]; if (!GES_SEK.some(function (s) { return s[0] === GS.sek; })) GS.sek = "bugun";
+  if (GS_ESKI[GS.sek]) GS.sek = GS_ESKI[GS.sek]; if (GS.sek !== "ayar" && !GES_SEK.some(function (s) { return s[0] === GS.sek; })) GS.sek = "genel";
   sGes0();
   var n = 0, iv = setInterval(function () { if (++n > 80) clearInterval(iv); if (!$("gsT")) return; clearInterval(iv); gesDuzenle(); }, 100);
 }
@@ -5358,21 +5374,21 @@ function gesGit(s, sec) { GS.sek = GS_ESKI[s] || s; gesGoster(); if (sec) { var 
 function gesDuzenle() {
   var m = $("m"), T = $("gsT"); if (!T) return;
   // eski sekme çubuğu yerine yenisi
-  T.outerHTML = '<div class="chips" id="gsT2">' + GES_SEK.map(function (x) { return '<button data-gst2="' + x[0] + '" style="display:inline-flex;align-items:center">' + ikon(x[2], "#b45309") + x[1] + (x[0] === "isler" ? '<small class="fRz" id="gsIsN" style="display:none"></small>' : "") + "</button>"; }).join("") + "</div>";
+  T.outerHTML = '<div class="chips" id="gsT2">' + GES_SEK.map(function (x) { return '<button data-gst2="' + x[0] + '">' + x[1] + (x[0] === "bakim" ? '<small class="fRz" id="gsIsN" style="display:none"></small>' : "") + "</button>"; }).join("") + "</div>";
   // içerikleri yeni sekmelere taşı
   var ozet = Array.prototype.slice.call(m.querySelectorAll('[data-gs="ozet"]')), dikkat = null, gunluk = null;
   ozet.forEach(function (o) { Array.prototype.forEach.call(o.querySelectorAll(".card"), function (c) { var h = c.querySelector("h3"); if (h && /Dikkat edilecekler/.test(h.textContent)) dikkat = c; if (c.classList.contains("ust3")) gunluk = c; }); o.dataset.gs = "eski"; });
   Array.prototype.forEach.call(m.querySelectorAll("[data-gs]"), function (e) { if (e.dataset.gs !== "eski" && GS_ESKI[e.dataset.gs]) e.dataset.gs = GS_ESKI[e.dataset.gs]; });
-  Array.prototype.forEach.call(m.querySelectorAll('[data-gs="isler"]'), function (e) { var h = e.querySelector(".card h3"); if (h && /^\s*İş emirleri/.test(h.textContent)) e.dataset.gs = "eski"; });
+  Array.prototype.forEach.call(m.querySelectorAll('[data-gs="bakim"]'), function (e) { var h = e.querySelector(".card h3"); if (h && /^\s*İş emirleri/.test(h.textContent)) e.dataset.gs = "eski"; });
   var os = $("osD"), osK = os && os.closest(".card"); if (osK) { var u = osK.parentNode, w = document.createElement("div"); w.dataset.gs = "ayar"; while (osK.nextSibling) w.appendChild(osK.nextSibling); w.insertBefore(osK, w.firstChild); u.parentNode.insertBefore(w, u.nextSibling); w.querySelector(".card h3").id = "gsYukle"; }
-  var kap = document.createElement("div"); kap.dataset.gs = "bugun"; kap.id = "gsBug"; kap.innerHTML = '<div class="bos">Yükleniyor…</div>';
-  var isl = document.createElement("div"); isl.dataset.gs = "isler"; isl.id = "gsIs";
-  var kr = document.createElement("div"); kr.dataset.gs = "kira"; kr.id = "gsKr";
-  var kp = document.createElement("div"); kp.dataset.gs = "kapanis"; kp.id = "gsKp";
-  var perf = document.createElement("div"); perf.dataset.gs = "performans"; if (gunluk) { gunluk.style.margin = "0 0 12px"; perf.appendChild(gunluk); }
+  var kap = document.createElement("div"); kap.dataset.gs = "genel"; kap.id = "gsBug"; kap.innerHTML = '<div class="bos">Yükleniyor…</div>';
+  var isl = document.createElement("div"); isl.dataset.gs = "bakim"; isl.id = "gsIs";
+  var kr = document.createElement("div"); kr.dataset.gs = "finans"; kr.id = "gsKr";
+  var kp = document.createElement("div"); kp.dataset.gs = "finans"; kp.id = "gsKp";
+  var perf = document.createElement("div"); perf.dataset.gs = "uretim"; if (gunluk) { gunluk.style.margin = "0 0 12px"; perf.appendChild(gunluk); }
   var ilk = m.querySelector('[data-gs="eski"]') || m.lastChild; [kap, perf, isl, kr, kp].forEach(function (x) { m.insertBefore(x, ilk); });
-  var ilkI = m.querySelector('[data-gs="isler"]:not(#gsIs)'); if (ilkI) m.insertBefore(isl, ilkI);
-  var ilkK = m.querySelector('[data-gs="kira"]:not(#gsKr)'); if (ilkK) m.insertBefore(kr, ilkK);
+  var ilkI = m.querySelector('[data-gs="bakim"]:not(#gsIs)'); if (ilkI) m.insertBefore(isl, ilkI);
+  var ilkK = m.querySelector('[data-gs="finans"]:not(#gsKr):not(#gsKp)'); if (ilkK) m.insertBefore(kr, ilkK);
   var ilkP = m.querySelector('[data-gs="performans"]:not(:first-of-type)');
   bagT("[data-gst2]", function (e) { GS.sek = e.dataset.gst2; gesGoster(); });
   gesGoster();
@@ -5410,7 +5426,7 @@ function gesDuzenle() {
     kap.innerHTML = '<div class="gsIz"><div>' + canli + '<div id="gsDk"></div>' + invH + '</div><div>' + tk + kapMini + "</div></div>";
     if (dikkat) { dikkat.style.margin = "0 0 12px"; $("gsDk").appendChild(dikkat); var h3 = dikkat.querySelector("h3"); if (h3) h3.lastChild.textContent = "Yapılacaklar";
       Array.prototype.forEach.call(dikkat.querySelectorAll("[data-gsg]"), function (x) { x.onclick = function (ev) { ev.preventDefault(); var s = x.dataset.gsg; gesGit(s, s === "uretim" ? "#gsYukle" : s === "inverter" ? "#invK" : null); }; }); }
-    bagT("[data-gsi]", function () { gesGit("performans", "#invK"); }); bagT("[data-gsk]", function () { gesGit("kapanis"); });
+    bagT("[data-gsi]", function () { gesGit("inverter", "#invK"); }); bagT("[data-gsk]", function () { gesGit("finans", "#gsKp"); });
     // --- İşler (kanban + bakımcı karnesi)
     var K4 = [["Gönderilecek", function (o) { return (o.ieDurum || "Açık") === "Açık"; }], ["Bakımcıda", function (o) { return ["Gönderildi", "Sahada", "Düzelmedi"].indexOf(o.ieDurum) >= 0; }], ["Doğrulanıyor", function (o) { return o.ieDurum === "Çözüldü"; }], ["Kapandı (son 30 gün)", function (o) { return !ieAcikMi(o) && (o.kapanis || o.updated || "").slice(0, 10) >= gunSonra(-30); }]];
     var bkAd = function (o) { var x = V.BK.filter(function (k) { return k.id === o.bakimci; })[0]; return x ? x.ad : "bakımcı seçilmedi"; };
@@ -5487,7 +5503,7 @@ function invKarti(IS, P, IEinv) { var h = invKarti0(IS, P, IEinv), A = invAnaliz
 document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-golge]"); if (!b) return; e.preventDefault(); var GG = Object.assign({}, GES_GOLGE || {}), key = b.dataset.golge;
   if (GG[key]) { if (!confirm((GG[key].ad || key) + " gölgeli listeden çıkarılsın mı? Tekrar akranlarıyla kıyaslanır.")) return; delete GG[key]; }
   else GG[key] = { ad: b.getAttribute("data-golgeAd") || key, bas: bugun(), norm: null };
-  b.disabled = true; gesGolgeKaydet(GG).then(function () { toast("Kaydedildi"); if (typeof gesGit === "function") gesGit("performans", "#invK"); else location.reload(); }).catch(hata); });
+  b.disabled = true; gesGolgeKaydet(GG).then(function () { toast("Kaydedildi"); if (typeof gesGit === "function") gesGit("inverter", "#invK"); else location.reload(); }).catch(hata); });
 
 /* ---------- v81 GES profesyonel: beklenen üretim (eğik düzlem ışınımı), PR / kullanılabilirlik / özgül verim / kayıp,
    durum kartı, kirlilik-yıkama, periyodik bakım, ekipman envanteri, kredi kapsama (DSCR), yapılacaklar sadeleşmesi ---------- */
@@ -5604,7 +5620,7 @@ function gesProDk(G, RA, P, IS) { var dk = [], b = bugun();
   var A = IS && IS.inv ? invAnaliz(IS.inv) : null; if (A) { var s7 = A.gunler.slice(-7), mx = A.gunler.reduce(function (m, d) { return Math.max(m, +A.med[d] || 0); }, 0), GD = {};
     s7.forEach(function (d) { if ((+A.med[d] || 0) < mx * 0.35) return; var L = A.R.filter(function (r) { var v = r.r[d]; return v != null && v < 0.6; }); if (L.length >= 2 && L.length < A.R.length * 0.8) { var k = L.map(function (r) { return r.x.ad; }).sort(function (x, y) { return String(x).localeCompare(String(y), "tr", { numeric: true }); }).join(", "); (GD[k] = GD[k] || []).push(+d.slice(6, 8)); } });
     Object.keys(GD).forEach(function (k) { dk.push(["kt", k + " aynı günlerde (" + GD[k].join(", ") + " " + AYLAR[+bugun().slice(5, 7) - 1].slice(0, 3) + ") birlikte düştü; diğerleri normaldi. Ortak hat, pano/trafo bölümü ya da koruma açması kontrol edilmeli.", "inverter"]); }); }
-  gesBakimListe(RA || {}).forEach(function (x) { if (x.kalan != null && x.kalan < 0) dk.push(["uy", x.ad + " " + (-x.kalan) + " gün gecikti (" + x.ay + " ayda bir).", "isler"]); });
+  gesBakimListe(RA || {}).forEach(function (x) { if (x.kalan != null && x.kalan < 0) dk.push(["uy", x.ad + " " + (-x.kalan) + " gün gecikti (" + x.ay + " ayda bir).", "bakim"]); });
   var INV = {}, E = (RA && RA.envanter) || {}; Object.keys(E).forEach(function (k) { var g = E[k].garanti; if (g && gunFark(b, g) <= 90) dk.push(["uy", "İnverter garantisi " + (gunFark(b, g) < 0 ? "bitti" : gunFark(b, g) + " gün içinde bitiyor") + " (" + tarih(g) + ").", "ayar"]); });
   ((RA && RA.envanterEk) || []).forEach(function (x) { if (x.garanti && gunFark(b, x.garanti) <= 90) dk.push(["uy", x.ad + " garantisi " + (gunFark(b, x.garanti) < 0 ? "bitti" : gunFark(b, x.garanti) + " gün içinde bitiyor") + ".", "ayar"]); });
   var onc = ayEkle(b, -1), g = (G || []).filter(function (x) { return x.donem === onc; })[0];
@@ -5625,12 +5641,26 @@ function gesProBagla(V) { var tik = function (id, f) { if ($(id)) $(id).onclick 
 /* tüm parçaları sekmelere yerleştir (gesDuzenle içinden çağrılır) */
 function gesProYerlestir(V, kap, isl, kr, KL) { GES_AYAR = V.RA || {};
   try { gesProBugun(V, kap); } catch (e) { console.warn(e); }
-  var perf = document.querySelector('#m [data-gs="performans"]'); if (perf) { var k1 = document.createElement("div"); k1.innerHTML = gesKirlilikKart(V); perf.insertBefore(k1, perf.firstChild); }
+  var perf = document.querySelector('#m [data-gs="uretim"]'); if (perf) { var k1 = document.createElement("div"); k1.innerHTML = gesKirlilikKart(V); perf.insertBefore(k1, perf.firstChild); }
   if (isl) isl.insertAdjacentHTML("beforeend", gesBakimKart(V));
   if (kr) { var d = document.createElement("div"); kr.appendChild(d); gesDscrKart(V, KL, d); }
   var ay = document.querySelector('#m [data-gs="ayar"]'); if (ay) { var e = document.createElement("div"); e.innerHTML = '<div class="card row" style="margin:0 0 12px"><div class="t"><b class="w">GES konumu</b><small>' + (gesKonum(V.RA) ? esc(V.RA.konum.lat + ", " + V.RA.konum.lon) + " · eğim " + (V.RA.konum.egim || 26) + "°" : "girilmedi · beklenen üretim hesaplanmıyor") + '</small></div><button class="btn sm" id="gsKnm2">' + (gesKonum(V.RA) ? "Değiştir" : "Gir") + "</button></div>" + gesEnvanterKart(V); ay.insertBefore(e, ay.firstChild); if ($("gsKnm2")) $("gsKnm2").onclick = gesKonumForm; }
-  gesProBagla(V); }
-function gesDkSar(dk) { dk.sort(function (a, b) { return (a[0] === "kt" ? 0 : 1) - (b[0] === "kt" ? 0 : 1); }); dk.forEach(function (x, i) { x[3] = i >= 5 ? 1 : 0; }); return dk; }
+  gesProBagla(V); gesYeniDuzen(); }
+/* v83: yeni 5 sekmeli düzen — kartları ait oldukları sekmeye taşı, ••• menüsü, sekme linkleri */
+function gesYeniDuzen() { var m = $("m"); if (!m) return; var kap = $("gsBug"), perf = m.querySelector('[data-gs="uretim"]'), kp = $("gsKp"), kr = $("gsKr");
+  var invT = $("gsInvT"); if (!invT) { invT = document.createElement("div"); invT.dataset.gs = "inverter"; invT.id = "gsInvT"; var i0 = m.querySelector('[data-gs="inverter"]'); if (i0) m.insertBefore(invT, i0); else if (perf) perf.parentNode.insertBefore(invT, perf.nextSibling); }
+  if (kap) { var gi = kap.querySelector("[data-gsi]"), gk = gi && gi.closest(".card"); if (gk) invT.insertBefore(gk, invT.firstChild);
+    var tk = Array.prototype.filter.call(kap.querySelectorAll(".card"), function (c) { var h = c.querySelector("h3"); return h && /takvimi/i.test(h.textContent); })[0];
+    var kpi = Array.prototype.filter.call(kap.querySelectorAll(".card"), function (c) { var h = c.querySelector("h3"); return h && /Performans göstergeleri/.test(h.textContent); })[0];
+    if (perf) { if (tk) perf.insertBefore(tk, perf.firstChild); if (kpi) perf.insertBefore(kpi, perf.firstChild); }
+    var km = kap.querySelector("[data-gsk]"), kmc = km && km.closest(".card"); if (kmc) kmc.remove(); }
+  if (kr && kp && kp.parentNode === kr.parentNode) kr.parentNode.insertBefore(kr, kp);
+  Array.prototype.forEach.call(m.querySelectorAll("[data-gsg]"), function (x) { x.onclick = function (e) { e.preventDefault(); gesGit(x.dataset.gsg); }; });
+  if (!$("gsMenu")) { var rb = Array.prototype.filter.call(m.querySelectorAll("button, a"), function (b) { return /Aylık rapor/.test(b.textContent); })[0];
+    if (rb) { var mb = document.createElement("button"); mb.id = "gsMenu"; mb.className = "btn sm"; mb.setAttribute("aria-label", "Veri ve ayarlar"); mb.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="19" cy="12" r="1.8"></circle></svg> Veri &amp; ayarlar';
+      rb.parentNode.insertBefore(mb, rb.nextSibling); mb.onclick = function () { gesGit("ayar"); }; } }
+  gesGoster(); }
+function gesDkSar(dk) { dk.sort(function (a, b) { return (a[0] === "kt" ? 0 : 1) - (b[0] === "kt" ? 0 : 1); }); dk.forEach(function (x, i) { x[3] = i >= 3 ? 1 : 0; }); return dk; }
 function gesDkDaha(dk) { var n = dk.filter(function (x) { return x[3]; }).length; return n ? '<button class="btn sm" style="margin:8px 14px 12px" onclick="this.closest(\'.card\').classList.add(\'gsAc\');this.remove()">+ ' + n + " madde daha</button>" : ""; }
 
 /* ---------- v46 GES aylık performans raporu (2 sayfa A4) ---------- */

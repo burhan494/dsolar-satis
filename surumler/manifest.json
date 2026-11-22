@@ -1,7 +1,7 @@
 {
- "surum": 82,
- "paket": "surumler/dsolar-82.zip",
- "sha256": "db0339044c5424c4078c9cc2c21a8029448cf1f1c91c514ccca4c9cc1edb44d0",
- "imza": "YZ2fxthx/NrWMWzkgJY0MATXjQ7SvKxsZOfK51rs8yOTCxFRntMGHPQLiwB1y/uf3jQnDKb9rVdv/LhUjm4ZkoWybqopfIPEpxC1l5VNpgQxi9rAIL92cuzSRMkTF62ahvK+DoX4+mOoBDGLXgXFq3jXKmO2owO748N1+jH8LrKakNfqwSoiyrX77MR3s0Nrul9LtIoxHvS3odXedZiTFl/jFYhyJtygf+i60aaUC5LJVcSJh1rZHLcH1TM/wVXZ1fsN35gRUPnq5thY8ARcM2T9qmC16YEtlEztS9hLaCcPRvUX6KsIBU8lLGI7I4GRvdSDDWeLB4agd44ooF9kwI5064It3wnx2qM31hfVUU/SEpqfuSzpGKkI7kODRlYEAtQ5hmArsnCtsh8v6eYeO0aEktA79BiajWlz+9UXk0hTsBgK/YtPkD4jMEKqgjg411s6fhJJXatVezvkkpV+qEAxsZg9Qg/2Vrd068NiBYXUkjxnOP0VrjCjgBlU4qQA",
- "not": "GES: aynı günlerde birlikte düşen inverterler tek uyarı (ortak hat/koruma), gölgeli inverterlerde bulutlu günler sayılmaz"
+ "surum": 83,
+ "paket": "surumler/dsolar-83.zip",
+ "sha256": "88b9ae8248af0ec748f31b6df6ba39db16af86d36c4dbe5e57f4a9fbcbc0ae34",
+ "imza": "UC+V/wZWe9aFraz7Ud5thUvzuHJYgLSgM1oPcz3EM2iYMKl4uleqmgNAsWJYDlptQp+B2pAIDsiR34i1tZjf9XTfj5nCiqspo3ughr+BlpBEZOpqWruRogal5IJEQvHva2AwjyB9ER+hsUV+84SWjidZEeyNY/xxnmFEgF+Owp6CLsyjNFXrCAKqbszRP42a3L7LJLQn0gQBE9emwz/Kt9sZNOcRh34MsSnwYRZYRIZ+7Qsju5Ui7VvPDTzwbV9XV3MUHSd37LuezIdUi0fSEwPKa/QmqOvTrjXS/BIfMqI5LqNBQq2OJYeFBlJSJI+bFJJ737+A8O4SRdjn2I+4RdOaehJ2J+Qr9EnHb6WG0imP9JDepDSxG/oZY7ptASU8MqJUq4cVIhrmjHp7QW2uftL8C9t0qmVpzX7m2TB12Mm2BCHRpGrkRolN8Qjw3z/CpnLJZ9U85maupMpKb0/XBuJF4YSPBw268N3kNR6UWyBHr+/FX0JGYNI2awvg+UVC",
+ "not": "GES yeni görünüm: 5 sekme (Genel/Üretim/İnverter/Bakım/Finans), sade beyaz kartlar, Veri & ayarlar ayrı, Dikkat en fazla 3"
 }
