@@ -1,7 +1,7 @@
 {
- "surum": 85,
- "paket": "surumler/dsolar-85.zip",
- "sha256": "1f9cd27151e79bdc222e152a6a461507dbfac6744e0bef5a7b5c6114044bea89",
- "imza": "XGHCNteP27Fy1NeAtoKzeWONi0ensrkv4quOoBhU6rEkYPwerIHFmYfcCAeHxrd8zxXMCHQLM8Njs6TOz9ke29yK8zWtNFALUC/7YhB/xqVVyFrX0HkkvoVQQ/oe3KJG5spbyDWeckcv7noduIO9l6rCPhc9OPInXZUZgKya/KZprdJnptW45NUjOz9qCZekK9oxHW88Qag+jfr8wt4a/0noYq7JTsNSsHYIFQDr5V6g4jxlnrdBNrxmPpAGOHwV3tyloe2X9cybhXvHP3UXcSJVnuZqLvFWxCkMACR6g8TyDd4R4g0OhVUsb7bS4CbtdaM6dKUZKikxrKf184UR4uKh+Nat+cYBznUytUc2ASfZy1HdI90wS15CdrM2JEZ09NimUKNoYL85vL/6gz7xFaes/NQEcMoJt8DqJGMOaDESYlCDTLRc/SCbnb8ZTAHp1cV9CRZaG8nnltqGoSFEZZRFlHUfhQu1BI1f1TcVS2LSRBVEHXaRZq1OlScOIqHR",
- "not": "Bugün: yeni görünüm herkeste, 'Eski görünüme dön' kaldırıldı"
+ "surum": 86,
+ "paket": "surumler/dsolar-86.zip",
+ "sha256": "c1bedffcfb8ff79f529ef47c2c22c1df76cff71ed34fc18580d1a1c9324ee146",
+ "imza": "Xi5KeOONdCbzDVacVzv9F4VvwYIuHaY0XOYB1EHOk7Pq722TfEXqeMzr9KK10plccDenftSyuKa/ffrYNfDNKOgJtJum1tAFpip3ysm128Hi21bcVDov301fhPhY7IHlw67GWhoPMvFa41KbAL7JYMyXAUn44b/Ycb/h2jeCMnic3BXz98KYXmC+cY9SNZwsX9y5m7/7TfeEeCkiLgCoLlTAKMBZwHE0DpP94bLEZqDRmiy57AbmH0jAQpiJ4egas2iVuq+0fLQFGgYYRzVXgrO62gE8K45Axtva8OKLsud7CptnZDBPVcCnPuU+FItqylPRtzrLoLPo92qXHa4VKqqrg/Vt9VTfvZ633UtnQwiH/bRCNFLVU1r/C+jEnbhyfPQxUxKtgpMwJrcBZOlqxS0tgxHtK09XbGnfalSMU/lgzbLoaUjWp0bqTDCrcmFW4l2rJQDzS9RxXpAeOSpl7ttcZEMmdbaRH1/30bqDDQUPzbNvIMJST3XuEsAowjYr",
+ "not": "Tüm sayfalar ortak görünüm (Faz 2): beyaz kartlar, tek tip KPI kutuları ve sekmeler; Param hariç"
 }

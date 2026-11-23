@@ -429,6 +429,92 @@ nav.y a.fab{overflow:visible;background:none!important}
 .prmOmL>button:last-child{border-bottom:0}.prmOmL>button b{display:block;font-size:14.5px;font-weight:500}.prmOmL>button small{display:block;font-size:12px;color:var(--pm)}
 .prmKart .prmKartY{border-radius:18px}
 
+/* ===== D Solar ortak görünüm (Faz 2) — Bugün sayfasındaki --ds-* tokenlarıyla aynı dil =====
+   Yalnız sunum: renk, kart, satır, sekme, KPI kutusu, yazı ölçeği. Veri / işlev değişmez.
+   body.ds sınıfı 9y_tasarim.js ile verilir (Param hariç; Param kendi tasarımını korur). */
+
+/* --- zemin, yazı --- */
+body.ds{background:var(--ds-bg)}
+.ds main#m{color:var(--ds-metin)}
+
+/* --- sayfa başlığı (.bUst içindeki 22px başlık) --- */
+.ds .bUst{gap:12px;margin-bottom:12px}
+.ds .bUst [style*="font-size:22px"]{font-size:var(--ds-t-xl)!important;font-weight:700!important;letter-spacing:-.3px;color:var(--ds-navy);line-height:1.25}
+.ds .bUst small{font-size:var(--ds-t-s)}
+
+/* --- kart (SectionCard) --- */
+.ds .card{background:var(--ds-yuzey);border:1px solid var(--ds-cizgi);border-radius:var(--ds-r);box-shadow:none}
+.ds .card h3{font-size:var(--ds-t-l);font-weight:700;color:var(--ds-navy);padding:14px var(--ds-2) 10px}
+.ds .card h3 small{font-weight:600}
+.ds .row{border-top-color:var(--ds-cizgi-2)}
+.ds .card .row{padding-left:var(--ds-2);padding-right:var(--ds-2)}
+.ds .bos{color:var(--ds-soluk);border-top-color:var(--ds-cizgi-2)}
+.ds .pill{border-radius:999px}
+
+/* --- koyu/degrade özet kartları → beyaz kart, renk yalnız anlamlı değerde --- */
+.ds .card.hero{background:var(--ds-yuzey)!important;color:var(--ds-metin)!important;border:1px solid var(--ds-cizgi)!important}
+.ds .card.hero h3,.ds .card.hero b,.ds .card.hero strong{color:var(--ds-navy)!important}
+.ds .card.hero [style*="color:#fff"],.ds .card.hero [style*="color: #fff"],.ds .card.hero [style*="color:#cfe0f3"],.ds .card.hero [style*="color:#dbe6f3"],.ds .card.hero [style*="opacity:.85"]{color:var(--ds-soluk)!important;opacity:1!important}
+.ds .card.hero [style*="font-size:34px"],.ds .card.hero [style*="font-size:32px"],.ds .card.hero [style*="font-size:30px"]{color:var(--ds-navy)!important}
+.ds .card.hero small,.ds .card.hero .not,.ds .card.hero i{color:var(--ds-soluk)!important}
+.ds .card.hero .not{border-top-color:var(--ds-cizgi-2)!important}
+.ds .card.hero .kv>*,.ds .card.hero [style*="rgba(255,255,255"]{background:var(--ds-bg)!important;border-color:var(--ds-cizgi-2)!important;color:var(--ds-metin)!important}
+.ds .card.hero .kv>* small{color:var(--ds-soluk)!important}
+.ds .card.hero [style*="#fecaca"],.ds .card.hero [style*="#ffc2c2"],.ds .card.hero [style*="#f3c4c4"],.ds .card.hero [style*="#ffe4e6"],.ds .card.hero [style*="#ffd7b8"],.ds .card.hero [style*="#fca5a5"],.ds .card.hero [style*="#ffb"]{color:var(--ds-kirmizi)!important}
+.ds .card.hero [style*="#86efac"],.ds .card.hero [style*="#bbf7d0"],.ds .card.hero [style*="#a7f3d0"]{color:#0f7a4a!important}
+.ds .card.hero [style*="#fde68a"],.ds .card.hero [style*="#fcd34d"],.ds .card.hero [style*="#fbbf24"]{color:var(--ds-or-metin)!important}
+.ds .card.hero a{color:var(--ds-navy-2)}
+.ds .card.hero [style*="--bad"]{color:var(--ds-kirmizi)!important}.ds .card.hero [style*="--ok)"]{color:#0f7a4a!important}.ds .card.hero [style*="--warn"]{color:var(--ds-or-metin)!important}
+
+/* --- KPI kutuları (.krK) — hepsi aynı beyaz kutu; vurgu değer renginde --- */
+.ds .krK{background:var(--ds-yuzey);border:1px solid var(--ds-cizgi);border-radius:var(--ds-r);box-shadow:none;padding:14px var(--ds-2)}
+.ds .krK small{font-size:var(--ds-t-s);font-weight:600;color:var(--ds-soluk)}
+.ds .krK b{font-size:22px;font-weight:700;letter-spacing:-.3px;color:var(--ds-navy)}
+.ds .krK i{color:var(--ds-soluk)}
+.ds .krK.ana,.ds .krK.ana2,.ds .krK.ana3{background:var(--ds-yuzey)!important;color:var(--ds-metin)!important;border:1px solid var(--ds-cizgi)!important}
+.ds .krK.ana small,.ds .krK.ana i,.ds .krK.ana2 small,.ds .krK.ana2 i,.ds .krK.ana3 small,.ds .krK.ana3 i{color:var(--ds-soluk)!important}
+.ds .krK.ana b{color:var(--ds-kirmizi)!important}.ds .krK.ana2 b{color:var(--ds-or-metin)!important}.ds .krK.ana3 b{color:#0f7a4a!important}
+.ds .krK.ana{box-shadow:inset 3px 0 0 var(--ds-kirmizi)!important}.ds .krK.ana2{box-shadow:inset 3px 0 0 var(--ds-or)!important}.ds .krK.ana3{box-shadow:inset 3px 0 0 #16a34a!important}
+.ds .krK .ik{background:var(--ds-bg)!important}
+
+/* --- sekmeler: tek tip hap sekme (.chips) ve bölümlü seçici (.seg) --- */
+.ds .chips{gap:8px;padding:0 0 12px;scrollbar-width:none}
+.ds .chips::-webkit-scrollbar{display:none}
+.ds .chips button,.ds .chips>a{min-height:40px;border:1px solid var(--ds-cizgi);background:var(--ds-yuzey);color:var(--ds-metin);border-radius:999px;padding:0 14px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.ds .chips button:hover,.ds .chips>a:hover{border-color:#c9d5e4}
+.ds .chips button.on,.ds .chips>a.on{background:var(--ds-navy);color:#fff;border-color:var(--ds-navy)}
+.ds .chips button .ik{width:20px;height:20px;margin:0}
+.ds .seg{border-color:var(--ds-cizgi);border-radius:var(--ds-r-k);background:var(--ds-yuzey)}
+.ds .seg button{min-height:40px;font-size:14px;font-weight:600;color:var(--ds-soluk);border-left-color:var(--ds-cizgi)}
+.ds .seg .on.sg,.ds .seg .on.sy,.ds .seg button.on{background:var(--ds-navy-tint);color:var(--ds-navy);font-weight:700}
+.ds .altS.chips{padding-top:2px}
+
+/* --- düğmeler --- */
+.ds .btn{border-radius:var(--ds-r-k);font-weight:600;border-color:var(--ds-cizgi)}
+.ds .btn.pri{background:var(--ds-navy);border-color:var(--ds-navy);color:#fff}
+.ds .btn.sm{border-radius:8px}
+
+/* --- tablolar --- */
+.ds main table th{color:var(--ds-soluk);font-weight:700}
+.ds main table td,.ds main table th{border-color:var(--ds-cizgi-2)}
+
+/* --- formlar --- */
+.ds main input:not([type=checkbox]):not([type=radio]),.ds main select,.ds main textarea{border-color:#d5deea;border-radius:var(--ds-r-k)}
+.ds main input:focus,.ds main select:focus,.ds main textarea:focus{outline:2px solid var(--ds-teal);outline-offset:0;border-color:var(--ds-teal)}
+
+/* --- mobil: tutarlı boşluk ve ölçek --- */
+@media (max-width:759px){
+  .ds main#m{padding-left:12px;padding-right:12px}
+  .ds .card{margin-bottom:12px}
+  .ds .izgara{gap:12px}
+  .ds .card h3{font-size:16px;padding:12px 14px 8px}
+  .ds .card .row{padding-left:14px;padding-right:14px}
+  .ds .bUst [style*="font-size:22px"]{font-size:20px!important}
+  .ds .krK{padding:12px 14px}.ds .krK b{font-size:20px}
+  .ds .chips button,.ds .chips>a{padding:0 12px;font-size:13.5px}
+  .ds .seg button{padding:7px 10px;font-size:13px}
+}
+
 /* ===== D Solar tasarım tokenları (merkezi) — Faz 1'de yalnız Bugün (.bg2) ve sol menü daraltma kullanır ===== */
 :root{
   --ds-navy:#1d3557;--ds-navy-2:#2b4a73;--ds-navy-tint:#e8eef6;
@@ -4800,7 +4886,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 85;
+var DS_SURUM = 86;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -6217,6 +6303,10 @@ function prjBagla(P, a, U, yenile) {
       (P.bedelUsd ? "<br>Sözleşme bedeli: " + sayi(P.bedelUsd) + " USD" : "") : "Henüz bu müşteriye bağlı hareket yok. Finans › Hareketler'de kayıt girerken \"Proje\" alanından bu müşteriyi seçin.") + "</div>";
   }).catch(function () {});
 }
+
+/* Faz 2 ortak görünüm: body.ds sınıfı (Param kendi tasarımında kalır) */
+function dsSinif() { var p = (location.hash || "").replace(/^#/, "").split("/")[0]; document.body.classList.toggle("ds", p !== "param"); }
+window.addEventListener("hashchange", dsSinif); dsSinif();
 
 /* ---------- Faz 1: Bugün sayfası yeni görünüm (bg2-*) ----------
    Veri sorguları ve hesaplar eski sBugun / gunOzetKarti ile birebir aynı; yalnız sunum değişti.
