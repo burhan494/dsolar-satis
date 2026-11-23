@@ -1,7 +1,7 @@
 {
- "surum": 83,
- "paket": "surumler/dsolar-83.zip",
- "sha256": "88b9ae8248af0ec748f31b6df6ba39db16af86d36c4dbe5e57f4a9fbcbc0ae34",
- "imza": "UC+V/wZWe9aFraz7Ud5thUvzuHJYgLSgM1oPcz3EM2iYMKl4uleqmgNAsWJYDlptQp+B2pAIDsiR34i1tZjf9XTfj5nCiqspo3ughr+BlpBEZOpqWruRogal5IJEQvHva2AwjyB9ER+hsUV+84SWjidZEeyNY/xxnmFEgF+Owp6CLsyjNFXrCAKqbszRP42a3L7LJLQn0gQBE9emwz/Kt9sZNOcRh34MsSnwYRZYRIZ+7Qsju5Ui7VvPDTzwbV9XV3MUHSd37LuezIdUi0fSEwPKa/QmqOvTrjXS/BIfMqI5LqNBQq2OJYeFBlJSJI+bFJJ737+A8O4SRdjn2I+4RdOaehJ2J+Qr9EnHb6WG0imP9JDepDSxG/oZY7ptASU8MqJUq4cVIhrmjHp7QW2uftL8C9t0qmVpzX7m2TB12Mm2BCHRpGrkRolN8Qjw3z/CpnLJZ9U85maupMpKb0/XBuJF4YSPBw268N3kNR6UWyBHr+/FX0JGYNI2awvg+UVC",
- "not": "GES yeni görünüm: 5 sekme (Genel/Üretim/İnverter/Bakım/Finans), sade beyaz kartlar, Veri & ayarlar ayrı, Dikkat en fazla 3"
+ "surum": 84,
+ "paket": "surumler/dsolar-84.zip",
+ "sha256": "b30661e0d88e4780ad8644676f35b5555cb903445c33efbc14af2eb7342ecacf",
+ "imza": "eXEyM7CmXLf8QIcl9b8m1Q9pNK7evCz0aEm90saI0rfNoIU5+JFcp1WvThd7S5YqUItqwOMtDKtOlaQDVjAg2h2BxE/ZwIscQEJS8qXZsmAa84Z4wCoz5z2qJjeJ4C05TgFLGUtj+6LnVyH+ffgTkt0zICUI6MnPwavcHP0gOkvaj7Yhb4AulbGxMqtCKJoMaFkX6DbnmLY16QSy3JJo31ic+uYaQ8pUFLxqSJ52cdTRs+nzuZG+4Vdn2QlPcaojzm7W1LdbeZjrs2uuqTNalCLV3dsVKIEAFzUh3aFbZV38V4Rj6H2zMbbPODqt46W4HyxlClZWHObCiuoqlcPXC/6f7Y1LqhKyd7APsW7ZTNdSux2SivbI2DiwnVgRgyLPVtmmxC54U5MKycxXU7Zo6bmxzgKvvT9rOGCj8Cyt88Ftobbc3mfE9qX5Pif+ICkeD95e9b8lXgP/zOZVd6qKcQOLLnkWHY+ck4hYT+nA2nNNdFOibd/qK4l9jlkAxD4Y",
+ "not": "Bugün sayfası yeni görünüm (Faz 1): KPI şeridi, acil şerit, Bugün/Bu hafta, satış hunisi ulaşan %, daraltılabilir menü, mobil arama ikonu"
 }
