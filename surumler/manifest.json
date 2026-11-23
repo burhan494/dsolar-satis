@@ -1,7 +1,7 @@
 {
- "surum": 84,
- "paket": "surumler/dsolar-84.zip",
- "sha256": "b30661e0d88e4780ad8644676f35b5555cb903445c33efbc14af2eb7342ecacf",
- "imza": "eXEyM7CmXLf8QIcl9b8m1Q9pNK7evCz0aEm90saI0rfNoIU5+JFcp1WvThd7S5YqUItqwOMtDKtOlaQDVjAg2h2BxE/ZwIscQEJS8qXZsmAa84Z4wCoz5z2qJjeJ4C05TgFLGUtj+6LnVyH+ffgTkt0zICUI6MnPwavcHP0gOkvaj7Yhb4AulbGxMqtCKJoMaFkX6DbnmLY16QSy3JJo31ic+uYaQ8pUFLxqSJ52cdTRs+nzuZG+4Vdn2QlPcaojzm7W1LdbeZjrs2uuqTNalCLV3dsVKIEAFzUh3aFbZV38V4Rj6H2zMbbPODqt46W4HyxlClZWHObCiuoqlcPXC/6f7Y1LqhKyd7APsW7ZTNdSux2SivbI2DiwnVgRgyLPVtmmxC54U5MKycxXU7Zo6bmxzgKvvT9rOGCj8Cyt88Ftobbc3mfE9qX5Pif+ICkeD95e9b8lXgP/zOZVd6qKcQOLLnkWHY+ck4hYT+nA2nNNdFOibd/qK4l9jlkAxD4Y",
- "not": "Bugün sayfası yeni görünüm (Faz 1): KPI şeridi, acil şerit, Bugün/Bu hafta, satış hunisi ulaşan %, daraltılabilir menü, mobil arama ikonu"
+ "surum": 85,
+ "paket": "surumler/dsolar-85.zip",
+ "sha256": "1f9cd27151e79bdc222e152a6a461507dbfac6744e0bef5a7b5c6114044bea89",
+ "imza": "XGHCNteP27Fy1NeAtoKzeWONi0ensrkv4quOoBhU6rEkYPwerIHFmYfcCAeHxrd8zxXMCHQLM8Njs6TOz9ke29yK8zWtNFALUC/7YhB/xqVVyFrX0HkkvoVQQ/oe3KJG5spbyDWeckcv7noduIO9l6rCPhc9OPInXZUZgKya/KZprdJnptW45NUjOz9qCZekK9oxHW88Qag+jfr8wt4a/0noYq7JTsNSsHYIFQDr5V6g4jxlnrdBNrxmPpAGOHwV3tyloe2X9cybhXvHP3UXcSJVnuZqLvFWxCkMACR6g8TyDd4R4g0OhVUsb7bS4CbtdaM6dKUZKikxrKf184UR4uKh+Nat+cYBznUytUc2ASfZy1HdI90wS15CdrM2JEZ09NimUKNoYL85vL/6gz7xFaes/NQEcMoJt8DqJGMOaDESYlCDTLRc/SCbnb8ZTAHp1cV9CRZaG8nnltqGoSFEZZRFlHUfhQu1BI1f1TcVS2LSRBVEHXaRZq1OlScOIqHR",
+ "not": "Bugün: yeni görünüm herkeste, 'Eski görünüme dön' kaldırıldı"
 }

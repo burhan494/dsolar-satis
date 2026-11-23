@@ -4800,7 +4800,7 @@ function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PR
 
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 84;
+var DS_SURUM = 85;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
@@ -6221,7 +6221,7 @@ function prjBagla(P, a, U, yenile) {
 /* ---------- Faz 1: Bugün sayfası yeni görünüm (bg2-*) ----------
    Veri sorguları ve hesaplar eski sBugun / gunOzetKarti ile birebir aynı; yalnız sunum değişti.
    Geri dönüş: localStorage "bugunEski" = "1" ya da sayfanın altındaki "Eski görünüm" bağlantısı. */
-function bgV2Acik() { try { return localStorage.getItem("bugunEski") !== "1"; } catch (e) { return true; } }
+function bgV2Acik() { try { localStorage.removeItem("bugunEski"); } catch (e) {} return true; } /* v85: yeni görünüm herkeste; eski bayrak temizlenir */
 function bgGorunum(yeni) { try { if (yeni) localStorage.removeItem("bugunEski"); else localStorage.setItem("bugunEski", "1"); } catch (e) {} sBugun(); }
 var BG_ASAMA = ["Aday", "Nitelikli", "Keşif", "Teklif", "Sözleşme"];
 /* ortak parçalar */
@@ -6280,7 +6280,7 @@ function sBugunV2() {
   var b = bugun();
   var saat = new Date().getHours(), selam = saat < 12 ? "Günaydın" : saat < 18 ? "İyi günler" : "İyi akşamlar", gunAd = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"][new Date().getDay()];
   var bas = function (alt) { return '<div class="bg2-bas"><div><h1>' + selam + ", " + esc((BEN.name || "").split(" ")[0]) + '</h1><p id="bgAlt">' + gunAd + ", " + tarih(b) + (alt || "") + '</p></div><div class="bg2-acil" id="bgAcil"></div></div>'; };
-  var ayak = '<p class="bg2-ayak"><button class="bg2-lnk" onclick="bgGorunum(false)">Eski görünüme dön</button></p>';
+  var ayak = '<p class="bg2-ayak" aria-hidden="true"></p>';
   $("m").classList.add("genis");
   if (!yt("musteri")) {
     $("m").innerHTML = '<div class="bg2">' + bas("") + '<div class="bg2-kpis" id="bgKpi"></div><div class="bg2-izgara"><div class="bg2-sol"><div id="odBk"></div><div id="mhK"></div><div id="gsK"></div></div><div class="bg2-sag">' + (!finansci() && !yt("ges") ? bgKart("Bölümler", "", bgBos("Yetkili olduğunuz bölümler menüde.")) : "") + "</div></div>" + ayak + "</div>";
