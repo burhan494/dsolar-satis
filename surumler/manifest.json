@@ -1,7 +1,7 @@
 {
- "surum": 87,
- "paket": "surumler/dsolar-87.zip",
- "sha256": "1f6efbc075bb542f2c51334f81ef1dddcbe5125ff384a4c187096cad4d8cd9da",
- "imza": "dsAAh0HkBN6FHBDI4pd36HzfvQgojqF/Lzc8TN8ipC2jR9U4J0CFPrlf7InGSAM66UIkICflRYDXqHqj67WvByYUDQ1w6hKPoZV/e1TmcMRrczLQ7QoN4RWqSBiOY4oKE/xjUonlH/28sTom59UR8C82T1z6L+VXZiAl5izDe4zp8EFT1XNWn69F1AZl6XWG0lgusADcIRKoGQ52UjJq8G09Rgz2jZr16MhWU4hGCTbIf3AzHe49TLh+HkoFxXwcsDAyCjAToVA5GLq1UliHhi1YNabnRVEJH+qcG3FFMUkGYekQo97A/8sFYbVA5Y4hFS0bDkWrOcIS0MX70M74ZSIFH44ot7BNllkOi3TpKZklxVGkhw9VI17AWbghawRhmU5wWv+iPu2XAV/KiSE5KnbE+hufHAuhrDMWH7ni1Bkhyo44GQ3UeSYUrSuh6QZDN7ZGCahH6wp7n/1MjlzDywYO72LmU1IOEVbwcWcOiIYcmPuaoH6D8G4lf3OXZbGa",
- "not": "Param: satılan varlıkta 'Satışı iptal et'"
+ "surum": 88,
+ "paket": "surumler/dsolar-88.zip",
+ "sha256": "7f376da1bad186c0ac315870afd0b9fe229a39b8f40d54e305a9f4906f712ae2",
+ "imza": "QU+kUcsrxfRYFo0wcYbaKYCHiiU25E123moy+Qma8Jnh7v16EtMvR6g3xGyTUW8Yq4GrrpDUNPXy4yQbZ66iUz1weEaib64SDn+2Ps7ZD+ynkS/WpgR9iagmmkHrpSr9RPeTMhK4oFGbB4+C4aOXfRQf9Bv2AZR28O79E9gPulLUneKZ53mDe6md2g+Ua7wbP18hBnCcLLYV8OzojNTM36FSfN67/Q3YRgh3LcDN316wgk89MUEWlCEdeQZZGflhnXNPwN3XauH6hNvJ/lkE6TdxDvH4SYgvYxWFhUIGJB9A47s3IUS2gHKQu+RxIqfZCIivNlbRjC56EysLmlF/ideVQS8C3ySowGp+6hhaI2LUYmfDAeDixD5+Ri50y5NddFvrJ+v1Fm/2Wi+xWie+7oR3LxZmQQAcqUtN/k1l8J4FAZHzqoSowb7lHnDhEtum6mEF9H4Iq4lkZuOpk6wzqpdnUalpYuOIivvjfRxzs9THZXuSpyXQORQt1KREBm+S",
+ "not": "Claude yönetici asistanı: salt okunur bağlantı (OAuth + MCP), yönetici günlüğü, Param'dan onaylı özet, kritik olay taraması"
 }

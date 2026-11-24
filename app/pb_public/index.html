@@ -4908,9 +4908,46 @@ function prmSatisIptal(v) {
     delete v.satildi; panelKapat(); prmKaydet("Satış iptal edildi"); prmCiz(); };
 }
 
+/* v88: Param → asistan. Param şifreli kalır; kullanıcı seçtiği özet rakamları kendi onayıyla asistana gönderir.
+   Hesaplar Param özet ekranıyla (prmSOzet) birebir aynı satırlardan gelir. */
+function prmAsistanHesap(D) {
+  var ym = bugun().slice(0, 7), O = prmOdemeler(D, ym), bg = bugun(), gg = +D.gelirGun || 1, bd = +bg.slice(8), gun = bd < gg ? gg - bd : gunSay(ym) - bd + gg, gelirT = bd < gg ? ym + "-" + String(gg).padStart(2, "0") : prmGunEkle(ym + "-" + String(Math.min(gg, 28)).padStart(2, "0"), 1);
+  if (bd >= gg) O = O.concat(prmOdemeler(D, ayEkle(ym, 1)).filter(function (o) { return o.gun <= gelirT; }));
+  var acik = O.filter(function (o) { return !o.drk && !prmOdDurum(D, o) && o.gun <= gelirT; }), kalanO = function (o) { return prmOdKalan(D, o); }, acikTop = acik.reduce(function (s, o) { return s + kalanO(o); }, 0);
+  var GL = prmGelecekAcik(D, gelirT), glTop = GL.reduce(function (s, x) { return s + prmTl(x.tutar, x.pb); }, 0), kasa = prmKasaTop(D), kalan = (+D.kasa.tl || 0) + prmBankaTop(D) + glTop - acikTop - (+D.acil || 0), tah = acik.some(function (o) { return o.tahmini; });
+  var U = prmUyarilar(D, kalan, kasa, acikTop, tah), P12 = prmPlan(D), cek = -Math.min(0, P12.L[P12.L.length - 1].k1);
+  return { kasa: kasa, acikTop: acikTop, kalan: kalan, glTop: glTop, tahmini: !!tah, gelirTarihi: gelirT, gunKaldi: gun, acik: acik.slice(0, 8).map(function (o) { return { ad: o.ad || o.baslik || "", tarih: o.gun, kalanTl: Math.round(kalanO(o)) }; }), uyarilar: U.map(function (u) { return u.b + (u.n ? " — " + u.n : ""); }), plan12Cekilecek: Math.round(cek) };
+}
+var PRM_ASK = [["nakit", "Nakit ve ay sonu", "Kullanılabilir nakit, ay sonuna kadar ödenecek, ödemelerden sonra kalan"], ["odemeler", "Sıradaki ödemeler", "En yakın 8 ödemenin adı, tarihi ve tutarı"], ["plan", "12 aylık plan", "12 ay içinde şirketten çekilmesi gereken tutar"], ["uyarilar", "Uyarılar", "Param'ın kendi uyarı listesi"]];
+function prmAsistanForm() {
+  var D = PRM.D, H; try { H = prmAsistanHesap(D); } catch (e) { toast("Özet hesaplanamadı: " + e.message); return; }
+  var sec = PRM.askSec || { nakit: true, odemeler: true, plan: true, uyarilar: true };
+  prmPnl("Asistana özet gönder", '<div class="bilgi" style="margin:0">Param şifreli kalır. Yalnız aşağıda seçtiğin rakamlar, senin onayınla, yalnız senin görebileceğin bir özet olarak kaydedilir. Claude bu özeti sadece senin hesabınla okuyabilir; ekipten kimse göremez.</div>' +
+    PRM_ASK.map(function (x) { return '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" data-prmask="' + x[0] + '"' + (sec[x[0]] ? " checked" : "") + ' style="width:auto;min-height:0;margin-top:4px"><span><b>' + x[1] + '</b><br><small style="color:var(--muted)">' + x[2] + "</small></span></label>"; }).join("") +
+    '<div id="prmAskOn" class="prmS" style="flex-direction:column;align-items:stretch;gap:4px"></div><button class="btn pri" id="prmAskG">Özeti gönder</button><button class="btn" id="prmAskS">Gönderilmiş özeti sil</button>');
+  var oku = function () { var s = {}; Array.prototype.forEach.call(document.querySelectorAll("[data-prmask]"), function (c) { s[c.dataset.prmask] = c.checked; }); return s; };
+  var ozet = function (s) { var o = { tarih: bugun(), paraBirimi: "TRY" };
+    if (s.nakit) o.nakit = { kullanilabilir: Math.round(H.kasa), ayaKadarOdenecek: Math.round(H.acikTop), odemelerdenSonraKalan: Math.round(H.kalan), gelecekParalar: Math.round(H.glTop), tahmini: H.tahmini, sonrakiGelirTarihi: H.gelirTarihi };
+    if (s.odemeler) o.siradakiOdemeler = H.acik; if (s.plan) o.plan12Ay = { sirkettenCekilmesiGereken: H.plan12Cekilecek }; if (s.uyarilar) o.uyarilar = H.uyarilar; return o; };
+  var goster = function () { var s = oku(), o = ozet(s), L = [];
+    if (o.nakit) L.push("Nakit " + prmP(o.nakit.kullanilabilir) + " · ay sonuna kadar " + prmP(o.nakit.ayaKadarOdenecek) + " · sonra " + prmP(o.nakit.odemelerdenSonraKalan));
+    if (o.siradakiOdemeler) L.push(o.siradakiOdemeler.length + " sıradaki ödeme"); if (o.plan12Ay) L.push("12 ay: çekilecek " + prmP(o.plan12Ay.sirkettenCekilmesiGereken)); if (o.uyarilar) L.push(o.uyarilar.length + " uyarı");
+    $("prmAskOn").innerHTML = "<small style=\"color:var(--muted)\">Gönderilecek:</small>" + (L.length ? L.map(function (x) { return "<div>" + esc(x) + "</div>"; }).join("") : "<div>Hiçbir şey seçilmedi</div>"); };
+  Array.prototype.forEach.call(document.querySelectorAll("[data-prmask]"), function (c) { c.onchange = goster; }); goster();
+  var kayit = function () { return api("/api/collections/asistan_kisisel/records?filter=" + encodeURIComponent("sahip = '" + BEN.id + "'")).then(function (r) { return (r.items || [])[0]; }); };
+  $("prmAskG").onclick = function () { var s = oku(), b = this; if (!Object.keys(s).some(function (k) { return s[k]; })) { toast("En az bir bölüm seç"); return; } PRM.askSec = s; b.disabled = true;
+    var govde = { sahip: BEN.id, ozet: ozet(s), kapsam: Object.keys(s).filter(function (k) { return s[k]; }) };
+    kayit().then(function (r) { return r ? api("/api/collections/asistan_kisisel/records/" + r.id, { method: "PATCH", body: govde }) : api("/api/collections/asistan_kisisel/records", { method: "POST", body: govde }); })
+      .then(function () { panelKapat(); toast("Özet asistana gönderildi"); }).catch(function (e) { b.disabled = false; hata(e); }); };
+  $("prmAskS").onclick = function () { var b = this; b.disabled = true; kayit().then(function (r) { return r ? api("/api/collections/asistan_kisisel/records/" + r.id, { method: "DELETE" }) : null; }).then(function () { panelKapat(); toast("Asistandaki kişisel özet silindi"); }).catch(function (e) { b.disabled = false; hata(e); }); };
+}
+var prmSOzet0 = prmSOzet;
+prmSOzet = function (D) { var o = prmSOzet0(D); o.html += '<button class="btn" data-prmask-ac="1" style="width:100%;margin-top:4px">Asistana özet gönder</button>'; return o; };
+document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-prmask-ac]"); if (b) { e.preventDefault(); prmAsistanForm(); } });
+
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 87;
+var DS_SURUM = 88;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;
