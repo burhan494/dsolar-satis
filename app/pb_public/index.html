@@ -4884,9 +4884,33 @@ function prmSOdeme(D) {
 }
 function prmV76Bagla() { if ($("prmGtA")) $("prmGtA").onclick = function () { PRM.gtAcik = !PRM.gtAcik; prmCiz(); }; }
 
+/* v87: satılan varlıkta "Satışı iptal et" — varlık yeniden aktif olur, istenirse kasaya eklenen bedel geri düşülür */
+function prmSatis(v) {
+  if (!v) return; var D = PRM.D;
+  prmPnl((v.ad || v.tur) + " · sattım", '<div class="f2"><label>Satış tarihi<input type="date" id="sT" value="' + bugun() + '"></label>' + prmSayiIn("sB", "Satış bedeli", v.deger) + '</div><label>Para birimi<select id="sPb">' + sec(["TRY", "USD", "EUR"], v.pb) + "</select></label>" +
+    (v.sahip === "DRK" ? '<div class="bilgi" style="margin:0">Bu varlık DRK üzerine kayıtlı: satış bedeli önce DRK\'ye girer. Kişisel kasana yalnız DRK\'den çektiğin kadarı eklenir.</div><label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" id="sKas" style="width:auto;min-height:0"> Bedeli kişisel kasama da ekle</label>' : '<label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" id="sKas" checked style="width:auto;min-height:0"> Bedeli kasama ekle</label>') +
+    '<small style="color:var(--muted)">Bu varlığa bağlı yıllık giderleri (marina, kasko…) satış ayından sonra durdurmak için o kalemlere bitiş ayı yaz.</small><button class="btn pri" id="sKay">Kaydet</button>');
+  $("sKay").onclick = function () { var b = num($("sB").value) || 0, pb = $("sPb").value, kas = $("sKas").checked; v.satildi = { t: $("sT").value, bedel: b, pb: pb, kasaya: kas };
+    if (kas) { if (pb === "USD") D.kasa.usd = (+D.kasa.usd || 0) + b; else if (pb === "EUR") D.kasa.eur = (+D.kasa.eur || 0) + b; else D.kasa.tl = (+D.kasa.tl || 0) + b; }
+    panelKapat(); prmKaydet("Satış kaydedildi"); prmCiz(); };
+}
+function prmSatilanlar() { var S = PRM.D.varliklar.filter(function (v) { return v.satildi; });
+  prmPnl("Satılan varlıklar", S.length ? S.map(function (v, i) { return '<div class="row" style="justify-content:space-between;gap:10px;padding-left:0;padding-right:0;flex-wrap:wrap"><span style="flex:1;min-width:0"><b>' + esc(v.ad || v.tur) + '</b><br><small style="color:var(--muted)">' + tarih(v.satildi.t) + " · son değer " + prmP(v.deger, v.pb) + "</small></span><b>" + prmP(v.satildi.bedel, v.satildi.pb) + '</b><button class="btn sm" data-satip="' + i + '" style="flex-basis:100%">Satışı iptal et</button></div>'; }).join("") : '<div class="bos">Satılan varlık yok.</div>');
+  Array.prototype.forEach.call(document.querySelectorAll("[data-satip]"), function (bt) { bt.onclick = function () { prmSatisIptal(S[+bt.dataset.satip]); }; });
+}
+function prmSatisIptal(v) {
+  if (!v || !v.satildi) return; var D = PRM.D, s = v.satildi, kasaya = s.kasaya !== false && v.sahip !== "DRK";
+  prmPnl((v.ad || v.tur) + " · satışı iptal et", '<div class="bilgi" style="margin:0">Satış iptal edilince varlık yeniden “Varlıklarım”da görünür.</div>' +
+    '<label style="display:flex;gap:8px;font-weight:500"><input type="checkbox" id="siKas"' + (kasaya ? " checked" : "") + ' style="width:auto;min-height:0"> Kasaya eklenen ' + prmP(s.bedel, s.pb) + "’yi kasadan geri düş</label>" +
+    '<small style="color:var(--muted)">Para hiç gelmediyse ve satışta “kasama ekle” işaretliydi ise bu kutu açık kalsın. Bu satış için ayrıca beklenen gelir (alacak) yazdıysan onu Alacaklar’dan sil.</small>' +
+    '<button class="btn pri" id="siKay">Satışı iptal et</button><button class="btn" onclick="panelKapat()">Vazgeç</button>');
+  $("siKay").onclick = function () { if ($("siKas").checked) { var b = +s.bedel || 0; if (s.pb === "USD") D.kasa.usd = (+D.kasa.usd || 0) - b; else if (s.pb === "EUR") D.kasa.eur = (+D.kasa.eur || 0) - b; else D.kasa.tl = (+D.kasa.tl || 0) - b; }
+    delete v.satildi; panelKapat(); prmKaydet("Satış iptal edildi"); prmCiz(); };
+}
+
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 86;
+var DS_SURUM = 87;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;

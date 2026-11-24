@@ -1,7 +1,7 @@
 {
- "surum": 86,
- "paket": "surumler/dsolar-86.zip",
- "sha256": "c1bedffcfb8ff79f529ef47c2c22c1df76cff71ed34fc18580d1a1c9324ee146",
- "imza": "Xi5KeOONdCbzDVacVzv9F4VvwYIuHaY0XOYB1EHOk7Pq722TfEXqeMzr9KK10plccDenftSyuKa/ffrYNfDNKOgJtJum1tAFpip3ysm128Hi21bcVDov301fhPhY7IHlw67GWhoPMvFa41KbAL7JYMyXAUn44b/Ycb/h2jeCMnic3BXz98KYXmC+cY9SNZwsX9y5m7/7TfeEeCkiLgCoLlTAKMBZwHE0DpP94bLEZqDRmiy57AbmH0jAQpiJ4egas2iVuq+0fLQFGgYYRzVXgrO62gE8K45Axtva8OKLsud7CptnZDBPVcCnPuU+FItqylPRtzrLoLPo92qXHa4VKqqrg/Vt9VTfvZ633UtnQwiH/bRCNFLVU1r/C+jEnbhyfPQxUxKtgpMwJrcBZOlqxS0tgxHtK09XbGnfalSMU/lgzbLoaUjWp0bqTDCrcmFW4l2rJQDzS9RxXpAeOSpl7ttcZEMmdbaRH1/30bqDDQUPzbNvIMJST3XuEsAowjYr",
- "not": "Tüm sayfalar ortak görünüm (Faz 2): beyaz kartlar, tek tip KPI kutuları ve sekmeler; Param hariç"
+ "surum": 87,
+ "paket": "surumler/dsolar-87.zip",
+ "sha256": "1f6efbc075bb542f2c51334f81ef1dddcbe5125ff384a4c187096cad4d8cd9da",
+ "imza": "dsAAh0HkBN6FHBDI4pd36HzfvQgojqF/Lzc8TN8ipC2jR9U4J0CFPrlf7InGSAM66UIkICflRYDXqHqj67WvByYUDQ1w6hKPoZV/e1TmcMRrczLQ7QoN4RWqSBiOY4oKE/xjUonlH/28sTom59UR8C82T1z6L+VXZiAl5izDe4zp8EFT1XNWn69F1AZl6XWG0lgusADcIRKoGQ52UjJq8G09Rgz2jZr16MhWU4hGCTbIf3AzHe49TLh+HkoFxXwcsDAyCjAToVA5GLq1UliHhi1YNabnRVEJH+qcG3FFMUkGYekQo97A/8sFYbVA5Y4hFS0bDkWrOcIS0MX70M74ZSIFH44ot7BNllkOi3TpKZklxVGkhw9VI17AWbghawRhmU5wWv+iPu2XAV/KiSE5KnbE+hufHAuhrDMWH7ni1Bkhyo44GQ3UeSYUrSuh6QZDN7ZGCahH6wp7n/1MjlzDywYO72LmU1IOEVbwcWcOiIYcmPuaoH6D8G4lf3OXZbGa",
+ "not": "Param: satılan varlıkta 'Satışı iptal et'"
 }
