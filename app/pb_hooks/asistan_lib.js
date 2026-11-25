@@ -180,7 +180,11 @@ function ges(app) {
   const ie = OL.filter((o) => o.getString("ieNo") && o.getString("ieDurum") !== "Doğrulandı");
   let isc = {}; try { const r = app.findFirstRecordByFilter("isc_ayar", "id != ''"); isc = { sonSenk: r.getString("sonSenk"), hata: temizHata(r.getString("hata")), canli: jsonAl(r, "canli", {}) }; } catch (e) {}
   const canli = isc.canli || {};
-  return { dun: { tarih: dun, veriVar: ham != null, uretimKwh: ham != null ? yuvarla(ham) : null, teorikOranYuzde: ham != null && +(teo[d] || 0) ? yuvarla(ham / +teo[d] * 100) : null },
+  // GDZ ARiL raporu (elle yüklenen Excel): reaktif oranlar çekilen aktif enerjiye göre, sınır endüktif %20 / kapasitif %15
+  const AG = g ? jsonAl(g, "arilGun", {}) || {} : {}, AK = Object.keys(AG).sort(), AT = { av: 0, ac: 0, ric: 0, rcc: 0 }, eksik = [];
+  AK.forEach((k) => { const o = AG[k] || {}; Object.keys(AT).forEach((x) => { AT[x] += +o[x] || 0; }); if (k < b && ((o.vo != null && o.vo < 100) || o.tn === 0)) eksik.push(k); });
+  const aril = AK.length ? { sonGun: AK[AK.length - 1], gunSayisi: AK.length, verisKwh: yuvarla(AT.av), cekisKwh: yuvarla(AT.ac), induktifYuzde: AT.ac > 0 ? yuvarla(AT.ric / AT.ac * 100) : null, kapasitifYuzde: AT.ac > 0 ? yuvarla(AT.rcc / AT.ac * 100) : null, eksikVeriGunleri: eksik, not: "GDZ ARiL Excel'inden; ay bitmeden kesin değil" } : null;
+  return { aril, dun: { tarih: dun, veriVar: ham != null, uretimKwh: ham != null ? yuvarla(ham) : null, teorikOranYuzde: ham != null && +(teo[d] || 0) ? yuvarla(ham / +teo[d] * 100) : null },
     buAy: { donem: dun.slice(0, 7), iscGunlukToplamKwh: yuvarla(ayTop), gunSayisi: Object.keys(gun).length, not: "iSolarCloud günlük toplamı; uygulamadaki aylık rakam sayaç verisi varsa onu kullanır" },
     olaylar: { acik: OL.length, acil: OL.filter((o) => o.getString("oncelik") === "Acil").length, isEmriAcik: ie.length, isEmriGecikmis: ie.filter((o) => o.getString("sonTarih") && o.getString("sonTarih").slice(0, 10) < b).length },
     izleme: { sonSenk: isc.sonSenk || "", hata: isc.hata || "", anlikGucKw: canli.gucKw != null ? yuvarla(canli.gucKw, 1) : null, bugunKwh: canli.bugunKwh != null ? yuvarla(canli.bugunKwh) : null, alarm: canli.alarm || 0 } };
@@ -206,6 +210,9 @@ function uyarilar(o) {
     if (g.izleme.sonSenk && Date.parse(g.izleme.sonSenk.replace(" ", "T")) < Date.now() - 3 * 3600e3) ekle("onemli", "isc-senk-" + b, "GES verisi 3 saatten uzun süredir gelmiyor (son: " + g.izleme.sonSenk.slice(0, 16) + ")");
     if (g.dun.veriVar && g.dun.teorikOranYuzde != null && g.dun.teorikOranYuzde < 60) ekle("onemli", "ges-dusuk-" + g.dun.tarih, "Dünkü GES üretimi teorik değerin %" + g.dun.teorikOranYuzde + "'i");
     if (!g.dun.veriVar) ekle("bilgi", "ges-veri-yok-" + g.dun.tarih, "Dünkü GES üretim verisi yok");
+    if (g.aril && g.aril.kapasitifYuzde > 15) ekle("onemli", "reaktif-kap-" + g.aril.sonGun.slice(0, 7), "Sayaçta kapasitif reaktif %" + g.aril.kapasitifYuzde + " (sınır %15): ay sonunda reaktif bedel riski");
+    if (g.aril && g.aril.induktifYuzde > 20) ekle("onemli", "reaktif-ind-" + g.aril.sonGun.slice(0, 7), "Sayaçta endüktif reaktif %" + g.aril.induktifYuzde + " (sınır %20): ay sonunda reaktif bedel riski");
+    if (g.aril && g.aril.eksikVeriGunleri.length) ekle("bilgi", "aril-eksik-" + g.aril.eksikVeriGunleri.slice(-1)[0], "GDZ sayacından eksik veri: " + g.aril.eksikVeriGunleri.join(", "));
     if (g.olaylar.acil) ekle("kritik", "ges-acil-" + b, g.olaylar.acil + " acil GES olayı açık");
     if (g.olaylar.isEmriGecikmis) ekle("onemli", "ie-gecik-" + b, g.olaylar.isEmriGecikmis + " GES iş emri son tarihi geçti");
   }
