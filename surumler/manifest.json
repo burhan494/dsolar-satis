@@ -1,7 +1,7 @@
 {
- "surum": 88,
- "paket": "surumler/dsolar-88.zip",
- "sha256": "7f376da1bad186c0ac315870afd0b9fe229a39b8f40d54e305a9f4906f712ae2",
- "imza": "QU+kUcsrxfRYFo0wcYbaKYCHiiU25E123moy+Qma8Jnh7v16EtMvR6g3xGyTUW8Yq4GrrpDUNPXy4yQbZ66iUz1weEaib64SDn+2Ps7ZD+ynkS/WpgR9iagmmkHrpSr9RPeTMhK4oFGbB4+C4aOXfRQf9Bv2AZR28O79E9gPulLUneKZ53mDe6md2g+Ua7wbP18hBnCcLLYV8OzojNTM36FSfN67/Q3YRgh3LcDN316wgk89MUEWlCEdeQZZGflhnXNPwN3XauH6hNvJ/lkE6TdxDvH4SYgvYxWFhUIGJB9A47s3IUS2gHKQu+RxIqfZCIivNlbRjC56EysLmlF/ideVQS8C3ySowGp+6hhaI2LUYmfDAeDixD5+Ri50y5NddFvrJ+v1Fm/2Wi+xWie+7oR3LxZmQQAcqUtN/k1l8J4FAZHzqoSowb7lHnDhEtum6mEF9H4Iq4lkZuOpk6wzqpdnUalpYuOIivvjfRxzs9THZXuSpyXQORQt1KREBm+S",
- "not": "Claude yönetici asistanı: salt okunur bağlantı (OAuth + MCP), yönetici günlüğü, Param'dan onaylı özet, kritik olay taraması"
+ "surum": 89,
+ "paket": "surumler/dsolar-89.zip",
+ "sha256": "54bd3bb9ca7454b0cff421464ed23f179de4472eda14d73c6e50053c1f890fa6",
+ "imza": "mAjt9sHwOSkOkCZSahpkfrXmmUk+VhIFNSNunI82YUPwZTfUjQBb0uzFUdYPQsavKtmssr7DCUcDXU4KGPUFOpMjMCKzXzt1iB8uNXaUfl2ig3KuyfgEQRhimnyhKgX9yvXa/qtZSrO5YblT1wqGX+74txO4UPGyJw4NEK21pP6P/8QzfNxptMiVDBd21bbjLbOf19MRIg7GZ/qZz6fjp2Sh71XSeEzNNHiYhIlm6Fx9ot5laonPL9/8U6cW72ktmco4ZnT942P7C+X69QEx2JowPx6jgzJo5/oaFIFVQK1gLE00XdQt0pFA+Ut9wqbPLgWQfQP2zGIKGoLeW0G5v+/3IT4stI6Wh8ObRizxStG24O/Glzoze13eregbbGRmuVUqiH505Z96lz/fET8PDS8uqNxNM1yAnTAOqO7R6U+XjkSgD3L5NJ+q4Mnq8Kh/TtNdcd2+MrifTlW2QH2VRbx3h7gKrvNoGFFUXSU9elkbSB7C9ZXy7f2FwCgmdbiJ",
+ "not": "GDZ ARiL Excel içe aktarma, GDZ sayaç kartı, asistan reaktif uyarısı"
 }
