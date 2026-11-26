@@ -428,6 +428,7 @@ nav.y a.fab{overflow:visible;background:none!important}
 .prmOmL>button{display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid var(--pl);background:#fff;padding:12px 14px;text-align:left;min-height:56px;font-family:inherit;color:var(--pc);cursor:pointer}
 .prmOmL>button:last-child{border-bottom:0}.prmOmL>button b{display:block;font-size:14.5px;font-weight:500}.prmOmL>button small{display:block;font-size:12px;color:var(--pm)}
 .prmKart .prmKartY{border-radius:18px}
+.prmOk.yarim{background:#fff3e0;border-color:#f59e0b;color:#b45309;font-weight:800}
 
 /* v90 · GES B+ */
 .gbM,.gbPnl{--gF:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;--gN:#1d3557;--gN2:#14263f;--gO:#ed7d31;--gOd:#c2410c;--gOt:#fff3e8;--gT:#0d9488;--gTd:#0b7373;--gTt:#e6f6f4;--gL:#e6ebf2;--gM:#5f6f82;--gX:#14253d;--gK:#c62828;--gKt:#fdecec;--gU:#b45309;--gUt:#fff6e5;--gOk:#15803d;--gOkt:#e7f6ec;--gR:18px;
@@ -5785,9 +5786,41 @@ var prmSOzet0 = prmSOzet;
 prmSOzet = function (D) { var o = prmSOzet0(D); o.html += '<button class="btn" data-prmask-ac="1" style="width:100%;margin-top:4px">Asistana özet gönder</button>'; return o; };
 document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-prmask-ac]"); if (b) { e.preventDefault(); prmAsistanForm(); } });
 
+/* ---------- v94: Kartlar ekranı asgari ve kısmi ödemeleri de görür ----------
+   Ödemeler listesi (prmOdDurum) asgari/kısmi kaydı zaten sayıyordu; kart ekranı yalnız "tamamı ödendi"ye bakıyordu.
+   Hesap ya da veri değişmez: yalnız görünüm, mevcut D.asgari ve D.kismi kayıtlarını okur. */
+function prmKartOdBilgi(D, b) {
+  if (!b) return null; var key = "k:" + b.id; if (D.odendi[key]) return null;
+  var borc = b.sum ? +b.sum.debt || 0 : 0, as = (D.asgari || {})[key], ks = typeof prmKismi === "function" ? prmKismi(D, key, null) : { top: 0, son: null };
+  if (as) return { tur: "asgari", t: as.t, odenen: +as.tutar || 0, kalan: Math.max(0, borc - (+as.tutar || 0) - ks.top) };
+  if (ks.top > 0) return { tur: ks.top >= borc - 1 ? "tam" : "kismi", t: ks.son, odenen: ks.top, kalan: Math.max(0, borc - ks.top) };
+  return null;
+}
+(function () {
+  var k0 = prmKartlar;
+  prmKartlar = function (D) {
+    var L = k0.apply(this, arguments);
+    try { L.forEach(function (k) { if (k.kapali || k.yeni || !k.son) return; var x = prmKartOdBilgi(D, k.son); if (!x) return; k.odBilgi = x;
+        if (x.tur === "asgari") { k.durum = "Asgari ödendi"; k.dRenk = "yesil"; } else if (x.tur === "tam") { k.durum = "✓ Ödendi"; k.dRenk = "yesil"; } else { k.durum = "Kısmi ödendi"; k.dRenk = "tur"; } }); } catch (e) {}
+    return L; };
+  var s0 = prmSKartlar;
+  prmSKartlar = function (D) {
+    var R = s0.apply(this, arguments);
+    try { var t = document.createElement("template"); t.innerHTML = R.html;
+      (D.belgeler || []).forEach(function (b) { var x = prmKartOdBilgi(D, b); if (!x) return; var btn = t.content.querySelector('[data-prmod="k:' + b.id + '"]'); if (!btn) return;
+        var sat = btn.closest(".prmS"), sm = sat && sat.querySelector("small"); if (!sm) return;
+        var f = b.sum && +b.sum.fees > 0 ? " · faiz/masraf " + prmP(b.sum.fees) : "";
+        if (x.tur === "tam") { sm.style.color = "var(--ok)"; sm.textContent = "ödendi " + tarih(x.t).slice(0, 5) + f; btn.classList.add("on"); btn.textContent = "✓"; return; }
+        sm.style.color = "#b45309";
+        sm.textContent = (x.tur === "asgari" ? "asgari ödendi " : "kısmi ödendi ") + (x.t ? tarih(x.t).slice(0, 5) + " · " : "") + prmP(x.odenen) + " · kalan " + prmP(x.kalan) + (x.tur === "asgari" ? " sonraki ekstreye devreder, faiz işler" : "") + f;
+        btn.classList.add("yarim"); btn.textContent = "½"; btn.setAttribute("aria-label", (x.tur === "asgari" ? "asgari ödendi" : "kısmi ödendi") + "; tamamı ödendiyse işaretle"); });
+      R.html = t.innerHTML; } catch (e) {}
+    return R; };
+})();
+
 /* v59: telefonda/ana ekranda eski sürüm takılı kalmasın. Sunucudaki sürüm bu sayfadakinden yeniyse sayfa bir kez yenilenir.
    DS_SURUM her pakette paket numarasıyla aynı olmalı. */
-var DS_SURUM = 93;
+var DS_SURUM = 94;
 function surumDenetle() {
   fetch("/surum.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
     if (!(+j.surum > DS_SURUM) || j.durum !== "basarili") return; var a = "dsYen" + j.surum;

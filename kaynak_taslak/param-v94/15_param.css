@@ -1,0 +1,115 @@
+/* v60: Param sekmeli düzen — telefon öncelikli */
+.prmW{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.prmUst{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.prmUst h2{margin:0;font-size:22px}.prmUst small{color:var(--muted);font-size:12px}
+.prmUst .btn.sm{min-height:44px;min-width:44px}
+.prmTab{display:flex;gap:2px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:4px;overflow-x:auto}
+.prmTab button{flex:1 0 auto;min-height:44px;border:0;background:none;border-radius:10px;font-size:14px;font-weight:700;color:#5f6f82;padding:0 10px;font-family:inherit;cursor:pointer}
+.prmTab button.on{background:var(--navy);color:#fff}
+.prmK{background:#fff;border:1px solid var(--line);border-radius:18px;padding:2px 0;overflow:hidden}
+.prmKb{display:flex;align-items:center;gap:8px;padding:12px 16px 4px}.prmKb h3{margin:0;font-size:16px;flex:1}.prmKb small{color:var(--muted)}
+.prmS{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid #eef2f7}
+.prmKb+.prmS,.prmK>.prmS:first-child,.prmAc+.prmS{border-top:0}
+.prmS small{display:block;font-size:12.5px;line-height:1.4}
+.prmAd{display:block;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prmT{font-size:14.5px;white-space:nowrap}
+.prmGun{width:44px;flex:none;text-align:center;background:#f4f7fb;border-radius:10px;padding:4px 0}.prmGun b{display:block;font-size:16px}.prmGun small{font-size:10.5px;color:var(--muted);font-weight:700}
+.prmOk{width:44px;height:44px;flex:none;border-radius:50%;border:2px solid #b9c6d6;background:#fff;color:#fff;font-size:17px;font-weight:800;cursor:pointer;padding:0}
+.prmOk.on{background:var(--ok);border-color:var(--ok)}
+.prmNok{width:10px;height:10px;border-radius:50%;flex:none}
+.prmHero{background:var(--navy);color:#fff;border-radius:18px;padding:18px}
+.prmHero small{color:#c3d0e0;font-size:12.5px;line-height:1.45}
+.prmBuyuk{font-size:32px;font-weight:800;letter-spacing:-.5px;margin:2px 0}
+.prmIki{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.prmIki>div{background:rgba(255,255,255,.09);border-radius:12px;padding:10px 12px}.prmIki b{display:block;font-size:19px;margin-top:2px}
+.prmIki .kotu{background:#fde8e6;color:#8a1c12}.prmIki .kotu small{color:#8a1c12;font-weight:700}
+.prmIki .iyi{background:#dcf3e4;color:#14532d}.prmIki .iyi small{color:#14532d;font-weight:700}
+.prmBar{height:10px;border-radius:99px;background:#e3e9f1;overflow:hidden;display:flex;margin-top:8px}.prmBar span{display:block;height:10px}
+.prmLej{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;font-size:12px;color:var(--muted)}.prmLej i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.prmBas{display:flex;align-items:baseline;justify-content:space-between;padding:0 4px}.prmBas h3{margin:0;font-size:18px}.prmBas small{color:var(--muted)}
+.prmKart{display:flex;flex-direction:column}
+.prmKartY{border:0;border-radius:18px;padding:16px;color:#fff;display:flex;flex-direction:column;gap:10px;text-align:left;font-family:inherit;cursor:pointer;position:relative;z-index:1}
+.prmKart.kapali .prmKartY{opacity:.75}
+.prmKartY .r1{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700}
+.prmKartY .r2{font-size:17px;font-weight:800}.prmKartY .r2 i{font-style:normal;font-weight:600;opacity:.8}
+.prmKartY .r3{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}.prmKartY .r3 small{display:block;font-size:12px;opacity:.85}.prmKartY .r3 b{font-size:23px}
+.prmKartY .sag{text-align:right;font-size:12px;opacity:.9;line-height:1.5}
+.prmChip{font-size:12px;font-weight:800;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.prmKartA{background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 18px 18px;margin-top:-16px;padding:20px 0 12px}
+.prmKartA .prmS{padding-left:16px;padding-right:16px}
+.prmEt{display:block;font-size:12px;font-weight:800;color:var(--muted);padding:4px 16px}
+.prmBtn2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px 16px 0}.prmBtn2 .btn{min-height:44px}
+.prmKartA>.btn.sm{margin-left:16px!important}
+.prmAy{display:flex;align-items:center;justify-content:space-between;gap:8px}.prmAy .btn{min-width:48px;min-height:48px;font-size:18px}
+.prmAy>div{text-align:center}.prmAy b{display:block;font-size:17px}.prmAy small{color:var(--muted);font-size:12.5px}
+.prmAc{display:block;color:#3d5470;font-size:12.5px;line-height:1.45;padding:0 16px 6px}
+.prmAyB{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.prmAyB button{min-height:54px;border:1px solid #cfdbe8;background:#fff;border-radius:12px;font-family:inherit;color:var(--navy);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.prmAyB button small{font-size:12.5px;font-weight:700}.prmAyB button b{font-size:15px}
+.prmAyB button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.prmKat{width:100%;border:0;background:none;text-align:left;padding:10px 16px 8px;border-top:1px solid #eef2f7;font-family:inherit;color:var(--text);cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.prmK>.prmKat:first-child{border-top:0}
+.prmKat .r{display:flex;justify-content:space-between;width:100%;font-size:14.5px}
+.prmBar1{display:block;height:8px;border-radius:99px;background:#eef2f7;width:100%}.prmBar1 span{display:block;height:8px;border-radius:99px}
+#prmKatO .row{padding-left:16px;padding-right:16px}
+@media (max-width:420px){.prmUst h2{font-size:20px}.prmBuyuk{font-size:29px}.prmTab button{font-size:13px;padding:0 6px}}
+.prmLb{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+.prmOneri{border-color:#cfe3fa;background:#f4f9ff}.prmKartMini{width:34px;height:24px;border-radius:5px;flex:none}
+.prmX{width:36px;height:36px;flex:none;border:0;background:none;color:#8a9bb0;font-size:15px;cursor:pointer;border-radius:50%}.prmX:hover{background:#eef2f7}
+.prmAcK{width:100%;text-align:left;border:0;border-top:1px solid #eef2f7;background:none;padding:12px 16px;font-family:inherit;font-size:14px;font-weight:700;color:var(--navy);cursor:pointer;min-height:44px}.prmK>.prmAcK:first-child{border-top:0}
+.prmPlanB,.prmPlanS{display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:6px;padding:9px 16px;font-size:13.5px;align-items:center}.prmPlanS.uc,.prmPlanB.uc{grid-template-columns:1.1fr 1fr 1fr}
+.prmPlanB{font-size:11.5px;font-weight:800;color:var(--muted);text-transform:uppercase}.prmPlanS{border-top:1px solid #eef2f7}.prmPlanS span:not(:first-child),.prmPlanB span:not(:first-child){text-align:right;font-weight:700}
+.prmUst h2 small{font-size:12px;font-weight:600;color:var(--muted)}.prmMenuB{min-width:48px;font-weight:800;letter-spacing:1px}
+.prmTik{cursor:pointer}.prmTik:active{background:#f4f7fb}.prmOk2{flex:none;color:#9aa9bb;font-size:22px;line-height:1;padding-left:2px}
+.prmPlanMini{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;font-family:inherit;color:var(--text);cursor:pointer;min-height:56px}
+.prmPlanMini span:first-child{flex:1;min-width:0}.prmPlanMini small{display:block;color:var(--muted);font-size:12.5px}.prmPlanMini b{font-size:15px}
+.prmOm{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}.prmOm label{flex:1}
+.prmSerit{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;background:#fff6ee;border:1px solid #f6d7bd;border-radius:14px;padding:12px 16px;font-family:inherit;font-size:14px;font-weight:700;color:#6b4a2e;cursor:pointer;min-height:48px;text-align:left}
+.prmDet{border-bottom:1px solid #eef2f7;padding:10px 0;display:flex;flex-direction:column;gap:6px}.prmDet .r{display:flex;gap:10px;align-items:flex-start}.prmDet b{display:block;font-size:14.5px;overflow-wrap:anywhere}.prmDet small{display:block;color:var(--muted);font-size:12.5px}.prmDet select{min-height:40px;font-size:13px}
+.prmKat .r .prmOk2{font-size:18px;vertical-align:-1px}
+/* ===== v76: sade profesyonel görünüm (Wallet / Monzo / Copilot örnek) ===== */
+.prmW{--pm:#6b7a90;--pc:#0f1b2d;--pl:#eef1f5;--pg:#1f7a4d;--pr:#c0362c;color:var(--pc);gap:16px}
+.prmUst{align-items:center;gap:8px}
+.prmUst h2{font-size:28px;font-weight:700;letter-spacing:-.6px;line-height:1.1}
+.prmTarih{display:block;font-size:13px;color:var(--pm);font-weight:500}
+.prmIkB{width:44px;height:44px;border:0;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(15,27,45,.08);color:var(--navy);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;padding:0}
+.prmTab{background:#e8edf3;border:0;border-radius:12px;padding:3px;gap:2px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}
+.prmTab button{min-height:38px;border-radius:9px;font-size:13px;font-weight:600;color:var(--pm);padding:0}
+.prmTab button.on{background:#fff;color:var(--pc);box-shadow:0 1px 3px rgba(15,27,45,.12)}
+.prmK{border:0;border-radius:20px;box-shadow:0 1px 2px rgba(15,27,45,.06);padding:0}
+.prmKb{padding:14px 16px 6px}.prmKb h3{font-size:15px;font-weight:700}
+.prmS{border-top:1px solid var(--pl);padding:12px 16px;min-height:44px}
+.prmAd{font-size:14.5px;font-weight:500}.prmT{font-size:14.5px;font-weight:600}
+.prmS small{color:var(--pm)}
+.prmGun{width:40px;background:none;padding:0}.prmGun b{font-size:17px;font-weight:700;line-height:1}.prmGun small{font-size:10.5px;letter-spacing:.5px;color:var(--pm)}
+.prmOk{width:30px;height:30px;border-width:1.5px;border-color:#c7d0dc;font-size:14px;position:relative}
+.prmOk::after{content:"";position:absolute;inset:-8px}
+.prmOk.on{background:var(--pg);border-color:var(--pg)}
+.prmHero{background:#fff;color:var(--pc);border-radius:20px;padding:20px;box-shadow:0 1px 2px rgba(15,27,45,.06)}
+.prmHero small{color:var(--pm);font-size:13px}
+.prmBuyuk{font-size:36px;font-weight:700;letter-spacing:-1.2px}
+.prmIki{margin-top:16px;padding-top:16px;border-top:1px solid var(--pl);gap:12px}
+.prmIki>div,.prmIki .kotu,.prmIki .iyi{background:none;border-radius:0;padding:0;color:var(--pc)}
+.prmIki small,.prmIki .kotu small,.prmIki .iyi small{color:var(--pm);font-weight:500;font-size:12.5px}
+.prmIki b{font-size:18px;font-weight:600;margin-top:4px}.prmIki .kotu b{color:var(--pr)}
+.prmBar{background:var(--pl)!important}
+.prmOneri{background:#fff;border:0}
+.prmIc{width:36px;height:36px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.prmPlanMini{background:var(--navy);color:#fff;border:0;border-radius:20px;box-shadow:none}
+.prmPlanMini small{color:#b9c6d8}.prmPlanMini .prmOk2{color:#b9c6d8}
+.prmAcK{font-weight:500;color:var(--pc);border-top:1px solid var(--pl);display:flex;align-items:center;gap:8px}
+.prmAy .btn{width:44px;min-width:44px;height:44px;min-height:44px;border-radius:50%;border:0;background:#fff;box-shadow:0 1px 2px rgba(15,27,45,.08);padding:0}
+.prmAyB button{border:0;border-radius:12px;background:#fff;box-shadow:0 1px 2px rgba(15,27,45,.06);color:var(--pm)}
+.prmAyB button b{color:var(--pc)}.prmAyB button.on{background:var(--navy);color:#b9c6d8}.prmAyB button.on b{color:#fff}
+.prmDevir{font-size:10.5px;font-weight:700;color:#b45309;background:#fdf1e6;border-radius:6px;padding:3px 6px;letter-spacing:.3px;margin-left:6px;vertical-align:1px}
+.prmIlerle{background:#fff;border-radius:16px;padding:14px 16px;box-shadow:0 1px 2px rgba(15,27,45,.06)}
+.prmIlerle .r{display:flex;justify-content:space-between;font-size:12.5px;color:var(--pm)}
+.prmIlerle .c{height:6px;border-radius:99px;background:var(--pl);margin-top:8px;overflow:hidden}.prmIlerle .c span{display:block;height:6px;border-radius:99px;background:var(--pg)}
+.prmBolB{display:flex;justify-content:space-between;align-items:baseline;padding:2px 4px 0}.prmBolB h3{margin:0;font-size:15px;font-weight:700}.prmBolB b{font-size:14px;font-weight:600}
+.prmDag{display:flex;height:10px;border-radius:99px;overflow:hidden;gap:2px;margin-top:16px}.prmDag span{display:block}
+.prmSerit{background:#fff;border:0;box-shadow:0 1px 2px rgba(15,27,45,.06);color:var(--pc);font-weight:500}
+.prmOmL{border:1px solid var(--pl);border-radius:16px;overflow:hidden}
+.prmOmL>button{display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid var(--pl);background:#fff;padding:12px 14px;text-align:left;min-height:56px;font-family:inherit;color:var(--pc);cursor:pointer}
+.prmOmL>button:last-child{border-bottom:0}.prmOmL>button b{display:block;font-size:14.5px;font-weight:500}.prmOmL>button small{display:block;font-size:12px;color:var(--pm)}
+.prmKart .prmKartY{border-radius:18px}
+.prmOk.yarim{background:#fff3e0;border-color:#f59e0b;color:#b45309;font-weight:800}
